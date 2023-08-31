@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "547856188797",
+    "project_id": "challenges-b6ee8",
+    "storage_bucket": "challenges-b6ee8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547856188797:android:05b45ab172772094867814",
+        "android_client_info": {
+          "package_name": "pro.issukiai.challenges"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547856188797-7blb5kheiukahi6kq0n2navi7r8knn9u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZpJcFo1_sBpNweaRB6mn_h8cLIpaddZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547856188797-5o4msm270rut0h52lsijmp24ml4c9p8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
