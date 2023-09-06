@@ -17,8 +17,8 @@ class ContainerGradient extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.green.shade100,
-              Colors.green.shade300,
+              Colors.white,
+              Colors.white,
             ],
           ),
         ),

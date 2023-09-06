@@ -24,6 +24,7 @@ class ButtonCustom extends StatelessWidget {
   final IconType icon;
 
   const ButtonCustom({
+    super.key,
     required this.onPressed,
     required this.text,
     this.type = ButtonType.primary,
@@ -64,26 +65,9 @@ class ButtonCustom extends StatelessWidget {
     }
 
     return Container(
-      margin: EdgeInsets.all(10.0),
+      margin: const EdgeInsets.all(10.0),
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != IconType.none)
-              Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Image.asset(
-                  iconPath,
-                  height: 20,
-                ),
-              ),
-            Text(
-              text,
-              style: TextStyle(fontSize: fontSize, color: textColor, fontWeight: fontWeight),
-            ),
-          ],
-        ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
           padding: MaterialStateProperty.all<EdgeInsets>(
@@ -95,6 +79,23 @@ class ButtonCustom extends StatelessWidget {
               side: BorderSide(color: borderColor, width: 2.0),
             ),
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != IconType.none)
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Image.asset(
+                  iconPath,
+                  height: 20,
+                ),
+              ),
+            Text(
+              text,
+              style: TextStyle(fontSize: fontSize, color: textColor, fontWeight: fontWeight),
+            ),
+          ],
         ),
       ),
     );

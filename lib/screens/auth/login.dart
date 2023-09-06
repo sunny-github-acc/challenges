@@ -11,6 +11,8 @@ import 'package:challenges/services/auth/auth.dart';
 import 'package:challenges/utils/helpers.dart';
 
 class login extends StatefulWidget {
+  const login({super.key});
+
   @override
   _loginState createState() => _loginState();
 }
@@ -26,8 +28,8 @@ class _loginState extends State<login> {
     String password = passwordController.text.trim();
 
     setState(() {
-      isEmail = !email.isEmpty;
-      isPassword = !password.isEmpty;
+      isEmail = email.isNotEmpty;
+      isPassword = password.isNotEmpty;
     });
 
     if (email.isEmpty || password.isEmpty) {
@@ -57,7 +59,7 @@ class _loginState extends State<login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Welcome back',
       ),
       body: ContainerGradient(
