@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:challenges/screens/auth/login.dart';
 import 'package:challenges/screens/auth/signup.dart';
 
+import 'package:challenges/services/auth/auth.dart';
+
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 
@@ -19,8 +21,13 @@ class Auth extends StatelessWidget {
   void _navigateToSignupScreen(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => signup()),
+      MaterialPageRoute(builder: (context) => Signup()),
     );
+  }
+
+  Future<void> _loginGoogle(context) async {
+    AuthService authService = AuthService();
+    await authService.loginGoogle(context);
   }
 
   @override
@@ -52,6 +59,12 @@ class Auth extends StatelessWidget {
                       type: ButtonType.secondary,
                       text: 'Welcome back',
                       onPressed: () => _navigateToLoginScreen(context),
+                    ),
+                    ButtonCustom(
+                      type: ButtonType.transparent,
+                      text: 'Join with Google',
+                      icon: IconType.google,
+                      onPressed: () => _loginGoogle(context),
                     ),
                   ],
                 ),

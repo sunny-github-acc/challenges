@@ -1,67 +1,64 @@
 import 'package:flutter/material.dart';
 
+import 'package:challenges/screens/auth/signupPassword.dart';
+
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
 
-import 'package:challenges/services/auth/auth.dart';
+import 'package:challenges/utils/helpers.dart';
 
-class signup extends StatefulWidget {
+class Signup extends StatefulWidget {
+  const Signup({super.key});
+
   @override
-  _signupState createState() => _signupState();
+  _SignupState createState() => _SignupState();
 }
 
-class _signupState extends State<signup> {
+class _SignupState extends State<Signup> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController passwordRepeatController = TextEditingController();
 
   bool isUsername = false;
   bool isEmail = false;
-  bool isPassword = false;
-  bool isPasswordRepeat = false;
 
-  Future<void> _signup(context) async {
-    String username = userNameController.text.trim();
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
-    String passwordRepeat = passwordRepeatController.text.trim();
-
-    if (username.isEmpty || email.isEmpty || password.isEmpty || passwordRepeat.isEmpty) {
+  void _navigateToSignupPasswordScreen(
+        BuildContext context,
+        String username,
+        String email
+      ) {
+    if (username.isEmpty || email.isEmpty) {
       setState(() {
-        isUsername = !username.isEmpty;
-        isEmail = !email.isEmpty;
-        isPassword = !password.isEmpty;
-        isPasswordRepeat = !password.isEmpty;
+        isUsername = username.isNotEmpty;
+        isEmail = email.isNotEmpty;
       });
 
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
-    if (password != passwordRepeat) {
+    if (!isValidEmail(email)) {
       setState(() {
-        isPasswordRepeat = false;
+        isEmail = false;
       });
 
-      return Modal.show(context, 'Oops', 'Passwords should match');
+      return Modal.show(context, 'Oops', 'Please fill in a valid email');
     }
 
-    AuthService authService = AuthService();
-    await authService.signupEmail(context, username, email, password);
-  }
-
-  Future<void> _loginGoogle(context) async {
-    AuthService authService = AuthService();
-    await authService.loginGoogle(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignupPassword(
+          username: username,
+          email: email,
+      )),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Nice to meet you',
       ),
       body: ContainerGradient(
@@ -72,37 +69,21 @@ class _signupState extends State<signup> {
                 labelText: 'Username',
                 hintText: 'Enter your username',
                 controller: userNameController,
-                disabled: isUsername,
+                disabled: !isUsername,
               ),
               InputCustom(
                 labelText: 'Email',
                 hintText: 'Enter your email',
                 controller: emailController,
-                disabled: isEmail,
-              ),
-              InputCustom(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-                controller: passwordController,
-                obscureText: true,
-                disabled: isPassword,
-              ),
-              InputCustom(
-                labelText: 'Repeat Password',
-                hintText: 'Repeat your password',
-                controller: passwordRepeatController,
-                obscureText: true,
-                disabled: isPasswordRepeat,
+                disabled: !isEmail,
               ),
               ButtonCustom(
-                text: 'Signup',
-                onPressed: () => _signup(context),
-              ),
-              ButtonCustom(
-                type: ButtonType.secondary,
-                text: 'Signup with google',
-                icon: IconType.google,
-                onPressed: () => _loginGoogle(context),
+                text: 'Next',
+                onPressed: () => _navigateToSignupPasswordScreen(
+                    context,
+                    userNameController.text.trim(),
+                    emailController.text.trim(),
+                ),
               ),
             ],
           ),

@@ -40,11 +40,6 @@ class _loginState extends State<login> {
     await authService.loginEmail(context, email, password);
   }
 
-  Future<void> _loginGoogle(context) async {
-    AuthService authService = AuthService();
-    await authService.loginGoogle(context);
-  }
-
   Future<void> _rememberPassword(context) async {
     String email = emailController.text.trim();
 
@@ -88,12 +83,6 @@ class _loginState extends State<login> {
               ButtonCustom(
                 text: 'Login',
                 onPressed: () => _loginEmail(context),
-              ),
-              ButtonCustom(
-                type: ButtonType.secondary,
-                text: 'Login with google',
-                icon: IconType.google,
-                onPressed: () => _loginGoogle(context),
               ),
             ],
           ),
