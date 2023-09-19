@@ -63,21 +63,17 @@ class AuthService {
   }
 
   Future<void> loginGoogle(context) async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth = await googleUser!
           .authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
-      final User? user = userCredential.user;
-      print(user);
-      
-      Navigator.pop(context);
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (error) {
       Modal.show(context, 'Oops', 'Google login has failed');
     }
