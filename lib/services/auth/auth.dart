@@ -62,7 +62,6 @@ class AuthService {
     }
   }
 
-
   Future<void> loginGoogle(context) async {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     try {
@@ -81,6 +80,23 @@ class AuthService {
       Navigator.pop(context);
     } catch (error) {
       Modal.show(context, 'Oops', 'Google login has failed');
+    }
+  }
+
+  getUser() {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      Map<String, dynamic> userMap = {
+        'uid': user.uid,
+        'displayName': user.displayName,
+        'email': user.email,
+        'photoURL': user.photoURL ?? 'https://lh3.googleusercontent.com/a/ACg8ocJgxc8UpaHn-osIcV-y9hVuE4UkHi0l7SjKOZ4q6_A6Ng=s96-c',
+      };
+
+      return userMap;
+    } else {
+      return null;
     }
   }
 }

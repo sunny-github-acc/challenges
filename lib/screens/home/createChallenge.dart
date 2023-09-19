@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:challenges/services/cloud/cloud.dart';
+import 'package:challenges/services/auth/auth.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
@@ -20,16 +22,21 @@ class _CreateChallenge extends State<CreateChallenge> {
   bool isTitle = true;
 
   Future<void> _save(context) async {
+    AuthService authService = AuthService();
+
     String title = titleController.text.trim();
+    Map user =  authService.getUser();
+
     Map<String, dynamic> document = {
-      title: title,
+      ...user,
+      'title': title,
     };
 
     setState(() {
       isTitle = title.isNotEmpty;
     });
 
-    if (title.isEmpty) {
+    if (!isTitle) {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 

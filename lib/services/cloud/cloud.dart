@@ -9,12 +9,12 @@ class CloudService {
       await FirebaseFirestore.instance
           .collection(collection)
           .add(document)
-          .then((value) => print('The challenge is added'));
+          .then((value) => print('The $collection is added'));
 
       Navigator.pop(context);
-      Modal.show(context, 'Congrats!', 'The challenge is added');
+      Modal.show(context, 'Congrats!', 'The $collection are added');
     } catch (error) {
-      Modal.show(context, 'Oops', 'Failed to add the challenge : $error');
+      Modal.show(context, 'Oops', 'Failed to add the $collection : $error');
     }
   }
 
