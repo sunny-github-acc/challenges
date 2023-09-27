@@ -26,8 +26,8 @@ class _SignupPasswordState extends State<SignupPassword> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordRepeatController = TextEditingController();
 
-  bool isPassword = false;
-  bool isPasswordRepeat = false;
+  bool isPassword = true;
+  bool isPasswordRepeat = true;
 
   Future<void> _signup(context) async {
     String username = widget.username;

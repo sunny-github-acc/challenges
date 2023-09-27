@@ -91,10 +91,13 @@ class ButtonCustom extends StatelessWidget {
                   height: 20,
                 ),
               ),
-            Text(
-              text,
-              style: TextStyle(fontSize: fontSize, color: textColor, fontWeight: fontWeight),
-            ),
+              Flexible(
+                child: Text(
+                  text,
+                  style: TextStyle(fontSize: fontSize, color: textColor, fontWeight: fontWeight),
+                  textAlign: TextAlign.center, // Center the text
+                ),
+              ),
           ],
         ),
       ),

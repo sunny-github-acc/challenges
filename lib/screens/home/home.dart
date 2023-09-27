@@ -8,18 +8,14 @@ import 'package:challenges/components/button_floating.dart';
 import 'package:challenges/components/container_gradient.dart';
 
 class Home extends StatelessWidget {
-  final bool isEmailVerified;
   final User? user;
 
-  Home({super.key})
-      : user = FirebaseAuth.instance.currentUser,
-        isEmailVerified = FirebaseAuth.instance.currentUser?.emailVerified ?? false;
+  Home({super.key}) : user = FirebaseAuth.instance.currentUser;
 
   void _logout() async {
     try {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      // Handle error
       print(e);
     }
   }
@@ -44,8 +40,6 @@ class Home extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                          isEmailVerified ? 'Hello' : 'Please verify your email'),
                       ButtonCustom(
                         type: ButtonType.secondary,
                         text: 'Logout',

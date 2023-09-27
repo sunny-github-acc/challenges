@@ -21,8 +21,8 @@ class _SignupState extends State<Signup> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
-  bool isUsername = false;
-  bool isEmail = false;
+  bool isUsername = true;
+  bool isEmail = true;
 
   void _navigateToSignupPasswordScreen(
         BuildContext context,

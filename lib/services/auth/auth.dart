@@ -34,7 +34,7 @@ class AuthService {
         await user.sendEmailVerification();
       }
 
-      Navigator.pop(context);
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (error) {
       List<String> parts = error.toString().split(']');
       if (error is FirebaseAuthException && parts.length > 1) {

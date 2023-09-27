@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'package:challenges/screens/auth/auth.dart';
 import 'package:challenges/screens/home/home.dart';
+import 'package:challenges/screens/home/verifyTheEmail.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? user;
@@ -33,15 +34,23 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My App',
       home: Consumer<AuthNotifier>(
         builder: (context, authNotifier, child) {
-          print('User:');
-          print(authNotifier.user);
-          return authNotifier.user?.uid == null ? Auth() : Home();
+          if (authNotifier.user?.uid == null) {
+            return Auth();
+          }
+
+          if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
+            return VerifyTheEmail();
+          }
+
+          return  Home();
         },
       ),
     );
