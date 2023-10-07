@@ -49,11 +49,13 @@ class _CreateChallenge extends State<CreateChallenge> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Create a challenge',
-        action: ButtonCustom(
-          onPressed: () => _save(context),
-          text: 'Save',
-          size: ButtonSize.small,
-        ),
+        actions: [
+          ButtonCustom(
+            onPressed: () => _save(context),
+            text: 'Save',
+            size: ButtonSize.small,
+          ),
+        ],
       ),
       body: Column(
         children: [
