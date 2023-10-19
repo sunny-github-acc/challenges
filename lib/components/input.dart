@@ -6,23 +6,31 @@ class InputCustom extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final bool disabled;
+  final bool isTall;
   final double padding;
+  final bool isInputTypeText;
 
   const InputCustom({
+    super.key,
     required this.labelText,
     required this.hintText,
     required this.controller,
     this.obscureText = false,
+    this.isTall = false,
     this.disabled = false,
     this.padding = 8.0,
+    this.isInputTypeText = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return
-      Padding(
-        padding: EdgeInsets.all(padding),
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: SizedBox(
+        height: isTall ? 150 : null,
         child: TextFormField(
+          keyboardType:
+              isInputTypeText ? TextInputType.text : TextInputType.number,
           controller: controller,
           decoration: InputDecoration(
             labelText: labelText,
@@ -33,9 +41,12 @@ class InputCustom extends StatelessWidget {
                 width: 1.0,
               ),
             ),
+            alignLabelWithHint: true,
           ),
+          maxLines: isTall ? 10 : null,
           obscureText: obscureText,
         ),
-      );
+      ),
+    );
   }
 }
