@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:challenges/screens/home/createChallenge.dart';
+import 'package:challenges/screens/home/dashboard.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button_floating.dart';
@@ -16,7 +18,9 @@ class Home extends StatelessWidget {
     try {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -34,42 +38,39 @@ class Home extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: _logout,
-            child: user?.photoURL != null ?
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-                  child: ClipOval(
-                  child: Image.network(
-                    user!.photoURL!,
-                    width: 50,
-                    height: 10,
-                    fit: BoxFit.cover,
-                  )
-              )) :
-              Image.asset('assets/grow.png'),
+            child: Container(
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+              width: 50,
+              height: 10,
+              child: user?.photoURL == 'null'
+                  ? ClipOval(
+                      child: Image.network(
+                      user!.photoURL!,
+                      width: 50,
+                      height: 10,
+                      fit: BoxFit.cover,
+                    ))
+                  : Image.asset(
+                      'assets/grow.png',
+                      width: 50,
+                      height: 10,
+                    ),
+            ),
           ),
         ],
-        leftButton:
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              // Handle right button tap
-            },
-          ),
+        leftButton: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            // Handle right button tap
+          },
+        ),
       ),
       body: ContainerGradient(
         child: Column(
           children: [
-            const Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(top: 70.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                    ],
-                  ),
-                ),
-              )
+            const Expanded(
+              child: Dashboard(),
             ),
             FloatingButton(
               onPressed: () => _navigateToCreateChallengeScreen(context),
@@ -79,4 +80,5 @@ class Home extends StatelessWidget {
         ),
       ),
     );
-  }}
+  }
+}

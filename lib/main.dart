@@ -28,7 +28,7 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => AuthNotifier(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -43,14 +43,14 @@ class MyApp extends StatelessWidget {
       home: Consumer<AuthNotifier>(
         builder: (context, authNotifier, child) {
           if (authNotifier.user?.uid == null) {
-            return Auth();
+            return const Auth();
           }
 
           if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
             return VerifyTheEmail();
           }
 
-          return  Home();
+          return Home();
         },
       ),
     );

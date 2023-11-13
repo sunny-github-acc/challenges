@@ -24,7 +24,8 @@ class SignupPassword extends StatefulWidget {
 
 class _SignupPasswordState extends State<SignupPassword> {
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController passwordRepeatController = TextEditingController();
+  final TextEditingController passwordRepeatController =
+      TextEditingController();
 
   bool isPassword = true;
   bool isPasswordRepeat = true;
@@ -66,21 +67,21 @@ class _SignupPasswordState extends State<SignupPassword> {
         child: Center(
           child: Column(
             children: [
-              InputCustom(
+              CustomInput(
                 labelText: 'Password',
                 hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
                 disabled: !isPassword,
               ),
-              InputCustom(
+              CustomInput(
                 labelText: 'Repeat Password',
                 hintText: 'Repeat your password',
                 controller: passwordRepeatController,
                 obscureText: true,
                 disabled: !isPasswordRepeat,
               ),
-              ButtonCustom(
+              CustomButton(
                 text: 'Signup',
                 onPressed: () => _signup(context),
               ),

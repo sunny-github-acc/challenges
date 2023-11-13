@@ -52,27 +52,26 @@ class VerifyTheEmailState extends State<VerifyTheEmailAuth> {
         child: Center(
           child: Column(
             children: [
-              InputCustom(
+              CustomInput(
                 labelText: 'Password',
                 hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
                 disabled: !isPassword,
               ),
-              ButtonCustom(
+              CustomButton(
                 onPressed: () => _rememberPassword(context),
                 text: 'Forgot password?',
                 type: ButtonType.transparent,
                 size: ButtonSize.small,
               ),
-              ButtonCustom(
+              CustomButton(
                 text: 'Verify',
                 onPressed: () => _loginEmail(context),
               ),
             ],
           ),
         ),
-
       ),
     );
   }

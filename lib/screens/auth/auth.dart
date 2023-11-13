@@ -14,14 +14,14 @@ class Auth extends StatelessWidget {
   void _navigateToLoginScreen(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => login()),
+      MaterialPageRoute(builder: (context) => const login()),
     );
   }
 
   void _navigateToSignupScreen(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Signup()),
+      MaterialPageRoute(builder: (context) => const Signup()),
     );
   }
 
@@ -34,43 +34,43 @@ class Auth extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ContainerGradient(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const Text(''),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Image.asset(
-                      'assets/grow.png',
-                      width: 200,
-                      height: 200,
-                    ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text(''),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Image.asset(
+                    'assets/grow.png',
+                    width: 200,
+                    height: 200,
                   ),
                 ),
-                Column(
-                  children: [
-                    ButtonCustom(
-                      onPressed: () => _navigateToSignupScreen(context),
-                      text: 'Join',
-                    ),
-                    ButtonCustom(
-                      type: ButtonType.secondary,
-                      text: 'Welcome back',
-                      onPressed: () => _navigateToLoginScreen(context),
-                    ),
-                    ButtonCustom(
-                      type: ButtonType.transparent,
-                      text: 'Join with Google',
-                      icon: IconType.google,
-                      onPressed: () => _loginGoogle(context),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              Column(
+                children: [
+                  CustomButton(
+                    onPressed: () => _navigateToSignupScreen(context),
+                    text: 'Join',
+                  ),
+                  CustomButton(
+                    type: ButtonType.secondary,
+                    text: 'Welcome back',
+                    onPressed: () => _navigateToLoginScreen(context),
+                  ),
+                  CustomButton(
+                    type: ButtonType.transparent,
+                    text: 'Join with Google',
+                    icon: IconType.google,
+                    onPressed: () => _loginGoogle(context),
+                  ),
+                ],
+              ),
+            ],
           ),
+        ),
       ),
     );
   }

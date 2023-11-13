@@ -20,12 +20,14 @@ class CloudService {
 
   Future<List<Map<String, dynamic>>> getCollection(context, collection) async {
     try {
-      CollectionReference challenges = FirebaseFirestore.instance.collection(collection);
+      CollectionReference challenges =
+          FirebaseFirestore.instance.collection(collection);
       QuerySnapshot querySnapshot = await challenges.get();
       List<Map<String, dynamic>> dataList = [];
 
       for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-        Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
         dataList.add(data);
       }
 
@@ -37,4 +39,3 @@ class CloudService {
     }
   }
 }
-

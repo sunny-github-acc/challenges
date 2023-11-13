@@ -61,33 +61,32 @@ class _loginState extends State<login> {
         child: Center(
           child: Column(
             children: [
-              InputCustom(
+              CustomInput(
                 labelText: 'Email',
                 hintText: 'Enter your email',
                 controller: emailController,
                 disabled: !isEmail,
               ),
-              InputCustom(
+              CustomInput(
                 labelText: 'Password',
                 hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
                 disabled: !isPassword,
               ),
-              ButtonCustom(
-                  onPressed: () => _rememberPassword(context),
-                  text: 'Forgot password?',
-                  type: ButtonType.transparent,
-                  size: ButtonSize.small,
+              CustomButton(
+                onPressed: () => _rememberPassword(context),
+                text: 'Forgot password?',
+                type: ButtonType.transparent,
+                size: ButtonSize.small,
               ),
-              ButtonCustom(
+              CustomButton(
                 text: 'Login',
                 onPressed: () => _loginEmail(context),
               ),
             ],
           ),
         ),
-
       ),
     );
   }

@@ -21,27 +21,22 @@ class CreateChallenge extends StatefulWidget {
 class _CreateChallenge extends State<CreateChallenge> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController measureNumberController = TextEditingController();
-  final TextEditingController measureTextController = TextEditingController();
-  final TextEditingController timeframeNumberController =
+  final TextEditingController durationCustomController =
       TextEditingController();
   final TextEditingController consequenceController = TextEditingController();
 
-  String measure = 'Once';
-  String timeframe = 'Week';
   String consequence = '';
+  String duration = 'Week';
+  String visibility = 'Public';
   bool isTitle = true;
-  bool isMeasure = true;
-  bool isTimeframe = true;
+  bool isDuration = true;
 
   Future<void> _save(context) async {
     AuthService authService = AuthService();
 
     String title = titleController.text.trim();
     String description = descriptionController.text.trim();
-    String measureNumber = measureNumberController.text.trim();
-    String measureText = measureTextController.text.trim();
-    String timeframeNumber = timeframeNumberController.text.trim();
+    String durationCustom = durationCustomController.text.trim();
     String consequence = consequenceController.text.trim();
 
     Map user = authService.getUser();
@@ -50,22 +45,18 @@ class _CreateChallenge extends State<CreateChallenge> {
       ...user,
       'title': title,
       'description': description,
-      'measure': measure,
-      'measureNumber': measureNumber,
-      'measureText': measureText,
-      'timeframeNumber': timeframeNumber,
-      'consequence': consequence
+      'durationCustom': durationCustom,
+      'duration': duration,
+      'consequence': consequence,
+      'visibility': visibility
     };
 
     setState(() {
       isTitle = title.isNotEmpty;
-      isMeasure = measure == 'Once' ||
-          measureNumber.isNotEmpty ||
-          measureText.isNotEmpty;
-      isTimeframe = timeframe != 'Custom' || timeframeNumber.isNotEmpty;
+      isDuration = duration != 'Custom' || durationCustom.isNotEmpty;
     });
 
-    if (!isTitle || !isMeasure || !isTimeframe) {
+    if (!isTitle || !isDuration) {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
@@ -73,15 +64,15 @@ class _CreateChallenge extends State<CreateChallenge> {
     await cloudService.setCollection(context, 'challenges', document);
   }
 
-  void _handleMeasure(BuildContext context, String measurement) {
+  void _handleDuration(BuildContext context, String length) {
     setState(() {
-      measure = measurement;
+      duration = length;
     });
   }
 
-  void _handleTimeframe(BuildContext context, String length) {
+  void _handleVisibility(BuildContext context, String vis) {
     setState(() {
-      timeframe = length;
+      visibility = vis;
     });
   }
 
@@ -91,7 +82,7 @@ class _CreateChallenge extends State<CreateChallenge> {
         appBar: CustomAppBar(
           title: 'Add a challenge',
           actions: [
-            ButtonCustom(
+            CustomButton(
               onPressed: () => _save(context),
               text: 'Save',
               size: ButtonSize.small,
@@ -104,15 +95,15 @@ class _CreateChallenge extends State<CreateChallenge> {
               ContainerGradient(
                 child: Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      InputCustom(
+                      CustomInput(
                         labelText: 'Title',
                         hintText: 'Enter the title of your challenge',
                         controller: titleController,
                         disabled: !isTitle,
                       ),
-                      InputCustom(
+                      CustomInput(
                         labelText: 'Description',
                         hintText:
                             'Enter a specific description of your challenge',
@@ -121,147 +112,75 @@ class _CreateChallenge extends State<CreateChallenge> {
                       ),
                       ReusableCard(
                         child: Column(children: [
-                          Center(
+                          const Center(
                             child: Align(
                               alignment: Alignment.centerLeft,
-                              child: TextCustom(text: 'Measure'),
+                              child: TextCustom(
+                                  text: 'The period of the challenge'),
                             ),
                           ),
-                          Wrap(
-                            direction: Axis.horizontal,
-                            children: [
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleMeasure(context, 'Once'),
-                                  text: 'Once',
-                                  size: ButtonSize.small,
-                                  type: measure == 'Once'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleMeasure(context, 'Times'),
-                                  text: 'Times',
-                                  size: ButtonSize.small,
-                                  type: measure == 'Times'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleMeasure(context, 'Points'),
-                                  text: 'Points',
-                                  size: ButtonSize.small,
-                                  type: measure == 'Points'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleMeasure(context, 'Event'),
-                                  text: 'Event',
-                                  size: ButtonSize.small,
-                                  type: measure == 'Event'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                            ],
-                          ),
-                          measure == 'Times' || measure == 'Points'
-                              ? Center(
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: InputCustom(
-                                      isInputTypeText: false,
-                                      labelText: measure,
-                                      hintText:
-                                          'Enter the length of your challenge',
-                                      controller: measureNumberController,
-                                      disabled: !isMeasure,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                          measure == 'Event'
-                              ? Center(
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: InputCustom(
-                                      labelText: measure,
-                                      hintText:
-                                          'Enter the amplitude of your challenge',
-                                      controller: measureTextController,
-                                      disabled: !isMeasure,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ]),
-                      ),
-                      ReusableCard(
-                        child: Column(children: [
                           Center(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: TextCustom(text: 'Timeframe'),
-                            ),
-                          ),
-                          Wrap(
-                            direction: Axis.horizontal,
-                            children: [
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleTimeframe(context, 'Week'),
-                                  text: 'Week',
-                                  size: ButtonSize.small,
-                                  type: timeframe == 'Week'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleTimeframe(context, 'Month'),
-                                  text: 'Month',
-                                  size: ButtonSize.small,
-                                  type: timeframe == 'Month'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleTimeframe(context, 'Year'),
-                                  text: 'Year',
-                                  size: ButtonSize.small,
-                                  type: timeframe == 'Year'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleTimeframe(context, 'Custom'),
-                                  text: 'Custom',
-                                  size: ButtonSize.small,
-                                  type: timeframe == 'Custom'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              ButtonCustom(
-                                  onPressed: () =>
-                                      _handleTimeframe(context, 'Forever'),
-                                  text: 'Forever',
-                                  size: ButtonSize.small,
-                                  type: timeframe == 'Forever'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              timeframe == 'Custom'
-                                  ? Center(
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: InputCustom(
-                                          labelText: 'Add calendar',
-                                          hintText:
-                                              'Enter the length of your challenge',
-                                          controller: timeframeNumberController,
-                                          disabled: !isTimeframe,
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Wrap(
+                                    children: [
+                                      CustomButton(
+                                          onPressed: () =>
+                                              _handleDuration(context, 'Week'),
+                                          text: 'Week',
+                                          size: ButtonSize.small,
+                                          type: duration == 'Week'
+                                              ? ButtonType.primary
+                                              : ButtonType.secondary),
+                                      CustomButton(
+                                          onPressed: () =>
+                                              _handleDuration(context, 'Month'),
+                                          text: 'Month',
+                                          size: ButtonSize.small,
+                                          type: duration == 'Month'
+                                              ? ButtonType.primary
+                                              : ButtonType.secondary),
+                                      CustomButton(
+                                          onPressed: () =>
+                                              _handleDuration(context, 'Year'),
+                                          text: 'Year',
+                                          size: ButtonSize.small,
+                                          type: duration == 'Year'
+                                              ? ButtonType.primary
+                                              : ButtonType.secondary),
+                                      CustomButton(
+                                          onPressed: () => _handleDuration(
+                                              context, 'Custom'),
+                                          text: 'Custom',
+                                          size: ButtonSize.small,
+                                          type: duration == 'Custom'
+                                              ? ButtonType.primary
+                                              : ButtonType.secondary),
+                                      CustomButton(
+                                          onPressed: () => _handleDuration(
+                                              context, 'Forever'),
+                                          text: 'Forever',
+                                          size: ButtonSize.small,
+                                          type: duration == 'Forever'
+                                              ? ButtonType.primary
+                                              : ButtonType.secondary),
+                                      duration == 'Custom'
+                                          ? Center(
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: CustomInput(
+                                                  labelText: 'Add calendar',
+                                                  hintText:
+                                                      'Enter the length of your challenge',
+                                                  controller:
+                                                      durationCustomController,
+                                                  disabled: !isDuration,
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ],
+                                  ))),
                         ]),
                       ),
                       ReusableCard(
@@ -269,11 +188,13 @@ class _CreateChallenge extends State<CreateChallenge> {
                           const Center(
                             child: Align(
                               alignment: Alignment.centerLeft,
-                              child: TextCustom(text: 'Consequence'),
+                              child: TextCustom(
+                                  text:
+                                      'What will happen if the challenge will succeed or fail?'),
                             ),
                           ),
                           Wrap(direction: Axis.horizontal, children: [
-                            InputCustom(
+                            CustomInput(
                               labelText: 'Description',
                               hintText:
                                   'Enter a specific consequence of your challenge',
@@ -283,6 +204,36 @@ class _CreateChallenge extends State<CreateChallenge> {
                           ]),
                         ]),
                       ),
+                      ReusableCard(
+                          child: Column(
+                        children: [
+                          const Center(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextCustom(
+                                  text: 'Public or private challenge?'),
+                            ),
+                          ),
+                          Row(children: [
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleVisibility(context, 'Public'),
+                                text: 'Public',
+                                size: ButtonSize.small,
+                                type: visibility == 'Public'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleVisibility(context, 'Private'),
+                                text: 'Private',
+                                size: ButtonSize.small,
+                                type: visibility == 'Private'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                          ]),
+                        ],
+                      )),
                     ],
                   ),
                 ),

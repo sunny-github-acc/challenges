@@ -16,14 +16,14 @@ enum IconType {
   google,
 }
 
-class ButtonCustom extends StatelessWidget {
+class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final ButtonType type;
   final ButtonSize size;
   final IconType icon;
 
-  const ButtonCustom({
+  const CustomButton({
     super.key,
     required this.onPressed,
     required this.text,
@@ -71,7 +71,8 @@ class ButtonCustom extends StatelessWidget {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
           padding: MaterialStateProperty.all<EdgeInsets>(
-            EdgeInsets.symmetric(vertical: paddingVertical, horizontal: paddingHorizontal),
+            EdgeInsets.symmetric(
+                vertical: paddingVertical, horizontal: paddingHorizontal),
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
@@ -91,13 +92,16 @@ class ButtonCustom extends StatelessWidget {
                   height: 20,
                 ),
               ),
-              Flexible(
-                child: Text(
-                  text,
-                  style: TextStyle(fontSize: fontSize, color: textColor, fontWeight: fontWeight),
-                  textAlign: TextAlign.center, // Center the text
-                ),
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                    fontSize: fontSize,
+                    color: textColor,
+                    fontWeight: fontWeight),
+                textAlign: TextAlign.center, // Center the text
               ),
+            ),
           ],
         ),
       ),

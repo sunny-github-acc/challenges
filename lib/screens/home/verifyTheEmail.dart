@@ -26,10 +26,11 @@ class VerifyTheEmail extends StatelessWidget {
     try {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => VerifyTheEmailAuth()
-        ),
-      );    } catch (e) {
-      Modal.show(context, 'Oops', 'Check again if your email has been verified');
+        MaterialPageRoute(builder: (context) => VerifyTheEmailAuth()),
+      );
+    } catch (e) {
+      Modal.show(
+          context, 'Oops', 'Check again if your email has been verified');
     }
   }
 
@@ -44,13 +45,14 @@ class VerifyTheEmail extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('The email is not yet verified. Please check your email for a verification link.'),
-                    ButtonCustom(
+                    const Text(
+                        'The email is not yet verified. Please check your email for a verification link.'),
+                    CustomButton(
                       type: ButtonType.secondary,
                       text: "I've verified the email",
                       onPressed: () => _checkTheEmail(context),
                     ),
-                    ButtonCustom(
+                    CustomButton(
                       type: ButtonType.secondary,
                       text: 'Resend the verification email',
                       onPressed: () => _resendVerificationEmail(context),
@@ -63,4 +65,5 @@ class VerifyTheEmail extends StatelessWidget {
         ),
       ),
     );
-  }}
+  }
+}

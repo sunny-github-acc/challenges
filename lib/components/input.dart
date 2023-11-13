@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class InputCustom extends StatelessWidget {
+class CustomInput extends StatelessWidget {
   final String labelText;
   final String hintText;
   final TextEditingController controller;
@@ -10,7 +10,7 @@ class InputCustom extends StatelessWidget {
   final double padding;
   final bool isInputTypeText;
 
-  const InputCustom({
+  const CustomInput({
     super.key,
     required this.labelText,
     required this.hintText,

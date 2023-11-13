@@ -25,10 +25,7 @@ class _SignupState extends State<Signup> {
   bool isEmail = true;
 
   void _navigateToSignupPasswordScreen(
-        BuildContext context,
-        String username,
-        String email
-      ) {
+      BuildContext context, String username, String email) {
     if (username.isEmpty || email.isEmpty) {
       setState(() {
         isUsername = username.isNotEmpty;
@@ -48,10 +45,11 @@ class _SignupState extends State<Signup> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SignupPassword(
-          username: username,
-          email: email,
-      )),
+      MaterialPageRoute(
+          builder: (context) => SignupPassword(
+                username: username,
+                email: email,
+              )),
     );
   }
 
@@ -65,24 +63,24 @@ class _SignupState extends State<Signup> {
         child: Center(
           child: Column(
             children: [
-              InputCustom(
+              CustomInput(
                 labelText: 'Username',
                 hintText: 'Enter your username',
                 controller: userNameController,
                 disabled: !isUsername,
               ),
-              InputCustom(
+              CustomInput(
                 labelText: 'Email',
                 hintText: 'Enter your email',
                 controller: emailController,
                 disabled: !isEmail,
               ),
-              ButtonCustom(
+              CustomButton(
                 text: 'Next',
                 onPressed: () => _navigateToSignupPasswordScreen(
-                    context,
-                    userNameController.text.trim(),
-                    emailController.text.trim(),
+                  context,
+                  userNameController.text.trim(),
+                  emailController.text.trim(),
                 ),
               ),
             ],
