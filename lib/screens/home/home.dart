@@ -43,7 +43,7 @@ class Home extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
               width: 50,
               height: 10,
-              child: user?.photoURL == 'null'
+              child: user?.photoURL != 'null'
                   ? ClipOval(
                       child: Image.network(
                       user!.photoURL!,

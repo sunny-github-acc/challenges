@@ -20,6 +20,7 @@ class login extends StatefulWidget {
 class _loginState extends State<login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final Debounce _debounce = Debounce();
   bool isEmail = true;
   bool isPassword = true;
 
@@ -75,14 +76,15 @@ class _loginState extends State<login> {
                 disabled: !isPassword,
               ),
               CustomButton(
-                onPressed: () => _rememberPassword(context),
+                onPressed: () =>
+                    _debounce.run(() => _rememberPassword(context)),
                 text: 'Forgot password?',
                 type: ButtonType.transparent,
                 size: ButtonSize.small,
               ),
               CustomButton(
                 text: 'Login',
-                onPressed: () => _loginEmail(context),
+                onPressed: () => _debounce.run(() => _loginEmail(context)),
               ),
             ],
           ),

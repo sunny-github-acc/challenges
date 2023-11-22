@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ReusableCard extends StatelessWidget {
+class CustomCard extends StatelessWidget {
   final Widget child;
   final Color color;
   final double borderRadius;
   final EdgeInsets padding;
 
-  const ReusableCard({
+  const CustomCard({
     super.key,
     required this.child,
     this.color = Colors.white,

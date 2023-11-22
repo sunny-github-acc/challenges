@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:challenges/services/auth/auth.dart';
+import 'package:challenges/utils/helpers.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
@@ -26,6 +27,7 @@ class _SignupPasswordState extends State<SignupPassword> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordRepeatController =
       TextEditingController();
+  final Debounce _debounce = Debounce();
 
   bool isPassword = true;
   bool isPasswordRepeat = true;
@@ -83,7 +85,7 @@ class _SignupPasswordState extends State<SignupPassword> {
               ),
               CustomButton(
                 text: 'Signup',
-                onPressed: () => _signup(context),
+                onPressed: () => _debounce.run(() => _signup(context)),
               ),
             ],
           ),

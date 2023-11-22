@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -34,6 +35,16 @@ class VerifyTheEmail extends StatelessWidget {
     }
   }
 
+  void _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +67,10 @@ class VerifyTheEmail extends StatelessWidget {
                       type: ButtonType.secondary,
                       text: 'Resend the verification email',
                       onPressed: () => _resendVerificationEmail(context),
+                    ),
+                    CustomButton(
+                      text: 'Logout',
+                      onPressed: () => _logout(),
                     ),
                   ],
                 ),

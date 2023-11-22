@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/card.dart';
 import 'package:flutter/foundation.dart';
@@ -24,14 +28,18 @@ class _Dashboard extends State<Dashboard> {
     super.initState();
 
     _loadCollectionData();
+
+    cloudService.getCollectionStream(context, 'challenges').listen((data) {
+      setState(() {
+        collectionData = data;
+      });
+    });
   }
 
   Future<void> _loadCollectionData() async {
     try {
-      print('Data loading started.');
       List<Map<String, dynamic>> data =
           await cloudService.getCollection(context, 'challenges');
-      print('Data loaded successfully: $data');
 
       setState(() {
         collectionData = data;
@@ -49,13 +57,16 @@ class _Dashboard extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'Dashboard',
+        title: 'Ongoing global challenges',
         fontSize: 20,
       ),
       body: ListView.builder(
         itemCount: collectionData.length,
         itemBuilder: (context, index) {
-          return ReusableCard(
+          final description = collectionData[index]['description'];
+          final consequence = collectionData[index]['consequence'];
+
+          return CustomCard(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,34 +97,29 @@ class _Dashboard extends State<Dashboard> {
                   text: 'Title',
                   fontWeight: FontWeight.bold,
                 ),
-                Text(collectionData[index]['title'] ?? ''),
-                const TextCustom(
-                  text: 'Description',
-                  fontWeight: FontWeight.bold,
-                ),
-                Text(collectionData[index]['description'] ?? ''),
-                const TextCustom(
-                  text: 'Duration',
-                  fontWeight: FontWeight.bold,
-                ),
-                Text(collectionData[index]['duration'] ?? ''),
-                if (collectionData[index]['duration'] == 'Custom') ...[
+                Text(collectionData[index]['title']),
+                if (description != '') ...[
                   const TextCustom(
-                    text: 'Custom duration',
+                    text: 'Description',
                     fontWeight: FontWeight.bold,
                   ),
-                  Text(collectionData[index]['durationCustom'] ?? ''),
+                  Text(description)
                 ],
                 const TextCustom(
-                  text: 'Consequence',
+                  text: 'End date',
                   fontWeight: FontWeight.bold,
                 ),
-                Text(collectionData[index]['consequence'] ?? ''),
-                const TextCustom(
-                  text: 'Visibility',
-                  fontWeight: FontWeight.bold,
-                ),
-                Text(collectionData[index]['visibility'] ?? ''),
+                Text(collectionData[index]['endDate']
+                    .toDate()
+                    .toString()
+                    .substring(0, 16)),
+                if (consequence != '') ...[
+                  const TextCustom(
+                    text: 'Consequence',
+                    fontWeight: FontWeight.bold,
+                  ),
+                  Text(consequence)
+                ],
               ]));
         },
       ),

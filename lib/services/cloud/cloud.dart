@@ -38,4 +38,28 @@ class CloudService {
       return [];
     }
   }
+
+  Stream<List<Map<String, dynamic>>> getCollectionStream(context, collection) {
+    try {
+      CollectionReference challenges =
+          FirebaseFirestore.instance.collection(collection);
+      Stream<QuerySnapshot> querySnapshotStream = challenges.snapshots();
+
+      return querySnapshotStream.map((snapshot) {
+        List<Map<String, dynamic>> dataList = [];
+
+        for (QueryDocumentSnapshot documentSnapshot in snapshot.docs) {
+          Map<String, dynamic> data =
+              documentSnapshot.data() as Map<String, dynamic>;
+          dataList.add(data);
+        }
+
+        return dataList;
+      });
+    } catch (error) {
+      Modal.show(context, 'Oops', 'Failed to get challenges : $error');
+
+      return Stream.error(error);
+    }
+  }
 }
