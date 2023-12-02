@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/card.dart';
 import 'package:flutter/foundation.dart';

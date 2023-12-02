@@ -27,7 +27,7 @@ class VerifyTheEmail extends StatelessWidget {
     try {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => VerifyTheEmailAuth()),
+        MaterialPageRoute(builder: (context) => const VerifyTheEmailAuth()),
       );
     } catch (e) {
       Modal.show(

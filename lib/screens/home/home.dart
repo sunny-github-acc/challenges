@@ -39,24 +39,23 @@ class Home extends StatelessWidget {
           GestureDetector(
             onTap: _logout,
             child: Container(
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-              width: 50,
-              height: 10,
-              child: user?.photoURL != 'null'
-                  ? ClipOval(
-                      child: Image.network(
-                      user!.photoURL!,
-                      width: 50,
-                      height: 10,
-                      fit: BoxFit.cover,
-                    ))
-                  : Image.asset(
-                      'assets/grow.png',
-                      width: 50,
-                      height: 10,
-                    ),
-            ),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+                width: 50,
+                height: 10,
+                child: user?.photoURL == 'null' || user?.photoURL == null
+                    ? Image.asset(
+                        'assets/grow.png',
+                        width: 50,
+                        height: 10,
+                      )
+                    : ClipOval(
+                        child: Image.network(
+                        user!.photoURL!,
+                        width: 50,
+                        height: 10,
+                        fit: BoxFit.cover,
+                      ))),
           ),
         ],
         leftButton: IconButton(

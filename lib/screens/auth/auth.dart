@@ -8,8 +8,15 @@ import 'package:challenges/services/auth/auth.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 
-class Auth extends StatelessWidget {
+class Auth extends StatefulWidget {
   const Auth({super.key});
+
+  @override
+  _AuthState createState() => _AuthState();
+}
+
+class _AuthState extends State<Auth> {
+  bool isLoading = false;
 
   void _navigateToLoginScreen(BuildContext context) {
     Navigator.push(
@@ -26,8 +33,16 @@ class Auth extends StatelessWidget {
   }
 
   Future<void> _loginGoogle(context) async {
+    setState(() {
+      isLoading = true;
+    });
+
     AuthService authService = AuthService();
     await authService.loginGoogle(context);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -64,6 +79,7 @@ class Auth extends StatelessWidget {
                     type: ButtonType.transparent,
                     text: 'Join with Google',
                     icon: IconType.google,
+                    isLoading: isLoading,
                     onPressed: () => _loginGoogle(context),
                   ),
                 ],

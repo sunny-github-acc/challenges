@@ -20,7 +20,6 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final Debounce _debounce = Debounce();
 
   bool isUsername = true;
   bool isEmail = true;
@@ -78,12 +77,11 @@ class _SignupState extends State<Signup> {
               ),
               CustomButton(
                 text: 'Next',
-                onPressed: () =>
-                    _debounce.run(() => _navigateToSignupPasswordScreen(
-                          context,
-                          userNameController.text.trim(),
-                          emailController.text.trim(),
-                        )),
+                onPressed: () => _navigateToSignupPasswordScreen(
+                  context,
+                  userNameController.text.trim(),
+                  emailController.text.trim(),
+                ),
               ),
             ],
           ),

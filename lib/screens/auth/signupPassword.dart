@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:challenges/services/auth/auth.dart';
-import 'package:challenges/utils/helpers.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
@@ -27,10 +26,10 @@ class _SignupPasswordState extends State<SignupPassword> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordRepeatController =
       TextEditingController();
-  final Debounce _debounce = Debounce();
 
   bool isPassword = true;
   bool isPasswordRepeat = true;
+  bool isLoading = false;
 
   Future<void> _signup(context) async {
     String username = widget.username;
@@ -55,8 +54,16 @@ class _SignupPasswordState extends State<SignupPassword> {
       return Modal.show(context, 'Oops', 'Passwords should match');
     }
 
+    setState(() {
+      isLoading = true;
+    });
+
     AuthService authService = AuthService();
     await authService.signupEmail(context, username, email, password);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -85,7 +92,8 @@ class _SignupPasswordState extends State<SignupPassword> {
               ),
               CustomButton(
                 text: 'Signup',
-                onPressed: () => _debounce.run(() => _signup(context)),
+                onPressed: () => _signup(context),
+                isLoading: isLoading,
               ),
             ],
           ),

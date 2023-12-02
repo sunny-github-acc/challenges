@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:challenges/services/cloud/cloud.dart';
 import 'package:challenges/services/auth/auth.dart';
-import 'package:challenges/utils/helpers.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
@@ -23,13 +22,13 @@ class _CreateChallenge extends State<CreateChallenge> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController consequenceController = TextEditingController();
-  final Debounce _debounce = Debounce();
 
   String consequence = '';
   String duration = 'Week';
   String visibility = 'Public';
   bool isTitle = true;
   bool isDuration = true;
+  bool isLoading = false;
   DateTime today = DateTime.now();
   DateTime? customEndDate;
 
@@ -65,8 +64,16 @@ class _CreateChallenge extends State<CreateChallenge> {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
+    setState(() {
+      isLoading = true;
+    });
+
     CloudService cloudService = CloudService();
     await cloudService.setCollection(context, 'challenges', document);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _handleDuration(BuildContext context, String length) {
@@ -96,9 +103,10 @@ class _CreateChallenge extends State<CreateChallenge> {
           title: 'Add a challenge',
           actions: [
             CustomButton(
-              onPressed: () => _debounce.run(() => _save(context)),
               text: 'Save',
               size: ButtonSize.small,
+              isLoading: isLoading,
+              onPressed: () => _save(context),
             ),
           ],
         ),

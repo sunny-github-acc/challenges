@@ -20,9 +20,11 @@ class login extends StatefulWidget {
 class _loginState extends State<login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final Debounce _debounce = Debounce();
+
   bool isEmail = true;
   bool isPassword = true;
+  bool isLoadingRememberPassword = false;
+  bool isLoadingLogin = false;
 
   Future<void> _loginEmail(context) async {
     String email = emailController.text.trim();
@@ -37,8 +39,16 @@ class _loginState extends State<login> {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
+    setState(() {
+      isLoadingLogin = true;
+    });
+
     AuthService authService = AuthService();
     await authService.loginEmail(context, email, password);
+
+    setState(() {
+      isLoadingLogin = false;
+    });
   }
 
   Future<void> _rememberPassword(context) async {
@@ -47,9 +57,16 @@ class _loginState extends State<login> {
     if (!isValidEmail(email)) {
       return Modal.show(context, 'Oops', 'Please enter a valid email');
     }
+    setState(() {
+      isLoadingRememberPassword = true;
+    });
 
     AuthService authService = AuthService();
     await authService.rememberPassword(context, email);
+
+    setState(() {
+      isLoadingRememberPassword = false;
+    });
   }
 
   @override
@@ -76,15 +93,16 @@ class _loginState extends State<login> {
                 disabled: !isPassword,
               ),
               CustomButton(
-                onPressed: () =>
-                    _debounce.run(() => _rememberPassword(context)),
                 text: 'Forgot password?',
                 type: ButtonType.transparent,
                 size: ButtonSize.small,
+                isLoading: isLoadingRememberPassword,
+                onPressed: () => _rememberPassword(context),
               ),
               CustomButton(
                 text: 'Login',
-                onPressed: () => _debounce.run(() => _loginEmail(context)),
+                isLoading: isLoadingLogin,
+                onPressed: () => _loginEmail(context),
               ),
             ],
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:challenges/components/row.dart';
+
 enum ButtonType {
   primary,
   secondary,
@@ -22,15 +24,16 @@ class CustomButton extends StatelessWidget {
   final ButtonType type;
   final ButtonSize size;
   final IconType icon;
+  final bool isLoading;
 
-  const CustomButton({
-    super.key,
-    required this.onPressed,
-    required this.text,
-    this.type = ButtonType.primary,
-    this.size = ButtonSize.normal,
-    this.icon = IconType.none,
-  });
+  const CustomButton(
+      {super.key,
+      required this.onPressed,
+      required this.text,
+      this.type = ButtonType.primary,
+      this.size = ButtonSize.normal,
+      this.icon = IconType.none,
+      this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +84,13 @@ class CustomButton extends StatelessWidget {
             ),
           ),
         ),
-        child: Row(
+        child: CustomRow(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != IconType.none)
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Image.asset(
-                  iconPath,
-                  height: 20,
-                ),
+              Image.asset(
+                iconPath,
+                height: 20,
               ),
             Flexible(
               child: Text(
@@ -102,6 +102,15 @@ class CustomButton extends StatelessWidget {
                 textAlign: TextAlign.center, // Center the text
               ),
             ),
+            if (isLoading)
+              const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  semanticsLabel: 'Circular progress indicator',
+                ),
+              )
           ],
         ),
       ),
