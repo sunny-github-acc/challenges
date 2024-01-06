@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:challenges/screens/home/displayChallenge.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/card.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:challenges/components/text.dart';
-import 'package:challenges/components/row.dart';
+import 'package:challenges/components/challenge.dart';
 
 import 'package:challenges/services/cloud/cloud.dart';
 
@@ -19,7 +20,7 @@ class Dashboard extends StatefulWidget {
 class _Dashboard extends State<Dashboard> {
   CloudService cloudService = CloudService();
 
-  List<Map<String, dynamic>> collectionData = [];
+  List<Map<String, dynamic>> collection = [];
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _Dashboard extends State<Dashboard> {
 
     cloudService.getCollectionStream(context, 'challenges').listen((data) {
       setState(() {
-        collectionData = data;
+        collection = data;
       });
     });
   }
@@ -40,7 +41,7 @@ class _Dashboard extends State<Dashboard> {
           await cloudService.getCollection(context, 'challenges');
 
       setState(() {
-        collectionData = data;
+        collection = data;
       });
     } catch (error) {
       if (kDebugMode) {
@@ -49,7 +50,15 @@ class _Dashboard extends State<Dashboard> {
     }
   }
 
-  Future<void> _openUserProfile() async {}
+  void _openChallenge(BuildContext context, Map<String, dynamic> collection) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DisplayChallenge(
+                collection: collection,
+              )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,66 +68,13 @@ class _Dashboard extends State<Dashboard> {
         fontSize: 20,
       ),
       body: ListView.builder(
-        itemCount: collectionData.length,
+        itemCount: collection.length,
         itemBuilder: (context, index) {
-          final description = collectionData[index]['description'];
-          final consequence = collectionData[index]['consequence'];
-
           return CustomCard(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                CustomRow(children: [
-                  GestureDetector(
-                    onTap: _openUserProfile,
-                    child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 12.0),
-                        child: collectionData[index]['photoURL'] != null
-                            ? ClipOval(
-                                child: Image.network(
-                                collectionData[index]['photoURL']!,
-                                height: 20,
-                                fit: BoxFit.cover,
-                              ))
-                            : Image.asset(
-                                'assets/grow.png',
-                                height: 20.0,
-                              )),
-                  ),
-                  TextCustom(
-                    text: collectionData[index]['displayName'],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ]),
-                const TextCustom(
-                  text: 'Title',
-                  fontWeight: FontWeight.bold,
-                ),
-                Text(collectionData[index]['title']),
-                if (description != '') ...[
-                  const TextCustom(
-                    text: 'Description',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Text(description)
-                ],
-                const TextCustom(
-                  text: 'End date',
-                  fontWeight: FontWeight.bold,
-                ),
-                Text(collectionData[index]['endDate']
-                    .toDate()
-                    .toString()
-                    .substring(0, 16)),
-                if (consequence != '') ...[
-                  const TextCustom(
-                    text: 'Consequence',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  Text(consequence)
-                ],
-              ]));
+              onPressed: () => _openChallenge(context, collection[index]),
+              child: Challenge(
+                collection: collection[index],
+              ));
         },
       ),
     );

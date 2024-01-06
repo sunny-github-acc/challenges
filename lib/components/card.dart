@@ -5,6 +5,7 @@ class CustomCard extends StatelessWidget {
   final Color color;
   final double borderRadius;
   final EdgeInsets padding;
+  final VoidCallback? onPressed;
 
   const CustomCard({
     super.key,
@@ -12,23 +13,36 @@ class CustomCard extends StatelessWidget {
     this.color = Colors.white,
     this.borderRadius = 8.0,
     this.padding = const EdgeInsets.all(16.0),
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: double.infinity,
-        child: Card(
-          color: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          child: InkWell(
-            child: Padding(
-              padding: padding,
-              child: child,
-            ),
-          ),
-        ));
+    if (onPressed == null) {
+      return Card(
+        color: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        child: Padding(
+          padding: padding,
+          child: child,
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: onPressed,
+      child: Card(
+        color: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        child: Padding(
+          padding: padding,
+          child: child,
+        ),
+      ),
+    );
   }
 }

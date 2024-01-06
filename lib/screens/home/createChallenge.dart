@@ -184,10 +184,9 @@ class _CreateChallenge extends State<CreateChallenge> {
                               duration == 'Custom'
                                   ? CustomDateRangePicker(
                                       isStartDate: false,
-                                      lastDate:
-                                          customEndDate ?? _getEndDate('Week'),
+                                      customEndDate: customEndDate,
                                       onSelected: (date) {
-                                        customEndDate = date?.end;
+                                        customEndDate = date.end;
                                       },
                                     )
                                   : const SizedBox.shrink(),

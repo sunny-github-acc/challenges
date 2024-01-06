@@ -6,15 +6,30 @@ import 'package:challenges/components/modal.dart';
 class CloudService {
   Future<void> setCollection(context, collection, document) async {
     try {
-      await FirebaseFirestore.instance
-          .collection(collection)
-          .add(document)
-          .then((value) => print('The $collection is added'));
+      final finalDocument =
+          await FirebaseFirestore.instance.collection(collection).add(document);
+      final documentId = finalDocument.id;
+
+      Map<String, dynamic> updatedData = {'id': documentId, ...document};
+
+      await updateCollection(context, collection, updatedData, documentId);
 
       Navigator.pop(context);
-      Modal.show(context, 'Congrats!', 'The $collection are added');
+      Modal.show(context, 'Congrats!', 'The $collection is added');
     } catch (error) {
       Modal.show(context, 'Oops', 'Failed to add the $collection : $error');
+    }
+  }
+
+  Future<void> updateCollection(
+      context, collection, document, documentId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(collection)
+          .doc(documentId)
+          .update(document);
+    } catch (error) {
+      Modal.show(context, 'Oops', 'Failed to update the $collection : $error');
     }
   }
 
@@ -60,6 +75,19 @@ class CloudService {
       Modal.show(context, 'Oops', 'Failed to get challenges : $error');
 
       return Stream.error(error);
+    }
+  }
+
+  Future<void> deleteDocument(context, collection, documentId) async {
+    try {
+      final collectionReference =
+          FirebaseFirestore.instance.collection(collection);
+      await collectionReference.doc(documentId).delete();
+
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } on FirebaseException catch (error) {
+      Modal.show(context, 'Oops', 'Failed to get challenges : $error');
     }
   }
 }

@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My App',
+      title: 'Challenges',
       home: Consumer<AuthNotifier>(
         builder: (context, authNotifier, child) {
           if (authNotifier.user?.uid == null) {
