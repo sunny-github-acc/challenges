@@ -31,7 +31,7 @@ class Challenge extends StatelessWidget {
                     )
                   : ClipOval(
                       child: Image.network(
-                      collection['photoURL']!,
+                      collection['photoURL'],
                       height: 20,
                       fit: BoxFit.cover,
                     ))),
@@ -59,7 +59,9 @@ class Challenge extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         TextCustom(
-            text: collection['endDate'].toDate().toString().substring(0, 16)),
+            text: collection['isUnlimited'] == true
+                ? 'Unlimited'
+                : '${collection['endDate'].toDate().toString().substring(0, 10)} (${DateTime.parse(collection['endDate'].toDate().toString()).difference(DateTime.now()).inDays} days left)'),
         if (consequence != '') ...[
           const TextCustom(
             text: 'Consequence',
