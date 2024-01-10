@@ -28,7 +28,11 @@ class UpdateChallengeState extends State<UpdateChallenge> {
   Map<String, dynamic> collection = {};
 
   Future<void Function(String p1)?> _save(String input, String type) async {
-    Map<String, dynamic> updatedData = {...collection, type: input};
+    Map<String, dynamic> updatedData = {
+      ...collection,
+      type: input,
+      'createdAt': DateTime.now()
+    };
 
     _updateCollection(updatedData);
 

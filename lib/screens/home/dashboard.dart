@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -29,8 +30,16 @@ class _Dashboard extends State<Dashboard> {
     _loadCollectionData();
 
     cloudService.getCollectionStream(context, 'challenges').listen((data) {
+      List<Map<String, dynamic>> sortedData = data
+        ..sort((a, b) {
+          DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();
+          DateTime dateTimeB = (b['createdAt'] as Timestamp).toDate();
+
+          return dateTimeB.compareTo(dateTimeA);
+        });
+
       setState(() {
-        collection = data;
+        collection = sortedData;
       });
     });
   }
@@ -39,9 +48,16 @@ class _Dashboard extends State<Dashboard> {
     try {
       List<Map<String, dynamic>> data =
           await cloudService.getCollection(context, 'challenges');
+      List<Map<String, dynamic>> sortedData = data
+        ..sort((a, b) {
+          DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();
+          DateTime dateTimeB = (b['createdAt'] as Timestamp).toDate();
+
+          return dateTimeB.compareTo(dateTimeA);
+        });
 
       setState(() {
-        collection = data;
+        collection = sortedData;
       });
     } catch (error) {
       if (kDebugMode) {
