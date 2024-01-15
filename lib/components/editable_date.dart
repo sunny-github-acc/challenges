@@ -6,13 +6,15 @@ import 'package:challenges/components/text.dart';
 class EditableDateWidget extends StatefulWidget {
   final String text;
   final bool isTextRequired;
-  final DateTime? customEndDate;
-  final void Function(DateTime) onSave;
+  final DateTime customStartDate;
+  final DateTime customEndDate;
+  final void Function(DateTimeRange) onSave;
 
   const EditableDateWidget({
     Key? key,
     required this.text,
-    this.customEndDate,
+    required this.customStartDate,
+    required this.customEndDate,
     this.isTextRequired = false,
     required this.onSave,
   }) : super(key: key);
@@ -24,11 +26,19 @@ class EditableDateWidget extends StatefulWidget {
 class _EditableDateWidgetState extends State<EditableDateWidget> {
   bool _isEditing = false;
   late String text = widget.text;
-  late DateTime? customEndDate = widget.customEndDate;
+  late DateTime customStartDate = widget.customStartDate;
+  late DateTime customEndDate = widget.customEndDate;
 
   @override
   void didUpdateWidget(covariant EditableDateWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.customStartDate != oldWidget.customStartDate) {
+      setState(() {
+        customStartDate = widget.customStartDate;
+        text = widget.text;
+      });
+    }
 
     if (widget.customEndDate != oldWidget.customEndDate) {
       setState(() {
@@ -40,7 +50,7 @@ class _EditableDateWidgetState extends State<EditableDateWidget> {
 
   @override
   Widget build(BuildContext context) {
-    handleSubmit(DateTime input) {
+    handleSubmit(DateTimeRange input) {
       widget.onSave(input);
       setState(() {
         _isEditing = false;
@@ -57,9 +67,10 @@ class _EditableDateWidgetState extends State<EditableDateWidget> {
         child: _isEditing
             ? SizedBox(
                 child: CustomDateRangePicker(
+                customStartDate: customStartDate,
                 customEndDate: customEndDate,
                 onSelected: (date) {
-                  handleSubmit(date.end);
+                  handleSubmit(date);
                 },
               ))
             : Container(

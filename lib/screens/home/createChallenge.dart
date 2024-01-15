@@ -1,3 +1,5 @@
+import 'package:challenges/components/column.dart';
+import 'package:challenges/components/row.dart';
 import 'package:flutter/material.dart';
 
 import 'package:challenges/services/cloud/cloud.dart';
@@ -30,6 +32,7 @@ class _CreateChallenge extends State<CreateChallenge> {
   bool isDuration = true;
   bool isLoading = false;
   DateTime today = DateTime.now();
+  DateTime customStartDate = DateTime.now();
   DateTime? customEndDate;
 
   Future<void> _save(context) async {
@@ -41,15 +44,14 @@ class _CreateChallenge extends State<CreateChallenge> {
 
     Map user = authService.getUser();
 
-    bool isCustom = duration == 'Custom';
-    DateTime customDate = customEndDate ?? _getEndDate('Week');
-    DateTime endDate = isCustom ? customDate : _getEndDate(duration);
+    DateTime endDate = _getEndDate(duration, customEndDate);
 
     Map<String, dynamic> document = {
       ...user,
       'title': title,
       'description': description,
       'createdAt': today,
+      'startDate': customStartDate,
       'endDate': endDate,
       'isUnlimited': duration == 'Unlimited',
       'consequence': consequence,
@@ -76,24 +78,28 @@ class _CreateChallenge extends State<CreateChallenge> {
     });
   }
 
-  void _handleDuration(BuildContext context, String length) {
+  void _handleDuration(BuildContext context, String durationParam) {
     setState(() {
-      duration = length;
+      duration = durationParam;
     });
   }
 
-  void _handleVisibility(BuildContext context, String vis) {
+  void _handleVisibility(BuildContext context, String visibilityParam) {
     setState(() {
-      visibility = vis;
+      visibility = visibilityParam;
     });
   }
 
-  DateTime _getEndDate(duration) {
-    return DateTime.utc(
-      today.year + (duration == 'Year' ? 1 : 0),
-      today.month + (duration == 'Month' ? 1 : 0),
-      today.day + (duration == 'Week' ? 7 : 0),
-    );
+  DateTime _getEndDate(duration, customDate) {
+    if (duration == 'Custom') {
+      return customDate;
+    } else {
+      return DateTime.utc(
+        today.year + (duration == 'Year' ? 1 : 0),
+        today.month + (duration == 'Month' ? 1 : 0),
+        today.day + (duration == 'Week' || duration == 'Unlimited' ? 7 : 0),
+      );
+    }
   }
 
   @override
@@ -113,7 +119,7 @@ class _CreateChallenge extends State<CreateChallenge> {
         body: SingleChildScrollView(
           child: ContainerGradient(
             padding: 8,
-            child: Column(
+            child: CustomColumn(
               children: [
                 CustomInput(
                   title: 'Title',
@@ -129,116 +135,90 @@ class _CreateChallenge extends State<CreateChallenge> {
                   controller: descriptionController,
                   isTall: true,
                 ),
-                Column(children: [
-                  const Center(
+                const TextCustom(text: 'The period of the challenge'),
+                Center(
                     child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextCustom(text: 'The period of the challenge'),
-                    ),
-                  ),
-                  Center(
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Wrap(
-                            children: [
-                              CustomButton(
-                                  onPressed: () =>
-                                      _handleDuration(context, 'Week'),
-                                  text: 'Week',
-                                  size: ButtonSize.small,
-                                  type: duration == 'Week'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              CustomButton(
-                                  onPressed: () =>
-                                      _handleDuration(context, 'Month'),
-                                  text: 'Month',
-                                  size: ButtonSize.small,
-                                  type: duration == 'Month'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              CustomButton(
-                                  onPressed: () =>
-                                      _handleDuration(context, 'Year'),
-                                  text: 'Year',
-                                  size: ButtonSize.small,
-                                  type: duration == 'Year'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              CustomButton(
-                                  onPressed: () =>
-                                      _handleDuration(context, 'Custom'),
-                                  text: 'Custom',
-                                  size: ButtonSize.small,
-                                  type: duration == 'Custom'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              CustomButton(
-                                  onPressed: () =>
-                                      _handleDuration(context, 'Unlimited'),
-                                  text: 'Unlimited',
-                                  size: ButtonSize.small,
-                                  type: duration == 'Unlimited'
-                                      ? ButtonType.primary
-                                      : ButtonType.secondary),
-                              duration == 'Custom'
-                                  ? CustomDateRangePicker(
-                                      isStartDate: false,
-                                      customEndDate: customEndDate,
-                                      onSelected: (date) {
-                                        customEndDate = date.end;
-                                      },
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ))),
-                ]),
-                Column(children: [
-                  const Center(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextCustom(
-                          text:
-                              'How will you reward or penalize yourself with completed of failed challenge?'),
-                    ),
-                  ),
-                  Wrap(direction: Axis.horizontal, children: [
-                    CustomInput(
-                      labelText: 'Consequence',
-                      hintText:
-                          'Enter a specific consequence of your challenge',
-                      controller: consequenceController,
-                      isTall: true,
-                    ),
-                  ]),
-                ]),
-                Column(
-                  children: [
-                    const Center(
-                      child: Align(
                         alignment: Alignment.centerLeft,
-                        child: TextCustom(text: 'Public or private challenge?'),
-                      ),
-                    ),
-                    Row(children: [
-                      CustomButton(
-                          onPressed: () => _handleVisibility(context, 'Public'),
-                          text: 'Public',
-                          size: ButtonSize.small,
-                          type: visibility == 'Public'
-                              ? ButtonType.primary
-                              : ButtonType.secondary),
-                      CustomButton(
-                          onPressed: () =>
-                              _handleVisibility(context, 'Private'),
-                          text: 'Private',
-                          size: ButtonSize.small,
-                          type: visibility == 'Private'
-                              ? ButtonType.primary
-                              : ButtonType.secondary),
-                    ]),
-                  ],
-                )
+                        child: Wrap(
+                          children: [
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleDuration(context, 'Week'),
+                                text: 'Week',
+                                size: ButtonSize.small,
+                                type: duration == 'Week'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleDuration(context, 'Month'),
+                                text: 'Month',
+                                size: ButtonSize.small,
+                                type: duration == 'Month'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleDuration(context, 'Year'),
+                                text: 'Year',
+                                size: ButtonSize.small,
+                                type: duration == 'Year'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleDuration(context, 'Custom'),
+                                text: 'Custom',
+                                size: ButtonSize.small,
+                                type: duration == 'Custom'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            CustomButton(
+                                onPressed: () =>
+                                    _handleDuration(context, 'Unlimited'),
+                                text: 'Unlimited',
+                                size: ButtonSize.small,
+                                type: duration == 'Unlimited'
+                                    ? ButtonType.primary
+                                    : ButtonType.secondary),
+                            duration == 'Custom'
+                                ? CustomDateRangePicker(
+                                    customStartDate: customStartDate,
+                                    customEndDate: customEndDate,
+                                    onSelected: (date) {
+                                      customStartDate = date.start;
+                                      customEndDate = date.end;
+                                    },
+                                  )
+                                : const SizedBox.shrink(),
+                          ],
+                        ))),
+                const TextCustom(
+                    text:
+                        'What will be the consequence of completed of failed challenge?'),
+                CustomInput(
+                  labelText: 'Consequence',
+                  hintText: 'Enter a specific consequence of your challenge',
+                  controller: consequenceController,
+                  isTall: true,
+                ),
+                const TextCustom(text: 'Public or private challenge?'),
+                CustomRow(children: [
+                  CustomButton(
+                      onPressed: () => _handleVisibility(context, 'Public'),
+                      text: 'Public',
+                      size: ButtonSize.small,
+                      type: visibility == 'Public'
+                          ? ButtonType.primary
+                          : ButtonType.secondary),
+                  CustomButton(
+                      onPressed: () => _handleVisibility(context, 'Private'),
+                      text: 'Private',
+                      size: ButtonSize.small,
+                      type: visibility == 'Private'
+                          ? ButtonType.primary
+                          : ButtonType.secondary),
+                ]),
               ],
             ),
           ),

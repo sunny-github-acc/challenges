@@ -27,7 +27,7 @@ class UpdateChallengeState extends State<UpdateChallenge> {
 
   Map<String, dynamic> collection = {};
 
-  Future<void Function(String p1)?> _save(String input, String type) async {
+  Future<void Function(String p1)?> _save(dynamic input, String type) async {
     Map<String, dynamic> updatedData = {
       ...collection,
       type: input,
@@ -39,8 +39,13 @@ class UpdateChallengeState extends State<UpdateChallenge> {
     return null;
   }
 
-  _saveDate(DateTime input) async {
-    Map<String, dynamic> updatedData = {...collection, 'endDate': input};
+  _saveDate(DateTimeRange input) async {
+    Map<String, dynamic> updatedData = {
+      ...collection,
+      'startDate': input.start,
+      'endDate': input.end,
+      'isUnlimited': false
+    };
 
     _updateCollection(updatedData);
   }
@@ -99,14 +104,32 @@ class UpdateChallengeState extends State<UpdateChallenge> {
               onSave: (input) => _save(input, 'description'),
             ),
             const TextCustom(
-              text: 'End date',
+              text: 'Period',
               fontWeight: FontWeight.bold,
             ),
-            EditableDateWidget(
-              text: collection['endDate'].toDate().toString().substring(0, 16),
-              customEndDate: collection['endDate'].toDate(),
-              onSave: _saveDate,
-            ),
+            if (!collection['isUnlimited'])
+              EditableDateWidget(
+                text:
+                    '${collection['startDate'].toDate().toString().substring(0, 10)} - ${collection['endDate'].toDate().toString().substring(0, 10)}',
+                customStartDate: collection['startDate'].toDate(),
+                customEndDate: collection['endDate'].toDate(),
+                onSave: _saveDate,
+              )
+            else
+              CustomColumn(children: [
+                const TextCustom(text: 'Unlimited'),
+                CustomButton(
+                    onPressed: () => _save(false, 'isUnlimited'),
+                    text: 'Set custom period',
+                    size: ButtonSize.small,
+                    type: ButtonType.primary)
+              ]),
+            if (!collection['isUnlimited'])
+              CustomButton(
+                  onPressed: () => _save(true, 'isUnlimited'),
+                  text: 'Set period to infinite',
+                  size: ButtonSize.small,
+                  type: ButtonType.primary),
             const TextCustom(
               text: 'Consequence',
               fontWeight: FontWeight.bold,

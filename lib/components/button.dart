@@ -67,52 +67,47 @@ class CustomButton extends StatelessWidget {
       iconPath = 'assets/google.png';
     }
 
-    return Container(
-      margin: const EdgeInsets.all(10.0),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-            EdgeInsets.symmetric(
-                vertical: paddingVertical, horizontal: paddingHorizontal),
-          ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-              side: BorderSide(color: borderColor, width: 2.0),
-            ),
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
+        padding: MaterialStateProperty.all<EdgeInsets>(
+          EdgeInsets.symmetric(
+              vertical: paddingVertical, horizontal: paddingHorizontal),
+        ),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(color: borderColor, width: 2.0),
           ),
         ),
-        child: CustomRow(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != IconType.none)
-              Image.asset(
-                iconPath,
-                height: 20,
-              ),
-            Flexible(
-              child: Text(
-                text,
-                style: TextStyle(
-                    fontSize: fontSize,
-                    color: textColor,
-                    fontWeight: fontWeight),
-                textAlign: TextAlign.center, // Center the text
-              ),
+      ),
+      child: CustomRow(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != IconType.none)
+            Image.asset(
+              iconPath,
+              height: 20,
             ),
-            if (isLoading)
-              const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  semanticsLabel: 'Circular progress indicator',
-                ),
-              )
-          ],
-        ),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                  fontSize: fontSize, color: textColor, fontWeight: fontWeight),
+              textAlign: TextAlign.center, // Center the text
+            ),
+          ),
+          if (isLoading)
+            const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                semanticsLabel: 'Circular progress indicator',
+              ),
+            )
+        ],
       ),
     );
   }

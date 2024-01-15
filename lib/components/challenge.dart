@@ -55,13 +55,13 @@ class Challenge extends StatelessWidget {
           TextCustom(text: description)
         ],
         const TextCustom(
-          text: 'End date',
+          text: 'Period',
           fontWeight: FontWeight.bold,
         ),
         TextCustom(
             text: collection['isUnlimited'] == true
-                ? 'Unlimited'
-                : '${collection['endDate'].toDate().toString().substring(0, 10)} (${DateTime.parse(collection['endDate'].toDate().toString()).difference(DateTime.now()).inDays} days left)'),
+                ? 'Unlimited (${DateTime.now().difference(DateTime.parse(collection['createdAt'].toDate().toString())).inDays} days since start)'
+                : '${collection['endDate'].toDate().toString().substring(0, 10)} (${DateTime.parse(collection['endDate'].toDate().toString()).difference(DateTime.now()).inDays + 1} days left)'),
         if (consequence != '') ...[
           const TextCustom(
             text: 'Consequence',
