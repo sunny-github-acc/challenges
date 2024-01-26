@@ -11,10 +11,11 @@ class CustomColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: children.map((child) {
         return Container(
-          margin: const EdgeInsets.only(bottom: 4.0),
+          margin: const EdgeInsets.only(bottom: 8.0),
           child: child,
         );
       }).toList(),

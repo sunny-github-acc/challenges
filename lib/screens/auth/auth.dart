@@ -1,3 +1,4 @@
+import 'package:challenges/components/column.dart';
 import 'package:flutter/material.dart';
 
 import 'package:challenges/screens/auth/login.dart';
@@ -12,7 +13,7 @@ class Auth extends StatefulWidget {
   const Auth({super.key});
 
   @override
-  _AuthState createState() => _AuthState();
+  State<Auth> createState() => _AuthState();
 }
 
 class _AuthState extends State<Auth> {
@@ -21,7 +22,7 @@ class _AuthState extends State<Auth> {
   void _navigateToLoginScreen(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const login()),
+      MaterialPageRoute(builder: (context) => const Login()),
     );
   }
 
@@ -50,39 +51,26 @@ class _AuthState extends State<Auth> {
     return Scaffold(
       body: ContainerGradient(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          child: CustomColumn(
             children: [
-              const Text(''),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Image.asset(
-                    'assets/grow.png',
-                    width: 200,
-                    height: 200,
-                  ),
-                ),
+              CustomButton(
+                onPressed: () => _navigateToSignupScreen(context),
+                text: 'Join',
+                disabled: isLoading,
               ),
-              Column(
-                children: [
-                  CustomButton(
-                    onPressed: () => _navigateToSignupScreen(context),
-                    text: 'Join',
-                  ),
-                  CustomButton(
-                    type: ButtonType.secondary,
-                    text: 'Welcome back',
-                    onPressed: () => _navigateToLoginScreen(context),
-                  ),
-                  CustomButton(
-                    type: ButtonType.transparent,
-                    text: 'Join with Google',
-                    icon: IconType.google,
-                    isLoading: isLoading,
-                    onPressed: () => _loginGoogle(context),
-                  ),
-                ],
+              CustomButton(
+                type: ButtonType.secondary,
+                text: 'Welcome back',
+                disabled: isLoading,
+                onPressed: () => _navigateToLoginScreen(context),
+              ),
+              CustomButton(
+                type: ButtonType.transparent,
+                text: 'Join with Google',
+                icon: IconType.google,
+                isLoading: isLoading,
+                disabled: isLoading,
+                onPressed: () => _loginGoogle(context),
               ),
             ],
           ),

@@ -13,6 +13,8 @@ class CustomRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      // mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: mainAxisSize ?? MainAxisSize.max,
       children: children.map((child) {
         return Container(

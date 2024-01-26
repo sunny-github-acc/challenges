@@ -25,15 +25,18 @@ class CustomButton extends StatelessWidget {
   final ButtonSize size;
   final IconType icon;
   final bool isLoading;
+  final bool disabled;
 
-  const CustomButton(
-      {super.key,
-      required this.onPressed,
-      required this.text,
-      this.type = ButtonType.primary,
-      this.size = ButtonSize.normal,
-      this.icon = IconType.none,
-      this.isLoading = false});
+  const CustomButton({
+    super.key,
+    required this.onPressed,
+    required this.text,
+    this.type = ButtonType.primary,
+    this.size = ButtonSize.normal,
+    this.icon = IconType.none,
+    this.isLoading = false,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +51,11 @@ class CustomButton extends StatelessWidget {
 
     if (type == ButtonType.secondary) {
       buttonColor = Colors.transparent;
-      textColor = Colors.white;
+      textColor = Colors.black26;
       borderColor = Colors.green.shade200;
     } else if (type == ButtonType.transparent) {
       buttonColor = Colors.transparent;
-      textColor = Colors.white;
+      textColor = Colors.black26;
       borderColor = Colors.transparent;
     }
 
@@ -67,21 +70,23 @@ class CustomButton extends StatelessWidget {
       iconPath = 'assets/google.png';
     }
 
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
-        padding: MaterialStateProperty.all<EdgeInsets>(
-          EdgeInsets.symmetric(
-              vertical: paddingVertical, horizontal: paddingHorizontal),
-        ),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-            side: BorderSide(color: borderColor, width: 2.0),
-          ),
+    ButtonStyle buttonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
+      padding: MaterialStateProperty.all<EdgeInsets>(
+        EdgeInsets.symmetric(
+            vertical: paddingVertical, horizontal: paddingHorizontal),
+      ),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+          side: BorderSide(color: borderColor, width: 2.0),
         ),
       ),
+    );
+
+    return ElevatedButton(
+      onPressed: disabled ? null : onPressed,
+      style: buttonStyle,
       child: CustomRow(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -90,7 +95,8 @@ class CustomButton extends StatelessWidget {
               iconPath,
               height: 20,
             ),
-          Flexible(
+          Align(
+            alignment: Alignment.center,
             child: Text(
               text,
               style: TextStyle(

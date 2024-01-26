@@ -81,6 +81,7 @@ class _SignupPasswordState extends State<SignupPassword> {
                 hintText: 'Enter your password',
                 controller: passwordController,
                 obscureText: true,
+                autocorrect: false,
                 disabled: !isPassword,
               ),
               CustomInput(
@@ -88,6 +89,7 @@ class _SignupPasswordState extends State<SignupPassword> {
                 hintText: 'Repeat your password',
                 controller: passwordRepeatController,
                 obscureText: true,
+                autocorrect: false,
                 disabled: !isPasswordRepeat,
               ),
               CustomButton(

@@ -5,21 +5,36 @@ import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
+import 'package:challenges/components/column.dart';
 
 import 'package:challenges/services/auth/auth.dart';
 
 import 'package:challenges/utils/helpers.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  _loginState createState() => _loginState();
+  State<Login> createState() => _LoginState();
 }
 
-class _loginState extends State<login> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+class _LoginState extends State<Login> {
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   bool isEmail = true;
   bool isPassword = true;
@@ -27,8 +42,8 @@ class _loginState extends State<login> {
   bool isLoadingLogin = false;
 
   Future<void> _loginEmail(context) async {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
     setState(() {
       isEmail = email.isNotEmpty;
@@ -52,7 +67,7 @@ class _loginState extends State<login> {
   }
 
   Future<void> _rememberPassword(context) async {
-    String email = emailController.text.trim();
+    String email = _emailController.text.trim();
 
     if (!isValidEmail(email)) {
       return Modal.show(context, 'Oops', 'Please enter a valid email');
@@ -76,36 +91,35 @@ class _loginState extends State<login> {
         title: 'Welcome back',
       ),
       body: ContainerGradient(
-        child: Center(
-          child: Column(
-            children: [
-              CustomInput(
-                labelText: 'Email',
-                hintText: 'Enter your email',
-                controller: emailController,
-                disabled: !isEmail,
-              ),
-              CustomInput(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-                controller: passwordController,
-                obscureText: true,
-                disabled: !isPassword,
-              ),
-              CustomButton(
-                text: 'Forgot password?',
-                type: ButtonType.transparent,
-                size: ButtonSize.small,
-                isLoading: isLoadingRememberPassword,
-                onPressed: () => _rememberPassword(context),
-              ),
-              CustomButton(
-                text: 'Login',
-                isLoading: isLoadingLogin,
-                onPressed: () => _loginEmail(context),
-              ),
-            ],
-          ),
+        child: CustomColumn(
+          children: [
+            CustomInput(
+              labelText: 'Email',
+              hintText: 'Enter your email',
+              controller: _emailController,
+              disabled: !isEmail,
+            ),
+            CustomInput(
+              labelText: 'Password',
+              hintText: 'Enter your password',
+              controller: _passwordController,
+              obscureText: true,
+              autocorrect: false,
+              disabled: !isPassword,
+            ),
+            CustomButton(
+              text: 'Forgot password?',
+              type: ButtonType.transparent,
+              size: ButtonSize.small,
+              isLoading: isLoadingRememberPassword,
+              onPressed: () => _rememberPassword(context),
+            ),
+            CustomButton(
+              text: 'Login',
+              isLoading: isLoadingLogin,
+              onPressed: () => _loginEmail(context),
+            ),
+          ],
         ),
       ),
     );

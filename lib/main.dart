@@ -28,31 +28,22 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => AuthNotifier(),
-      child: const MyApp(),
+      child: MaterialApp(
+        title: 'Challenges',
+        home: Consumer<AuthNotifier>(
+          builder: (context, authNotifier, child) {
+            if (authNotifier.user?.uid == null) {
+              return const Auth();
+            }
+
+            if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
+              return VerifyTheEmail();
+            }
+
+            return Home();
+          },
+        ),
+      ),
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Challenges',
-      home: Consumer<AuthNotifier>(
-        builder: (context, authNotifier, child) {
-          if (authNotifier.user?.uid == null) {
-            return const Auth();
-          }
-
-          if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
-            return VerifyTheEmail();
-          }
-
-          return Home();
-        },
-      ),
-    );
-  }
 }
