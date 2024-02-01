@@ -127,7 +127,7 @@ class _CreateChallenge extends State<CreateChallenge> {
                   labelText: 'Enter Title',
                   hintText: 'Enter the title of your challenge',
                   controller: titleController,
-                  disabled: !isTitle,
+                  isDisabled: !isTitle,
                 ),
                 CustomInput(
                   title: 'Description',

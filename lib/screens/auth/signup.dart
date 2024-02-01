@@ -67,13 +67,14 @@ class _SignupState extends State<Signup> {
                 labelText: 'Username',
                 hintText: 'Enter your username',
                 controller: userNameController,
-                disabled: !isUsername,
+                isDisabled: !isUsername,
               ),
               CustomInput(
                 labelText: 'Email',
                 hintText: 'Enter your email',
                 controller: emailController,
-                disabled: !isEmail,
+                keyboardType: TextInputType.emailAddress,
+                isDisabled: !isEmail,
               ),
               CustomButton(
                 text: 'Next',

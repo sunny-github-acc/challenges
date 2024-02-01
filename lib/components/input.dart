@@ -4,26 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:challenges/components/text.dart';
 
 class CustomInput extends StatelessWidget {
+  final TextEditingController controller;
+  final TextInputType keyboardType;
   final String hintText;
   final String labelText;
   final String title;
-  final TextEditingController controller;
-  final bool disabled;
-  final bool isInputTypeText;
+  final bool isAutocorrect;
+  final bool isDisabled;
+  final bool isObscureText;
+  final bool isSuggestions;
   final bool isTall;
-  final bool obscureText;
-  final bool autocorrect;
 
   const CustomInput({
     super.key,
     required this.controller,
     required this.hintText,
     required this.labelText,
-    this.disabled = false,
-    this.isInputTypeText = true,
+    this.isAutocorrect = false,
+    this.isDisabled = false,
+    this.isObscureText = false,
+    this.isSuggestions = true,
     this.isTall = false,
-    this.obscureText = false,
-    this.autocorrect = true,
+    this.keyboardType = TextInputType.text,
     this.title = '',
   });
 
@@ -34,23 +36,23 @@ class CustomInput extends StatelessWidget {
       SizedBox(
         height: isTall ? 150 : null,
         child: TextFormField(
-          keyboardType:
-              isInputTypeText ? TextInputType.text : TextInputType.number,
           controller: controller,
           decoration: InputDecoration(
             labelText: labelText,
             hintText: hintText,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: disabled ? Colors.orangeAccent : Colors.black26,
+                color: isDisabled ? Colors.orangeAccent : Colors.black26,
                 width: 1.0,
               ),
             ),
             alignLabelWithHint: true,
           ),
           maxLines: isTall ? 10 : 1,
-          obscureText: obscureText,
-          autocorrect: autocorrect,
+          keyboardType: keyboardType,
+          obscureText: isObscureText,
+          autocorrect: isAutocorrect,
+          enableSuggestions: isObscureText ? false : isSuggestions,
         ),
       )
     ]);

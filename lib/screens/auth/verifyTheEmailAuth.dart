@@ -56,9 +56,9 @@ class VerifyTheEmailState extends State<VerifyTheEmailAuth> {
                 labelText: 'Password',
                 hintText: 'Enter your password',
                 controller: passwordController,
-                obscureText: true,
-                autocorrect: false,
-                disabled: !isPassword,
+                isObscureText: true,
+                isAutocorrect: false,
+                isDisabled: !isPassword,
               ),
               CustomButton(
                 onPressed: () => _rememberPassword(context),
