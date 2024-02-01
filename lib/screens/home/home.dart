@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:challenges/screens/home/createChallenge.dart';
+import 'package:challenges/screens/home/menu.dart';
 import 'package:challenges/screens/home/dashboard.dart';
 
 import 'package:challenges/components/app_bar.dart';
@@ -28,6 +29,13 @@ class Home extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const CreateChallenge()),
+    );
+  }
+
+  void _navigateToMenuScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Menu()),
     );
   }
 
@@ -60,9 +68,7 @@ class Home extends StatelessWidget {
         ],
         leftButton: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Handle right button tap
-          },
+          onPressed: () => _navigateToMenuScreen(context),
         ),
       ),
       body: ContainerGradient(

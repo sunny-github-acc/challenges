@@ -29,7 +29,10 @@ class _Dashboard extends State<Dashboard> {
 
     _loadCollectionData();
 
-    cloudService.getCollectionStream(context, 'challenges').listen((data) {
+    cloudService.getCollectionStream(context, 'challenges', {
+      'endDateIsAfter': DateTime.now(),
+      'isUnlimited': true,
+    }).listen((data) {
       List<Map<String, dynamic>> sortedData = data
         ..sort((a, b) {
           DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();
@@ -47,7 +50,10 @@ class _Dashboard extends State<Dashboard> {
   Future<void> _loadCollectionData() async {
     try {
       List<Map<String, dynamic>> data =
-          await cloudService.getCollection(context, 'challenges');
+          await cloudService.getCollectionWithQuery(context, 'challenges', {
+        'endDateIsGreater': DateTime.now(),
+        'isUnlimited': true,
+      });
       List<Map<String, dynamic>> sortedData = data
         ..sort((a, b) {
           DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();

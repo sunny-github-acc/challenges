@@ -51,9 +51,7 @@ class UpdateChallengeState extends State<UpdateChallenge> {
   }
 
   _updateCollection(Map<String, dynamic> updatedData) async {
-    CloudService cloudService = CloudService();
-
-    await cloudService.updateCollection(
+    await CloudService().updateCollection(
         context, 'challenges', updatedData, updatedData['id']);
   }
 

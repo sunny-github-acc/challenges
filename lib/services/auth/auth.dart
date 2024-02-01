@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'package:challenges/services/cloud/cloud.dart';
+
 import 'package:challenges/components/modal.dart';
 
 class AuthService {
@@ -23,7 +25,7 @@ class AuthService {
 
   Future<void> signupEmail(context, username, email, password) async {
     try {
-      UserCredential?  userCredential = await FirebaseAuth.instance
+      UserCredential? userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
       User? user = userCredential.user;
@@ -31,6 +33,8 @@ class AuthService {
       await userCredential.user?.updateDisplayName(username);
 
       if (user != null) {
+        setUser(context, userCredential.user!.uid);
+
         await user.sendEmailVerification();
       }
 
@@ -50,7 +54,7 @@ class AuthService {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
       Modal.show(context, 'Success', 'Reset email has been sent to: $email');
-      return null; // Return null after showing the message
+      return null;
     } catch (error) {
       List<String> parts = error.toString().split(']');
       if (error is FirebaseAuthException && parts.length > 1) {
@@ -58,7 +62,7 @@ class AuthService {
       } else {
         Modal.show(context, 'Oops', 'Something unexpected happened');
       }
-      return null; // Return null in case of an error as well
+      return null;
     }
   }
 
@@ -66,20 +70,65 @@ class AuthService {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser!
-          .authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      setUser(context, userCredential.user!.uid);
     } catch (error) {
       Modal.show(context, 'Oops', 'Google login has failed');
     }
   }
 
+  Future<void> setUser(context, id) async {
+    try {
+      CloudService cloudService = CloudService();
+      final firebaseDocument =
+          await cloudService.getDocument(context, 'users', id);
+
+      if (firebaseDocument?.data() == null) {
+        Map<String, dynamic> document = {
+          'uid': id,
+          'isGlobal': false,
+          'isCompleted': false,
+          'isUnlimited': false,
+        };
+
+        await cloudService.setCollection(
+          context,
+          'users',
+          document,
+          customDocumentId: id,
+        );
+      }
+    } catch (error) {
+      Modal.show(context, 'Oops', 'Setting user info has failed');
+    }
+  }
+
   getUser() {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return null;
+    }
+
+    return {
+      'uid': user.uid,
+      'displayName': user.displayName,
+      'email': user.email,
+      'photoURL': user.photoURL,
+    };
+  }
+
+  updateUser() {
+    // Not implemented
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -87,7 +136,7 @@ class AuthService {
         'uid': user.uid,
         'displayName': user.displayName,
         'email': user.email,
-        'photoURL': user.photoURL ?? 'https://lh3.googleusercontent.com/a/ACg8ocJgxc8UpaHn-osIcV-y9hVuE4UkHi0l7SjKOZ4q6_A6Ng=s96-c',
+        'photoURL': user.photoURL,
       };
 
       return userMap;
@@ -96,4 +145,3 @@ class AuthService {
     }
   }
 }
-

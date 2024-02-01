@@ -72,6 +72,7 @@ class _CreateChallenge extends State<CreateChallenge> {
 
     CloudService cloudService = CloudService();
     await cloudService.setCollection(context, 'challenges', document);
+    Navigator.pop(context);
 
     setState(() {
       isLoading = false;
