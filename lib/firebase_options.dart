@@ -16,6 +16,11 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
+    print('android');
+    print('android');
+    print('android');
+    print('android');
+    print(android);
     if (kIsWeb) {
       throw UnsupportedError(
         'DefaultFirebaseOptions have not been configured for web - '
@@ -50,7 +55,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAZpJcFo1_sBpNweaRB6mn_h8cLIpaddZ0',
+    apiKey: 'ANDROID_API_KEY',
     appId: '1:547856188797:android:05b45ab172772094867814',
     messagingSenderId: '547856188797',
     projectId: 'challenges-b6ee8',
@@ -58,12 +63,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBYPyR2bd__PvRNyJ81Ky8BYnT2KCZPfPY',
+    apiKey: 'IOS_API_KEY',
     appId: '1:547856188797:ios:8ede6a26792bfa1c867814',
     messagingSenderId: '547856188797',
     projectId: 'challenges-b6ee8',
     storageBucket: 'challenges-b6ee8.appspot.com',
-    iosClientId: '547856188797-6ru5acmo2jo5hoorq4tth89uud85rogv.apps.googleusercontent.com',
+    iosClientId:
+        '547856188797-6ru5acmo2jo5hoorq4tth89uud85rogv.apps.googleusercontent.com',
     iosBundleId: 'pro.issukiai.challenges',
   );
 }
