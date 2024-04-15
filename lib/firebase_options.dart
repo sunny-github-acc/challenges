@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'ANDROID_API_KEY',
+    apiKey: 'AIzaSyAZpJcFo1_sBpNweaRB6mn_h8cLIpaddZ0',
     appId: '1:547856188797:android:05b45ab172772094867814',
     messagingSenderId: '547856188797',
     projectId: 'challenges-b6ee8',
@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'IOS_API_KEY',
+    apiKey: 'AIzaSyBYPyR2bd__PvRNyJ81Ky8BYnT2KCZPfPY',
     appId: '1:547856188797:ios:8ede6a26792bfa1c867814',
     messagingSenderId: '547856188797',
     projectId: 'challenges-b6ee8',

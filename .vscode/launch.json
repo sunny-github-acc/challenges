@@ -4,7 +4,8 @@
     {
       "name": "challenges",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "flutterMode": "debug",
     },
     {
       "name": "challenges (profile mode)",
