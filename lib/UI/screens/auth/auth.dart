@@ -1,8 +1,8 @@
 import 'package:challenges/components/column.dart';
 import 'package:flutter/material.dart';
 
-import 'package:challenges/screens/auth/login.dart';
-import 'package:challenges/screens/auth/signup.dart';
+import 'package:challenges/UI/screens/auth/login.dart';
+import 'package:challenges/UI/screens/auth/signup.dart';
 
 import 'package:challenges/services/auth/auth.dart';
 
@@ -20,17 +20,11 @@ class _AuthState extends State<Auth> {
   bool isLoading = false;
 
   void _navigateToLoginScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
+    Navigator.of(context).pushNamed('/login');
   }
 
   void _navigateToSignupScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Signup()),
-    );
+    Navigator.of(context).pushNamed('/signup');
   }
 
   Future<void> _loginGoogle(context) async {

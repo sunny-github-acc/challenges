@@ -4,9 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
-import 'package:challenges/screens/auth/auth.dart';
-import 'package:challenges/screens/home/home.dart';
-import 'package:challenges/screens/home/verifyTheEmail.dart';
+import 'package:challenges/UI/router/router.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? user;
@@ -22,28 +20,19 @@ class AuthNotifier extends ChangeNotifier {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform, // check if necessary
   );
 
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthNotifier(),
-      child: MaterialApp(
-        title: 'Challenges',
-        home: Consumer<AuthNotifier>(
-          builder: (context, authNotifier, child) {
-            if (authNotifier.user?.uid == null) {
-              return const Auth();
-            }
+  final AppRouter appRouter = AppRouter();
 
-            if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
-              return VerifyTheEmail();
-            }
-
-            return Home();
-          },
-        ),
-      ),
-    ),
-  );
+  runApp(ChangeNotifierProvider(
+    create: (_) => AuthNotifier(),
+    child: Consumer<AuthNotifier>(builder: (context, authNotifier, child) {
+      return MaterialApp(
+        title: 'Leap',
+        onGenerateRoute: (settings) =>
+            appRouter.onGenerateRoute(settings, authNotifier),
+      );
+    }),
+  ));
 }

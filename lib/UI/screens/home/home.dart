@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:challenges/screens/home/createChallenge.dart';
-import 'package:challenges/screens/home/menu.dart';
-import 'package:challenges/screens/home/dashboard.dart';
+import 'package:challenges/UI/screens/home/createChallenge.dart';
+import 'package:challenges/UI/screens/home/dashboard.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button_floating.dart';
@@ -30,13 +29,11 @@ class Home extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (context) => const CreateChallenge()),
     );
+    Navigator.of(context).pushNamed('/createChallenge');
   }
 
   void _navigateToMenuScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Menu()),
-    );
+    Navigator.of(context).pushNamed('/menu');
   }
 
   @override

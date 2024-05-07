@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:challenges/screens/auth/signupPassword.dart';
+import 'package:challenges/UI/screens/auth/signupPassword.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
