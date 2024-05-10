@@ -1,6 +1,8 @@
+import 'package:challenges/logic/cubit/internet_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:challenges/UI/screens/home/createChallenge.dart';
 import 'package:challenges/UI/screens/home/dashboard.dart';
@@ -38,47 +40,64 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        actions: [
-          GestureDetector(
-            onTap: _logout,
-            child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-                width: 50,
-                height: 10,
-                child: user?.photoURL == 'null' || user?.photoURL == null
-                    ? Image.asset(
-                        'assets/grow.png',
-                        width: 50,
-                        height: 10,
-                      )
-                    : ClipOval(
-                        child: Image.network(
-                        user!.photoURL!,
-                        width: 50,
-                        height: 10,
-                        fit: BoxFit.cover,
-                      ))),
-          ),
-        ],
-        leftButton: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => _navigateToMenuScreen(context),
-        ),
-      ),
-      body: ContainerGradient(
-        child: Column(
-          children: [
-            const Expanded(
-              child: Dashboard(),
+    return BlocListener<InternetCubit, InternetState>(
+      listener: (context, state) {
+        if (state is InternetConnected) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Internet connection restored'),
             ),
-            FloatingButton(
-              onPressed: () => _navigateToCreateChallengeScreen(context),
-              child: const Icon(Icons.add),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No internet connection'),
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          actions: [
+            GestureDetector(
+              onTap: _logout,
+              child: Container(
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 2.0),
+                  width: 50,
+                  height: 10,
+                  child: user?.photoURL == 'null' || user?.photoURL == null
+                      ? Image.asset(
+                          'assets/grow.png',
+                          width: 50,
+                          height: 10,
+                        )
+                      : ClipOval(
+                          child: Image.network(
+                          user!.photoURL!,
+                          width: 50,
+                          height: 10,
+                          fit: BoxFit.cover,
+                        ))),
             ),
           ],
+          leftButton: IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => _navigateToMenuScreen(context),
+          ),
+        ),
+        body: ContainerGradient(
+          child: Column(
+            children: [
+              const Expanded(
+                child: Dashboard(),
+              ),
+              FloatingButton(
+                onPressed: () => _navigateToCreateChallengeScreen(context),
+                child: const Icon(Icons.add),
+              ),
+            ],
+          ),
         ),
       ),
     );
