@@ -7,7 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:challenges/UI/router/router.dart';
-import 'package:challenges/logic/cubit/internet_cubit.dart';
+import 'package:challenges/logic/bloc/internet_bloc.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? user;
@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<InternetCubit>(
-          create: (context) => InternetCubit(connectivity: connectivity),
+        BlocProvider<InternetBloc>(
+          create: (context) => InternetBloc(connectivity: connectivity),
         ),
       ],
       child: ChangeNotifierProvider(
@@ -51,6 +51,26 @@ class MyApp extends StatelessWidget {
               title: 'Leap',
               onGenerateRoute: (settings) =>
                   appRouter.onGenerateRoute(settings, authNotifier),
+              builder: (context, child) {
+                return BlocListener<InternetBloc, InternetState>(
+                  listener: (context, state) {
+                    if (state is InternetConnected) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Internet connection restored'),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No internet connection'),
+                        ),
+                      );
+                    }
+                  },
+                  child: child,
+                );
+              },
             );
           },
         ),
