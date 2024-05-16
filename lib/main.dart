@@ -54,17 +54,18 @@ class MyApp extends StatelessWidget {
               builder: (context, child) {
                 return BlocListener<InternetBloc, InternetState>(
                   listener: (context, state) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     if (state is InternetConnected) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Internet connection restored'),
-                        ),
+                            content: Text('Connected'),
+                            duration: Duration(seconds: 1)),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('No internet connection'),
-                        ),
+                            content: Text('No internet connection'),
+                            duration: Duration(days: 999)),
                       );
                     }
                   },
