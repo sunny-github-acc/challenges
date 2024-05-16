@@ -1,6 +1,6 @@
 import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
-import 'package:challenges/UI/screens/auth/verifyTheEmailAuth.dart';
+import 'package:challenges/UI/screens/auth/verify_email_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:challenges/main.dart';
@@ -32,7 +32,7 @@ class AppRouter {
         );
       case '/verifyEmail':
         return MaterialPageRoute(
-          builder: (_) => const VerifyTheEmailAuth(),
+          builder: (_) => const VerifyEmailAuth(),
         );
       default:
         return null;

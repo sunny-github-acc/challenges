@@ -19,10 +19,10 @@ class SignupPassword extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SignupPasswordState createState() => _SignupPasswordState();
+  SignupPasswordState createState() => SignupPasswordState();
 }
 
-class _SignupPasswordState extends State<SignupPassword> {
+class SignupPasswordState extends State<SignupPassword> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordRepeatController =
       TextEditingController();

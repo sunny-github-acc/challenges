@@ -9,14 +9,14 @@ import 'package:challenges/components/modal.dart';
 
 import 'package:challenges/services/auth/auth.dart';
 
-class VerifyTheEmailAuth extends StatefulWidget {
-  const VerifyTheEmailAuth({super.key});
+class VerifyEmailAuth extends StatefulWidget {
+  const VerifyEmailAuth({super.key});
 
   @override
   VerifyTheEmailState createState() => VerifyTheEmailState();
 }
 
-class VerifyTheEmailState extends State<VerifyTheEmailAuth> {
+class VerifyTheEmailState extends State<VerifyEmailAuth> {
   final TextEditingController passwordController = TextEditingController();
   final email = FirebaseAuth.instance.currentUser?.email;
   bool isPassword = true;

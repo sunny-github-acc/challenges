@@ -14,10 +14,10 @@ class EditableTextWidget extends StatefulWidget {
   });
 
   @override
-  _EditableTextWidgetState createState() => _EditableTextWidgetState();
+  EditableTextWidgetState createState() => EditableTextWidgetState();
 }
 
-class _EditableTextWidgetState extends State<EditableTextWidget> {
+class EditableTextWidgetState extends State<EditableTextWidget> {
   final TextEditingController _textEditingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isEditing = false;

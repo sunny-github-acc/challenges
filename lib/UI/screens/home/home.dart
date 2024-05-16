@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:challenges/UI/screens/home/createChallenge.dart';
+import 'package:challenges/UI/screens/home/create_challenge.dart';
 import 'package:challenges/UI/screens/home/dashboard.dart';
 
 import 'package:challenges/components/app_bar.dart';

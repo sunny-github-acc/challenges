@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:challenges/UI/screens/home/updateChallenge.dart';
+import 'package:challenges/UI/screens/home/update_challenge.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/challenge.dart';

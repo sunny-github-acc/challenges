@@ -16,10 +16,10 @@ class EditableOptionsWidget extends StatefulWidget {
   });
 
   @override
-  _EditableOptionsWidgetState createState() => _EditableOptionsWidgetState();
+  EditableOptionsWidgetState createState() => EditableOptionsWidgetState();
 }
 
-class _EditableOptionsWidgetState extends State<EditableOptionsWidget> {
+class EditableOptionsWidgetState extends State<EditableOptionsWidget> {
   bool _isEditing = false;
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:challenges/UI/screens/auth/signupPassword.dart';
+import 'package:challenges/UI/screens/auth/signup_password.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
@@ -14,10 +14,10 @@ class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
-  _SignupState createState() => _SignupState();
+  SignupState createState() => SignupState();
 }
 
-class _SignupState extends State<Signup> {
+class SignupState extends State<Signup> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 

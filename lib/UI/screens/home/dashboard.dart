@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:challenges/UI/screens/home/displayChallenge.dart';
+import 'package:challenges/UI/screens/home/display_challenge.dart';
 
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/card.dart';

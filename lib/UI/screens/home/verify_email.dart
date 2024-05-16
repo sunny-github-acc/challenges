@@ -2,16 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:challenges/UI/screens/auth/verifyTheEmailAuth.dart';
-
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/modal.dart';
 
-class VerifyTheEmail extends StatelessWidget {
+class VerifyEmail extends StatelessWidget {
   final User? user;
 
-  VerifyTheEmail({super.key}) : user = FirebaseAuth.instance.currentUser;
+  VerifyEmail({super.key}) : user = FirebaseAuth.instance.currentUser;
 
   void _resendVerificationEmail(context) async {
     try {
@@ -19,7 +17,9 @@ class VerifyTheEmail extends StatelessWidget {
 
       return Modal.show(context, 'Success', 'Verification email has been send');
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 

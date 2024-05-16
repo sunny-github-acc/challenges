@@ -1,9 +1,6 @@
 import 'package:challenges/components/column.dart';
 import 'package:flutter/material.dart';
 
-import 'package:challenges/UI/screens/auth/login.dart';
-import 'package:challenges/UI/screens/auth/signup.dart';
-
 import 'package:challenges/services/auth/auth.dart';
 
 import 'package:challenges/components/button.dart';
