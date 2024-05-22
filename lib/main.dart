@@ -7,7 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:challenges/UI/router/router.dart';
-import 'package:challenges/logic/bloc/internet_bloc.dart';
+import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 
 class AuthNotifier extends ChangeNotifier {
   User? user;
@@ -22,6 +22,9 @@ class AuthNotifier extends ChangeNotifier {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // https://pub.dev/packages/hydrated_bloc
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

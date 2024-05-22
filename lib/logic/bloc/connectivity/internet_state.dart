@@ -1,7 +1,7 @@
 part of 'internet_bloc.dart';
 
 @immutable
-class InternetState {
+abstract class InternetState {
   final bool isConnected;
 
   const InternetState({

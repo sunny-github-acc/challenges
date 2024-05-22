@@ -39,3 +39,57 @@ class AppRouter {
     }
   }
 }
+
+
+//   /// Removes all screens and then pushes the given screen
+//   static void pushThisRemoveRest({
+//     required BuildContext context,
+//     required String pageName,
+//   }) {
+//     // If navigator can remove current screen, removes it
+//     if (Navigator.of(context).canPop()) {
+//       Navigator.of(context).pushNamedAndRemoveUntil(
+//         pageName,
+//         (route) => false, // false --> remove all screens
+//       );
+//     } else {
+//       // left no screen to remove, therefore pushes the given screen
+//       push(context: context, pageName: pageName);
+//     }
+
+//     Navigator.of(context).pushNamedAndRemoveUntil(pageName, (route) => false);
+//   }
+
+//   /// Removes all screens and then pushes the given screen with arguments
+//   static void pushThisRemoveRestWithArguments({
+//     required BuildContext context,
+//     required String pageName,
+//     required Object args,
+//   }) {
+//     // If navigator can remove current screen, removes it
+//     if (Navigator.of(context).canPop()) {
+//       Navigator.of(context).pushNamedAndRemoveUntil(
+//         pageName,
+//         (route) => false,
+//         arguments: args,
+//       );
+//     } else {
+//       // left no screen to remove, then push the given screen
+//       push(context: context, pageName: pageName);
+//     }
+//   }
+
+//   /// Pushes given page
+//   static void push({required BuildContext context, required String pageName}) {
+//     Navigator.of(context).pushNamed(pageName);
+//   }
+
+//   /// Pushes given page with arguments
+//   static void pushWithArgument({
+//     required BuildContext context,
+//     required String pageName,
+//     required Object args,
+//   }) {
+//     Navigator.of(context).pushNamed(pageName, arguments: args);
+//   }
+// }
