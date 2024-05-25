@@ -1,3 +1,4 @@
+import 'package:challenges/UI/router/router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ class VerifyEmail extends StatelessWidget {
 
   void _checkTheEmail(context) async {
     try {
-      Navigator.of(context).pushNamed('/verifyEmail');
+      Navigator.of(context).pushNamed(Routes.verifyEmail);
     } catch (e) {
       Modal.show(
           context, 'Oops', 'Check again if your email has been verified');

@@ -4,8 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:challenges/components/modal.dart';
 
 class CloudService {
-  Future<void> setCollection(context, collection, document,
-      {customDocumentId}) async {
+  Future<void> setCollection(collection, document, {customDocumentId}) async {
     try {
       final finalDocument = FirebaseFirestore.instance
           .collection('challenges')
@@ -17,7 +16,7 @@ class CloudService {
         await finalDocument.add(document);
       }
     } catch (error) {
-      Modal.show(context, 'Oops', 'Failed to add the $collection : $error');
+      // Modal.show(context, 'Oops', 'Failed to add the $collection : $error');
     }
   }
 
@@ -36,7 +35,7 @@ class CloudService {
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>?> getDocument(
-      context, collection, id) async {
+      collection, id) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = FirebaseFirestore
           .instance
@@ -49,7 +48,7 @@ class CloudService {
 
       return querySnapshot;
     } catch (error) {
-      Modal.show(context, 'Oops', 'Failed to get challenges : $error');
+      // Modal.show(context, 'Oops', 'Failed to get challenges : $error');
 
       return null;
     }

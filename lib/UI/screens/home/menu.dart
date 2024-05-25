@@ -43,8 +43,7 @@ class _Menu extends State<Menu> {
     });
 
     final user = AuthService().getUser();
-    final document =
-        await CloudService().getDocument(context, 'users', user['uid']);
+    final document = await CloudService().getDocument('users', user['uid']);
     final data = document?.data();
 
     if (data != null) {
@@ -62,7 +61,7 @@ class _Menu extends State<Menu> {
 
   void setValues() async {
     Map updatedDocument = stateDocument..addAll(switchValues);
-    await CloudService().setCollection(context, 'users', updatedDocument,
+    await CloudService().setCollection('users', updatedDocument,
         customDocumentId: updatedDocument['uid']);
   }
 

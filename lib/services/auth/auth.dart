@@ -33,7 +33,7 @@ class AuthService {
       await userCredential.user?.updateDisplayName(username);
 
       if (user != null) {
-        setUser(context, userCredential.user!.uid);
+        setUser(userCredential.user!.uid);
 
         await user.sendEmailVerification();
       }
@@ -66,8 +66,10 @@ class AuthService {
     }
   }
 
-  Future<void> loginGoogle(context) async {
+  Future<User?> loginGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
+    User? user;
+
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -80,17 +82,23 @@ class AuthService {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      setUser(context, userCredential.user!.uid);
+      setUser(userCredential.user!.uid);
+
+      user = userCredential.user;
     } catch (error) {
-      Modal.show(context, 'Oops', 'Google login has failed');
+      user = null;
+      print('loginGoogle error 🚀');
+      print(error);
+      // Modal.show(context, 'Oops', 'Google login has failed');
     }
+
+    return user;
   }
 
-  Future<void> setUser(context, id) async {
+  Future<void> setUser(id) async {
     try {
       CloudService cloudService = CloudService();
-      final firebaseDocument =
-          await cloudService.getDocument(context, 'users', id);
+      final firebaseDocument = await cloudService.getDocument('users', id);
 
       if (firebaseDocument?.data() == null) {
         Map<String, dynamic> document = {
@@ -101,14 +109,15 @@ class AuthService {
         };
 
         await cloudService.setCollection(
-          context,
           'users',
           document,
           customDocumentId: id,
         );
       }
     } catch (error) {
-      Modal.show(context, 'Oops', 'Setting user info has failed');
+      print('setUser error 🚀');
+      print(error);
+      // Modal.show(context, 'Oops', 'Setting user info has failed');
     }
   }
 

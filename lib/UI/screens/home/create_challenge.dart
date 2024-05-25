@@ -71,7 +71,7 @@ class _CreateChallenge extends State<CreateChallenge> {
     });
 
     CloudService cloudService = CloudService();
-    await cloudService.setCollection(context, 'challenges', document);
+    await cloudService.setCollection('challenges', document);
     Navigator.pop(context);
 
     setState(() {

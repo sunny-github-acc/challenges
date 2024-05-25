@@ -4,7 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:async';
 
-import 'package:challenges/logic/bloc/internet_bloc.dart';
+import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 
 class MockConnectivity extends Mock implements Connectivity {
   final StreamController<ConnectivityResult> _connectivityStreamController =

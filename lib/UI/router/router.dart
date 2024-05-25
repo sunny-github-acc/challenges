@@ -1,38 +1,52 @@
+import 'package:challenges/UI/screens/auth/auth.dart';
 import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
 import 'package:challenges/UI/screens/auth/verify_email_auth.dart';
-import 'package:flutter/material.dart';
-
-import 'package:challenges/main.dart';
-
+import 'package:challenges/UI/screens/home/create_challenge.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/menu.dart';
-import 'package:challenges/UI/screens/auth/auth.dart';
+import 'package:flutter/material.dart';
+
+class Routes {
+  static const String auth = '/';
+  static const String home = '/home';
+  static const String menu = '/menu';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String verifyEmail = '/verifyEmail';
+  static const String createChallenge = '/createChallenge';
+}
 
 class AppRouter {
-  MaterialPageRoute? onGenerateRoute(
-      RouteSettings settings, AuthNotifier authNotifier) {
+  MaterialPageRoute? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
+      case Routes.auth:
         return MaterialPageRoute(
-          builder: (_) =>
-              authNotifier.user?.uid == null ? const Auth() : Home(),
+          builder: (context) => const Auth(),
         );
-      case '/menu':
+      case Routes.home:
         return MaterialPageRoute(
-          builder: (_) => const Menu(),
+          builder: (context) => Home(),
         );
-      case '/login':
+      case Routes.menu:
         return MaterialPageRoute(
-          builder: (_) => const Login(),
+          builder: (context) => const Menu(),
         );
-      case '/signup':
+      case Routes.login:
         return MaterialPageRoute(
-          builder: (_) => const Signup(),
+          builder: (context) => const Login(),
         );
-      case '/verifyEmail':
+      case Routes.signup:
         return MaterialPageRoute(
-          builder: (_) => const VerifyEmailAuth(),
+          builder: (context) => const Signup(),
+        );
+      case Routes.verifyEmail:
+        return MaterialPageRoute(
+          builder: (context) => const VerifyEmailAuth(),
+        );
+      case Routes.createChallenge:
+        return MaterialPageRoute(
+          builder: (context) => const CreateChallenge(),
         );
       default:
         return null;

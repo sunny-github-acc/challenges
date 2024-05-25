@@ -1,39 +1,29 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:challenges/UI/screens/home/create_challenge.dart';
+import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/UI/screens/home/dashboard.dart';
-
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button_floating.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatelessWidget {
   final User? user;
 
   Home({super.key}) : user = FirebaseAuth.instance.currentUser;
 
-  void _logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+  void _logout(BuildContext context) {
+    context.read<AuthBloc>().add(const AuthEventLogOut());
   }
 
   void _navigateToCreateChallengeScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CreateChallenge()),
-    );
-    Navigator.of(context).pushNamed('/createChallenge');
+    Navigator.of(context).pushNamed(Routes.createChallenge);
   }
 
   void _navigateToMenuScreen(BuildContext context) {
-    Navigator.of(context).pushNamed('/menu');
+    Navigator.of(context).pushNamed(Routes.menu);
   }
 
   @override
@@ -42,25 +32,27 @@ class Home extends StatelessWidget {
       appBar: CustomAppBar(
         actions: [
           GestureDetector(
-            onTap: _logout,
+            onTap: () => _logout(context),
             child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-                width: 50,
-                height: 10,
-                child: user?.photoURL == 'null' || user?.photoURL == null
-                    ? Image.asset(
-                        'assets/grow.png',
-                        width: 50,
-                        height: 10,
-                      )
-                    : ClipOval(
-                        child: Image.network(
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+              width: 50,
+              height: 10,
+              child: user?.photoURL == 'null' || user?.photoURL == null
+                  ? Image.asset(
+                      'assets/grow.png',
+                      width: 50,
+                      height: 10,
+                    )
+                  : ClipOval(
+                      child: Image.network(
                         user!.photoURL!,
                         width: 50,
                         height: 10,
                         fit: BoxFit.cover,
-                      ))),
+                      ),
+                    ),
+            ),
           ),
         ],
         leftButton: IconButton(

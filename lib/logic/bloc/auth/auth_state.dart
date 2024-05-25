@@ -25,6 +25,41 @@ class AuthStateLoggedIn extends AuthState {
           // authError: authError,
         );
 
+  // @override
+  // bool operator ==(other) {
+  //   final otherClass = other;
+
+  //   if (otherClass is AuthStateLoggedIn) {
+  //     return isLoading == otherClass.isLoading &&
+  //         user.uid == otherClass.user.uid;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  // @override
+  // int get hashCode => Object.hash(
+  //       isLoading,
+  //       user.uid,
+  //     );
+
+  @override
+  String toString() => 'AuthStateLoggedIn';
+}
+
+@immutable
+class AuthStateGoogleLoggedIn extends AuthState {
+  final User user;
+
+  const AuthStateGoogleLoggedIn({
+    required bool isLoading,
+    required this.user,
+    // AuthError? authError,
+  }) : super(
+          isLoading: isLoading,
+          // authError: authError,
+        );
+
   @override
   bool operator ==(other) {
     final otherClass = other;

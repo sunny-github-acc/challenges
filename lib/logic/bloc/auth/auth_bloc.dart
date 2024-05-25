@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
+import 'package:challenges/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -33,7 +34,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             email: email,
             password: password,
           );
-          // get images for user
           final user = userCredential.user!;
           emit(
             AuthStateLoggedIn(
@@ -41,6 +41,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               user: user,
             ),
           );
+        } on FirebaseAuthException catch (e) {
+          if (kDebugMode) {
+            print(e);
+          }
+
+          emit(
+            const AuthStateLoggedOut(
+              isLoading: false,
+            ),
+          );
+        }
+      },
+    );
+
+    on<AuthEventGoogleLogIn>(
+      (event, emit) async {
+        emit(
+          const AuthStateLoggedOut(
+            isLoading: true,
+          ),
+        );
+        // log the user in
+        try {
+          AuthService authService = AuthService();
+
+          final user = await authService.loginGoogle();
+
+          if (user != null) {
+            emit(
+              AuthStateLoggedIn(
+                isLoading: false,
+                user: user,
+              ),
+            );
+          }
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
             print(e);
@@ -126,20 +161,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventLogOut>(
       (event, emit) async {
-        // start loading
-        emit(
-          const AuthStateLoggedOut(
-            isLoading: true,
-          ),
-        );
-        // log the user out
-        await FirebaseAuth.instance.signOut();
-        // log the user out in the UI as well
-        emit(
-          const AuthStateLoggedOut(
-            isLoading: false,
-          ),
-        );
+        emit(const AuthStateLoggedOut(isLoading: false));
+
+        try {
+          await FirebaseAuth.instance.signOut();
+        } catch (e) {
+          if (kDebugMode) {
+            print('error 🚀');
+            print(e);
+          }
+        }
+
+        emit(const AuthStateLoggedOut(isLoading: false));
       },
     );
 
