@@ -1,10 +1,8 @@
-// import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -12,12 +10,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       : super(
           const AuthStateLoggedOut(isLoading: false),
         ) {
-    on<AuthEventGoToRegistration>((event, emit) {
-      emit(
-        const AuthStateIsInRegistrationView(isLoading: false),
-      );
-    });
-
     on<AuthEventLogIn>(
       (event, emit) async {
         emit(
@@ -35,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: password,
           );
           final user = userCredential.user!;
+
           emit(
             AuthStateLoggedIn(
               isLoading: false,

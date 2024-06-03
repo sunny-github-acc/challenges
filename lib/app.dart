@@ -5,7 +5,6 @@ import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,6 +19,8 @@ class _MyAppState extends State<MyApp> {
   final AppRouter appRouter = AppRouter();
   final Connectivity connectivity = Connectivity();
   String route = Routes.auth;
+
+  // https://pub.dev/packages/flutter_hooks
 
   @override
   Widget build(BuildContext context) {
