@@ -62,7 +62,12 @@ class _MyAppState extends State<MyApp> {
                 }
 
                 if (state is AuthStateLoggedIn) {
-                  Navigator.of(context).pushReplacementNamed(Routes.home);
+                  if (state.user.emailVerified == true) {
+                    Navigator.of(context).pushReplacementNamed(Routes.home);
+                  } else {
+                    Navigator.of(context)
+                        .pushReplacementNamed(Routes.verifyEmail);
+                  }
                 } else if (state is AuthStateLoggedOut) {
                   Navigator.of(context).pushReplacementNamed(Routes.auth);
                 }

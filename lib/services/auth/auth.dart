@@ -23,6 +23,22 @@ class AuthService {
     }
   }
 
+  Future<void> resendVerificationEmail(context) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      await user?.sendEmailVerification();
+
+      Modal.show(context, 'Success', 'Verification email has been send');
+    } catch (error) {
+      List<String> parts = error.toString().split(']');
+      if (error is FirebaseAuthException && parts.length > 1) {
+        Modal.show(context, 'Oops', parts[1].trim());
+      } else {
+        Modal.show(context, 'Oops', 'Something unexpected happened');
+      }
+    }
+  }
+
   Future<User?> signupEmail(username, email, password) async {
     try {
       UserCredential? userCredential = await FirebaseAuth.instance
@@ -125,11 +141,20 @@ class AuthService {
     }
   }
 
-  getUser() {
+  Future<User?> getReloadedUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.reload();
+      user = FirebaseAuth.instance.currentUser;
+    }
+    return user;
+  }
+
+  Map<String, Object?> getUser() {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return null;
+      return {};
     }
 
     return {
@@ -137,6 +162,7 @@ class AuthService {
       'displayName': user.displayName,
       'email': user.email,
       'photoURL': user.photoURL,
+      'emailVerified': user.emailVerified,
     };
   }
 

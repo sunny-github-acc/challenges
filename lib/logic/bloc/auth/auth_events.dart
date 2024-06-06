@@ -16,6 +16,11 @@ class AuthEventLogOut implements AuthEvent {
 }
 
 @immutable
+class AuthEventVerifyEmail implements AuthEvent {
+  const AuthEventVerifyEmail();
+}
+
+@immutable
 class AuthEventInitialize implements AuthEvent {
   const AuthEventInitialize();
 }
@@ -39,11 +44,6 @@ class AuthEventGoogleLogIn implements AuthEvent {
 @immutable
 class AuthEventGoToRegistration implements AuthEvent {
   const AuthEventGoToRegistration();
-}
-
-@immutable
-class AuthEventGoToLogin implements AuthEvent {
-  const AuthEventGoToLogin();
 }
 
 @immutable

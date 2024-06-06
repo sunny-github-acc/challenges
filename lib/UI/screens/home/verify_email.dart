@@ -1,46 +1,31 @@
-import 'package:challenges/UI/router/router.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
-import 'package:challenges/components/modal.dart';
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
+import 'package:challenges/services/auth/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VerifyEmail extends StatelessWidget {
-  final User? user;
+  const VerifyEmail({super.key});
 
-  VerifyEmail({super.key}) : user = FirebaseAuth.instance.currentUser;
-
-  void _resendVerificationEmail(context) async {
-    try {
-      await user?.sendEmailVerification();
-
-      return Modal.show(context, 'Success', 'Verification email has been send');
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+  void _resendVerificationEmail(context) {
+    AuthService authService = AuthService();
+    authService.resendVerificationEmail(context);
   }
 
-  void _checkTheEmail(context) async {
-    try {
-      Navigator.of(context).pushNamed(Routes.verifyEmail);
-    } catch (e) {
-      Modal.show(
-          context, 'Oops', 'Check again if your email has been verified');
-    }
+  void _verifyEmail(context) {
+    BlocProvider.of<AuthBloc>(context).add(const AuthEventVerifyEmail());
+
+    // try { // handle errors
+    // } catch (e) {
+    //   Modal.show(
+    //       context, 'Oops', 'Check again if your email has been verified');
+    // }
   }
 
-  void _logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+  void _logout(context) {
+    BlocProvider.of<AuthBloc>(context).add(const AuthEventLogOut());
   }
 
   @override
@@ -59,16 +44,19 @@ class VerifyEmail extends StatelessWidget {
                     CustomButton(
                       type: ButtonType.secondary,
                       text: "I've verified the email",
-                      onPressed: () => _checkTheEmail(context),
+                      onPressed: () => _verifyEmail(context),
+                      // handle loading
                     ),
                     CustomButton(
                       type: ButtonType.secondary,
-                      text: 'Resend the verification email',
+                      text: 'Resend', // the verification email',
                       onPressed: () => _resendVerificationEmail(context),
+                      // handle loading
                     ),
                     CustomButton(
                       text: 'Logout',
-                      onPressed: () => _logout(),
+                      onPressed: () => _logout(context),
+                      // handle loading
                     ),
                   ],
                 ),

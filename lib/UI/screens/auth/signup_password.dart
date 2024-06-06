@@ -84,6 +84,7 @@ class SignupPasswordState extends State<SignupPassword> {
                     text: 'Signup',
                     onPressed: () => _signup(context),
                     isLoading: state.isLoading,
+                    disabled: state.isLoading,
                   );
                 },
               ),

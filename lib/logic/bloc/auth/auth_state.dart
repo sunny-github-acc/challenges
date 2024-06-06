@@ -13,6 +13,11 @@ abstract class AuthState {
 }
 
 @immutable
+class AuthStateLoading extends AuthState {
+  const AuthStateLoading() : super(isLoading: true);
+}
+
+@immutable
 class AuthStateLoggedIn extends AuthState {
   final User user;
 
@@ -25,26 +30,29 @@ class AuthStateLoggedIn extends AuthState {
           // authError: authError,
         );
 
-  // @override
-  // bool operator ==(other) {
-  //   final otherClass = other;
+  @override
+  bool operator ==(other) {
+    final otherClass = other;
 
-  //   if (otherClass is AuthStateLoggedIn) {
-  //     return isLoading == otherClass.isLoading &&
-  //         user.uid == otherClass.user.uid;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // @override
-  // int get hashCode => Object.hash(
-  //       isLoading,
-  //       user.uid,
-  //     );
+    if (otherClass is AuthStateLoggedIn) {
+      return isLoading == otherClass.isLoading &&
+          user.uid == otherClass.user.uid &&
+          user.emailVerified == otherClass.user.emailVerified;
+    } else {
+      return false;
+    }
+  }
 
   @override
-  String toString() => 'AuthStateLoggedIn';
+  int get hashCode => Object.hash(
+        isLoading,
+        user.uid,
+      );
+
+  @override
+  String toString() {
+    return '🚀 AuthStateLoggedIn(user: $user)';
+  }
 }
 
 @immutable

@@ -13,10 +13,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogIn>(
       (event, emit) async {
         emit(
-          const AuthStateLoggedOut(
-            isLoading: true,
-          ),
+          const AuthStateLoading(),
         );
+
         // log the user in
         try {
           final email = event.email;
@@ -48,13 +47,51 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
+    on<AuthEventVerifyEmail>(
+      (event, emit) async {
+        emit(
+          const AuthStateLoading(),
+        );
+
+        // log the user in
+        try {
+          AuthService authService = AuthService();
+          User? user = await authService.getReloadedUser();
+
+          if (user != null) {
+            emit(
+              AuthStateLoggedIn(
+                isLoading: false,
+                user: user,
+              ),
+            );
+          } else {
+            emit(
+              const AuthStateLoggedOut(
+                isLoading: false,
+              ),
+            );
+          }
+        } on FirebaseAuthException catch (e) {
+          if (kDebugMode) {
+            print(e);
+          }
+
+          emit(
+            const AuthStateLoggedOut(
+              isLoading: false,
+            ),
+          );
+        }
+      },
+    );
+
     on<AuthEventGoogleLogIn>(
       (event, emit) async {
         emit(
-          const AuthStateLoggedOut(
-            isLoading: true,
-          ),
+          const AuthStateLoading(),
         );
+
         // log the user in
         try {
           AuthService authService = AuthService();
@@ -83,16 +120,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    on<AuthEventGoToLogin>(
-      (event, emit) {
-        emit(
-          const AuthStateLoggedOut(
-            isLoading: false,
-          ),
-        );
-      },
-    );
-
     on<AuthEventSaveName>(
       (event, emit) async {
         final username = event.username;
@@ -114,9 +141,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final password = event.password;
 
         emit(
-          const AuthStateInRegistration(
-            isLoading: true,
-          ),
+          const AuthStateLoading(),
         );
 
         try {
@@ -135,7 +160,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            const AuthStateInRegistration(
+            const AuthStateLoggedOut(
               isLoading: false,
               // authError: AuthError.from(e),
             ),
@@ -167,7 +192,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventLogOut>(
       (event, emit) async {
-        emit(const AuthStateLoggedOut(isLoading: false));
+        emit(const AuthStateLoggedOut(isLoading: true));
 
         try {
           await FirebaseAuth.instance.signOut();
