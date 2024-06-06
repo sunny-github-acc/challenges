@@ -1,21 +1,17 @@
-import 'package:flutter/material.dart';
-
-import 'package:challenges/services/auth/auth.dart';
-
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignupPassword extends StatefulWidget {
-  final String username;
-  final String email;
-
   const SignupPassword({
     Key? key,
-    required this.username,
-    required this.email,
   }) : super(key: key);
 
   @override
@@ -29,11 +25,8 @@ class SignupPasswordState extends State<SignupPassword> {
 
   bool isPassword = true;
   bool isPasswordRepeat = true;
-  bool isLoading = false;
 
   Future<void> _signup(context) async {
-    String username = widget.username;
-    String email = widget.email;
     String password = passwordController.text.trim();
     String passwordRepeat = passwordRepeatController.text.trim();
 
@@ -54,16 +47,9 @@ class SignupPasswordState extends State<SignupPassword> {
       return Modal.show(context, 'Oops', 'Passwords should match');
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    AuthService authService = AuthService();
-    await authService.signupEmail(context, username, email, password);
-
-    setState(() {
-      isLoading = false;
-    });
+    BlocProvider.of<AuthBloc>(context).add(AuthEventRegister(
+      password: password,
+    ));
   }
 
   @override
@@ -92,10 +78,14 @@ class SignupPasswordState extends State<SignupPassword> {
                 isAutocorrect: false,
                 isDisabled: !isPasswordRepeat,
               ),
-              CustomButton(
-                text: 'Signup',
-                onPressed: () => _signup(context),
-                isLoading: isLoading,
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  return CustomButton(
+                    text: 'Signup',
+                    onPressed: () => _signup(context),
+                    isLoading: state.isLoading,
+                  );
+                },
               ),
             ],
           ),

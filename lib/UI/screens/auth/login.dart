@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
-import 'package:challenges/components/column.dart';
-
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/services/auth/auth.dart';
-
 import 'package:challenges/utils/helpers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -50,16 +50,18 @@ class _LoginState extends State<Login> {
       isPassword = password.isNotEmpty;
     });
 
-    if (email.isEmpty || password.isEmpty) {
-      return Modal.show(context, 'Oops', 'Please fill out all input fields');
-    }
+    // if (email.isEmpty || password.isEmpty) {
+    //   return Modal.show(context, 'Oops', 'Please fill out all input fields');
+    // }
 
     setState(() {
       isLoadingLogin = true;
     });
 
-    AuthService authService = AuthService();
-    await authService.loginEmail(context, email, password);
+    BlocProvider.of<AuthBloc>(context).add(AuthEventLogIn(
+      email: email,
+      password: password,
+    ));
 
     setState(() {
       isLoadingLogin = false;

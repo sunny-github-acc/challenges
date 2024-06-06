@@ -97,13 +97,30 @@ class AuthStateLoggedOut extends AuthState {
 }
 
 @immutable
-class AuthStateIsInRegistrationView extends AuthState {
-  const AuthStateIsInRegistrationView({
+class AuthStateNameSaved extends AuthState {
+  final String username;
+  final String email;
+
+  const AuthStateNameSaved({
+    required this.username,
+    required this.email,
     required bool isLoading,
-    // AuthError? authError,
   }) : super(
           isLoading: isLoading,
-          // authError: authError,
+        );
+
+  @override
+  String toString() {
+    return '🚀 AuthStateNameSaved(username: $username, email: $email, isLoading: $isLoading)';
+  }
+}
+
+@immutable
+class AuthStateInRegistration extends AuthState {
+  const AuthStateInRegistration({
+    required bool isLoading,
+  }) : super(
+          isLoading: isLoading,
         );
 }
 
@@ -112,6 +129,28 @@ extension GetUser on AuthState {
     final cls = this;
     if (cls is AuthStateLoggedIn) {
       return cls.user;
+    } else {
+      return null;
+    }
+  }
+}
+
+extension GetUsername on AuthState {
+  String? get username {
+    final cls = this;
+    if (cls is AuthStateNameSaved) {
+      return cls.username;
+    } else {
+      return null;
+    }
+  }
+}
+
+extension GetEmail on AuthState {
+  String? get email {
+    final cls = this;
+    if (cls is AuthStateNameSaved) {
+      return cls.email;
     } else {
       return null;
     }

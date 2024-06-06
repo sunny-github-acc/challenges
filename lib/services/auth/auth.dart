@@ -23,7 +23,7 @@ class AuthService {
     }
   }
 
-  Future<void> signupEmail(context, username, email, password) async {
+  Future<User?> signupEmail(username, email, password) async {
     try {
       UserCredential? userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -36,16 +36,20 @@ class AuthService {
         setUser(userCredential.user!.uid);
 
         await user.sendEmailVerification();
+
+        return user;
       }
 
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      return null;
     } catch (error) {
-      List<String> parts = error.toString().split(']');
-      if (error is FirebaseAuthException && parts.length > 1) {
-        Modal.show(context, 'Oops', parts[1].trim());
-      } else {
-        Modal.show(context, 'Oops', 'Something unexpected happened');
-      }
+      // List<String> parts = error.toString().split(']');
+      // if (error is FirebaseAuthException && parts.length > 1) {
+      //   Modal.show(context, 'Oops', parts[1].trim());
+      // } else {
+      //   Modal.show(context, 'Oops', 'Something unexpected happened');
+      // }
+
+      return null;
     }
   }
 

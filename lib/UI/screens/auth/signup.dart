@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
-
-import 'package:challenges/UI/screens/auth/signup_password.dart';
-
+import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
-
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/utils/helpers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -18,14 +18,17 @@ class Signup extends StatefulWidget {
 }
 
 class SignupState extends State<Signup> {
-  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
   bool isUsername = true;
   bool isEmail = true;
 
   void _navigateToSignupPasswordScreen(
-      BuildContext context, String username, String email) {
+    BuildContext context,
+    String username,
+    String email,
+  ) {
     if (username.isEmpty || email.isEmpty) {
       setState(() {
         isUsername = username.isNotEmpty;
@@ -43,14 +46,11 @@ class SignupState extends State<Signup> {
       return Modal.show(context, 'Oops', 'Please fill in a valid email');
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => SignupPassword(
-                username: username,
-                email: email,
-              )),
-    );
+    BlocProvider.of<AuthBloc>(context).add(AuthEventSaveName(
+      username: username,
+      email: email,
+    ));
+    Navigator.of(context).pushNamed(Routes.signupPassword);
   }
 
   @override
@@ -66,7 +66,7 @@ class SignupState extends State<Signup> {
               CustomInput(
                 labelText: 'Username',
                 hintText: 'Enter your username',
-                controller: userNameController,
+                controller: usernameController,
                 isDisabled: !isUsername,
               ),
               CustomInput(
@@ -80,7 +80,7 @@ class SignupState extends State<Signup> {
                 text: 'Next',
                 onPressed: () => _navigateToSignupPasswordScreen(
                   context,
-                  userNameController.text.trim(),
+                  usernameController.text.trim(),
                   emailController.text.trim(),
                 ),
               ),
