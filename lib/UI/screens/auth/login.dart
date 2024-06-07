@@ -6,7 +6,7 @@ import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
-import 'package:challenges/services/auth/auth.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,8 +38,6 @@ class _LoginState extends State<Login> {
 
   bool isEmail = true;
   bool isPassword = true;
-  bool isLoadingRememberPassword = false;
-  bool isLoadingLogin = false;
 
   Future<void> _loginEmail(context) async {
     String email = _emailController.text.trim();
@@ -50,40 +48,30 @@ class _LoginState extends State<Login> {
       isPassword = password.isNotEmpty;
     });
 
-    // if (email.isEmpty || password.isEmpty) {
-    //   return Modal.show(context, 'Oops', 'Please fill out all input fields');
-    // }
-
-    setState(() {
-      isLoadingLogin = true;
-    });
+    if (email.isEmpty || password.isEmpty) {
+      return Modal.show(context, 'Oops', 'Please fill out all input fields');
+    }
 
     BlocProvider.of<AuthBloc>(context).add(AuthEventLogIn(
       email: email,
       password: password,
     ));
-
-    setState(() {
-      isLoadingLogin = false;
-    });
   }
 
   Future<void> _rememberPassword(context) async {
     String email = _emailController.text.trim();
 
+    setState(() {
+      isEmail = email.isNotEmpty;
+    });
+
     if (!isValidEmail(email)) {
       return Modal.show(context, 'Oops', 'Please enter a valid email');
     }
-    setState(() {
-      isLoadingRememberPassword = true;
-    });
 
-    AuthService authService = AuthService();
-    await authService.rememberPassword(context, email);
-
-    setState(() {
-      isLoadingRememberPassword = false;
-    });
+    BlocProvider.of<AuthBloc>(context).add(AuthEventRememberPassword(
+      email: email,
+    ));
   }
 
   @override
@@ -110,17 +98,26 @@ class _LoginState extends State<Login> {
               isAutocorrect: false,
               isDisabled: !isPassword,
             ),
-            CustomButton(
-              text: 'Forgot password?',
-              type: ButtonType.transparent,
-              size: ButtonSize.small,
-              isLoading: isLoadingRememberPassword,
-              onPressed: () => _rememberPassword(context),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return CustomButton(
+                  text: 'Forgot password?',
+                  type: ButtonType.transparent,
+                  size: ButtonSize.small,
+                  isLoading: state.isLoading &&
+                      state.event is AuthEventRememberPassword,
+                  onPressed: () => _rememberPassword(context),
+                );
+              },
             ),
-            CustomButton(
-              text: 'Login',
-              isLoading: isLoadingLogin,
-              onPressed: () => _loginEmail(context),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return CustomButton(
+                  text: 'Login',
+                  isLoading: state.isLoading && state.event is AuthEventLogIn,
+                  onPressed: () => _loginEmail(context),
+                );
+              },
             ),
           ],
         ),

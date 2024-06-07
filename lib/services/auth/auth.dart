@@ -69,20 +69,20 @@ class AuthService {
     }
   }
 
-  Future<bool?> rememberPassword(context, email) async {
+  Future<void> rememberPassword(email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-      Modal.show(context, 'Success', 'Reset email has been sent to: $email');
-      return null;
+      // Modal.show(context, 'Success', 'Reset email has been sent to: $email');
+      // return null;
     } catch (error) {
       List<String> parts = error.toString().split(']');
       if (error is FirebaseAuthException && parts.length > 1) {
-        Modal.show(context, 'Oops', parts[1].trim());
+        // Modal.show(context, 'Oops', parts[1].trim());
       } else {
-        Modal.show(context, 'Oops', 'Something unexpected happened');
+        // Modal.show(context, 'Oops', 'Something unexpected happened');
       }
-      return null;
+      // return null;
     }
   }
 

@@ -13,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogIn>(
       (event, emit) async {
         emit(
-          const AuthStateLoading(),
+          AuthStateLoading(event: event),
         );
 
         // log the user in
@@ -50,7 +50,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventVerifyEmail>(
       (event, emit) async {
         emit(
-          const AuthStateLoading(),
+          AuthStateLoading(event: event),
         );
 
         // log the user in
@@ -86,10 +86,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
+    on<AuthEventRememberPassword>(
+      (event, emit) async {
+        emit(
+          AuthStateLoading(event: event),
+        );
+
+        try {
+          final email = event.email;
+          await AuthService().rememberPassword(email);
+        } on FirebaseAuthException catch (e) {
+          if (kDebugMode) {
+            print(e);
+          }
+        }
+
+        emit(
+          AuthStateLoading(
+            event: event,
+            isLoading: false,
+          ),
+        );
+      },
+    );
+
     on<AuthEventGoogleLogIn>(
       (event, emit) async {
         emit(
-          const AuthStateLoading(),
+          AuthStateLoading(event: event),
         );
 
         // log the user in
@@ -141,7 +165,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final password = event.password;
 
         emit(
-          const AuthStateLoading(),
+          AuthStateLoading(event: event),
         );
 
         try {

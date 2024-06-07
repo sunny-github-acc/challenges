@@ -1,3 +1,4 @@
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
@@ -14,7 +15,19 @@ abstract class AuthState {
 
 @immutable
 class AuthStateLoading extends AuthState {
-  const AuthStateLoading() : super(isLoading: true);
+  final AuthEvent event;
+
+  const AuthStateLoading({
+    required this.event,
+    bool? isLoading,
+  }) : super(
+          isLoading: isLoading ?? true,
+        );
+
+  @override
+  String toString() {
+    return '🚀 AuthStateLoading(event: $event)';
+  }
 }
 
 @immutable
@@ -86,7 +99,9 @@ class AuthStateGoogleLoggedIn extends AuthState {
       );
 
   @override
-  String toString() => 'AuthStateLoggedIn';
+  String toString() {
+    return '🚀 AuthStateGoogleLoggedIn(user: $user)';
+  }
 }
 
 @immutable
@@ -101,7 +116,7 @@ class AuthStateLoggedOut extends AuthState {
 
   @override
   String toString() =>
-      'AuthStateLoggedOut, isLoading = $isLoading'; // , authError = $authError';
+      '🚀 AuthStateLoggedOut, isLoading = $isLoading'; // , authError = $authError';
 }
 
 @immutable
@@ -121,15 +136,6 @@ class AuthStateNameSaved extends AuthState {
   String toString() {
     return '🚀 AuthStateNameSaved(username: $username, email: $email, isLoading: $isLoading)';
   }
-}
-
-@immutable
-class AuthStateInRegistration extends AuthState {
-  const AuthStateInRegistration({
-    required bool isLoading,
-  }) : super(
-          isLoading: isLoading,
-        );
 }
 
 extension GetUser on AuthState {
@@ -159,6 +165,17 @@ extension GetEmail on AuthState {
     final cls = this;
     if (cls is AuthStateNameSaved) {
       return cls.email;
+    } else {
+      return null;
+    }
+  }
+}
+
+extension GetEvent on AuthState {
+  AuthEvent? get event {
+    final cls = this;
+    if (cls is AuthStateLoading) {
+      return cls.event;
     } else {
       return null;
     }
