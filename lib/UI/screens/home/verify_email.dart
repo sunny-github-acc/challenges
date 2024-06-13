@@ -2,7 +2,6 @@ import 'package:challenges/components/button.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
-import 'package:challenges/services/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,18 +9,12 @@ class VerifyEmail extends StatelessWidget {
   const VerifyEmail({super.key});
 
   void _resendVerificationEmail(context) {
-    AuthService authService = AuthService();
-    authService.resendVerificationEmail(context);
+    BlocProvider.of<AuthBloc>(context)
+        .add(const AuthEventResendVerificationEmail());
   }
 
   void _verifyEmail(context) {
     BlocProvider.of<AuthBloc>(context).add(const AuthEventVerifyEmail());
-
-    // try { // handle errors
-    // } catch (e) {
-    //   Modal.show(
-    //       context, 'Oops', 'Check again if your email has been verified');
-    // }
   }
 
   void _logout(context) {

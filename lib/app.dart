@@ -1,5 +1,6 @@
 import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/UI/screens/auth/auth.dart';
+import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
@@ -70,6 +71,11 @@ class _MyAppState extends State<MyApp> {
                   }
                 } else if (state is AuthStateLoggedOut) {
                   Navigator.of(context).pushReplacementNamed(Routes.auth);
+                }
+
+                if (state.authError != null) {
+                  Modal.show(context, state.authError!.dialogTitle,
+                      state.authError!.dialogText);
                 }
               },
             ),

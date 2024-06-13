@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_error.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/services/auth/auth.dart';
@@ -16,7 +17,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoading(event: event),
         );
 
-        // log the user in
         try {
           final email = event.email;
           final password = event.password;
@@ -35,12 +35,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventLogIn error 🚀');
             print(e);
           }
 
           emit(
-            const AuthStateLoggedOut(
+            AuthStateLoggedOut(
               isLoading: false,
+              authError: AuthError.from(e),
             ),
           );
         }
@@ -53,7 +55,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoading(event: event),
         );
 
-        // log the user in
         try {
           AuthService authService = AuthService();
           User? user = await authService.getReloadedUser();
@@ -74,12 +75,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventVerifyEmail error 🚀');
             print(e);
           }
 
           emit(
-            const AuthStateLoggedOut(
+            AuthStateLoading(
+              event: event,
               isLoading: false,
+              authError: AuthError.from(e),
             ),
           );
         }
@@ -95,18 +99,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           final email = event.email;
           await AuthService().rememberPassword(email);
+
+          emit(
+            AuthStateLoading(
+              event: event,
+              isLoading: false,
+            ),
+          );
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventRememberPassword error 🚀');
             print(e);
           }
-        }
 
+          emit(
+            AuthStateLoading(
+              event: event,
+              isLoading: false,
+              authError: AuthError.from(e),
+            ),
+          );
+        }
+      },
+    );
+
+    on<AuthEventResendVerificationEmail>(
+      (event, emit) async {
         emit(
-          AuthStateLoading(
-            event: event,
-            isLoading: false,
-          ),
+          AuthStateLoading(event: event),
         );
+
+        try {
+          await AuthService().resendVerificationEmail();
+
+          emit(
+            AuthStateLoading(
+              event: event,
+              isLoading: false,
+            ),
+          );
+        } on FirebaseAuthException catch (e) {
+          if (kDebugMode) {
+            print('AuthEventResendVerificationEmail error 🚀');
+            print(e);
+          }
+
+          emit(
+            AuthStateLoading(
+              event: event,
+              isLoading: false,
+              authError: AuthError.from(e),
+            ),
+          );
+        }
       },
     );
 
@@ -116,7 +161,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoading(event: event),
         );
 
-        // log the user in
         try {
           AuthService authService = AuthService();
 
@@ -132,12 +176,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventGoogleLogIn error 🚀');
             print(e);
           }
 
           emit(
-            const AuthStateLoggedOut(
+            AuthStateLoading(
+              event: event,
               isLoading: false,
+              authError: AuthError.from(e),
             ),
           );
         }
@@ -180,13 +227,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventRegister error 🚀');
             print(e);
           }
 
           emit(
-            const AuthStateLoggedOut(
+            AuthStateLoggedOut(
               isLoading: false,
-              // authError: AuthError.from(e),
+              authError: AuthError.from(e),
             ),
           );
         }
@@ -195,7 +243,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventInitialize>(
       (event, emit) async {
-        // get the current user
         final user = FirebaseAuth.instance.currentUser;
         if (user == null) {
           emit(
@@ -222,7 +269,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await FirebaseAuth.instance.signOut();
         } catch (e) {
           if (kDebugMode) {
-            print('error 🚀');
+            print('AuthEventLogOut error 🚀');
             print(e);
           }
         }
@@ -234,7 +281,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventDeleteAccount>(
       (event, emit) async {
         final user = FirebaseAuth.instance.currentUser;
-        // log the user out if we don't have a current user
         if (user == null) {
           emit(
             const AuthStateLoggedOut(
@@ -243,32 +289,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
           return;
         }
-        // start loading
+
         emit(
           AuthStateLoggedIn(
             isLoading: true,
             user: user,
           ),
         );
-        // delete the user folder
-        try {
-          // delete user folder
-          // final folderContents =
-          //     await FirebaseStorage.instance.ref(user.uid).listAll();
-          // for (final item in folderContents.items) {
-          //   await item.delete().catchError((_) {}); // maybe handle the error?
-          // }
-          // delete the folder itself
-          // await FirebaseStorage.instance
-          //     .ref(user.uid)
-          //     .delete()
-          //     .catchError((_) {});
 
-          // delete the user
+        try {
           await user.delete();
-          // log the user out
           await FirebaseAuth.instance.signOut();
-          // log the user out in the UI as well
           emit(
             const AuthStateLoggedOut(
               isLoading: false,
@@ -276,18 +307,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         } on FirebaseAuthException catch (e) {
           if (kDebugMode) {
+            print('AuthEventDeleteAccount error 🚀');
             print(e);
           }
 
           emit(
-            AuthStateLoggedIn(
+            AuthStateLoggedOut(
               isLoading: false,
-              user: user,
+              authError: AuthError.from(e),
             ),
           );
         } on FirebaseException {
-          // we might not be able to delete the folder
-          // log the user out
           emit(
             const AuthStateLoggedOut(
               isLoading: false,

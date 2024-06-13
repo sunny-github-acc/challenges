@@ -1,3 +1,4 @@
+import 'package:challenges/logic/bloc/auth/auth_error.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show immutable;
@@ -5,11 +6,11 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class AuthState {
   final bool isLoading;
-  // final AuthError? authError;
+  final AuthError? authError;
 
   const AuthState({
     required this.isLoading,
-    // this.authError,
+    this.authError,
   });
 }
 
@@ -20,13 +21,15 @@ class AuthStateLoading extends AuthState {
   const AuthStateLoading({
     required this.event,
     bool? isLoading,
+    AuthError? authError,
   }) : super(
           isLoading: isLoading ?? true,
+          authError: authError,
         );
 
   @override
   String toString() {
-    return '🚀 AuthStateLoading(event: $event)';
+    return '🚀 AuthStateLoading(event: $event, authError: $authError)';
   }
 }
 
@@ -37,10 +40,8 @@ class AuthStateLoggedIn extends AuthState {
   const AuthStateLoggedIn({
     required bool isLoading,
     required this.user,
-    // AuthError? authError,
   }) : super(
           isLoading: isLoading,
-          // authError: authError,
         );
 
   @override
@@ -75,10 +76,8 @@ class AuthStateGoogleLoggedIn extends AuthState {
   const AuthStateGoogleLoggedIn({
     required bool isLoading,
     required this.user,
-    // AuthError? authError,
   }) : super(
           isLoading: isLoading,
-          // authError: authError,
         );
 
   @override
@@ -108,15 +107,15 @@ class AuthStateGoogleLoggedIn extends AuthState {
 class AuthStateLoggedOut extends AuthState {
   const AuthStateLoggedOut({
     required bool isLoading,
-    // AuthError? authError,
+    AuthError? authError,
   }) : super(
           isLoading: isLoading,
-          // authError: authError,
+          authError: authError,
         );
 
   @override
   String toString() =>
-      '🚀 AuthStateLoggedOut, isLoading = $isLoading'; // , authError = $authError';
+      '🚀 AuthStateLoggedOut, (isLoading = $isLoading, authError: $authError)'; // , authError = $authError';
 }
 
 @immutable

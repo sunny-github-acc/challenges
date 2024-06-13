@@ -1,41 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:challenges/services/cloud/cloud.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'package:challenges/services/cloud/cloud.dart';
-
-import 'package:challenges/components/modal.dart';
-
 class AuthService {
-  Future<void> loginEmail(context, email, password) async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-
-      Navigator.pop(context);
-    } catch (error) {
-      List<String> parts = error.toString().split(']');
-      if (error is FirebaseAuthException && parts.length > 1) {
-        Modal.show(context, 'Oops', parts[1].trim());
-      } else {
-        Modal.show(context, 'Oops', 'Something unexpected happened');
-      }
-    }
-  }
-
-  Future<void> resendVerificationEmail(context) async {
+  Future<void> resendVerificationEmail() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       await user?.sendEmailVerification();
-
-      Modal.show(context, 'Success', 'Verification email has been send');
     } catch (error) {
-      List<String> parts = error.toString().split(']');
-      if (error is FirebaseAuthException && parts.length > 1) {
-        Modal.show(context, 'Oops', parts[1].trim());
-      } else {
-        Modal.show(context, 'Oops', 'Something unexpected happened');
-      }
+      rethrow;
     }
   }
 
@@ -58,31 +32,15 @@ class AuthService {
 
       return null;
     } catch (error) {
-      // List<String> parts = error.toString().split(']');
-      // if (error is FirebaseAuthException && parts.length > 1) {
-      //   Modal.show(context, 'Oops', parts[1].trim());
-      // } else {
-      //   Modal.show(context, 'Oops', 'Something unexpected happened');
-      // }
-
-      return null;
+      rethrow;
     }
   }
 
   Future<void> rememberPassword(email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-      // Modal.show(context, 'Success', 'Reset email has been sent to: $email');
-      // return null;
     } catch (error) {
-      List<String> parts = error.toString().split(']');
-      if (error is FirebaseAuthException && parts.length > 1) {
-        // Modal.show(context, 'Oops', parts[1].trim());
-      } else {
-        // Modal.show(context, 'Oops', 'Something unexpected happened');
-      }
-      // return null;
+      rethrow;
     }
   }
 
@@ -105,14 +63,16 @@ class AuthService {
       setUser(userCredential.user!.uid);
 
       user = userCredential.user;
-    } catch (error) {
-      user = null;
-      print('loginGoogle error 🚀');
-      print(error);
-      // Modal.show(context, 'Oops', 'Google login has failed');
-    }
 
-    return user;
+      return user;
+    } catch (error) {
+      if (kDebugMode) {
+        print('loginGoogle error 🚀');
+        print(error);
+      }
+
+      rethrow;
+    }
   }
 
   Future<void> setUser(id) async {
@@ -135,19 +95,32 @@ class AuthService {
         );
       }
     } catch (error) {
-      print('setUser error 🚀');
-      print(error);
-      // Modal.show(context, 'Oops', 'Setting user info has failed');
+      if (kDebugMode) {
+        print('setUser error 🚀');
+        print(error);
+      }
+
+      rethrow;
     }
   }
 
   Future<User?> getReloadedUser() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await user.reload();
-      user = FirebaseAuth.instance.currentUser;
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.reload();
+        user = FirebaseAuth.instance.currentUser;
+      }
+      return user;
+    } catch (error) {
+      if (kDebugMode) {
+        print('getReloadedUser error 🚀');
+        print(error);
+      }
+
+      rethrow;
     }
-    return user;
   }
 
   Map<String, Object?> getUser() {
@@ -166,8 +139,8 @@ class AuthService {
     };
   }
 
+  // Not implemented
   updateUser() {
-    // Not implemented
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {

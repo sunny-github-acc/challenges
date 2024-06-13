@@ -21,6 +21,11 @@ class AuthEventVerifyEmail implements AuthEvent {
 }
 
 @immutable
+class AuthEventResendVerificationEmail implements AuthEvent {
+  const AuthEventResendVerificationEmail();
+}
+
+@immutable
 class AuthEventRememberPassword implements AuthEvent {
   final String email;
 

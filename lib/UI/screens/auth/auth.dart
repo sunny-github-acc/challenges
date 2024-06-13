@@ -42,18 +42,18 @@ class _AuthState extends State<Auth> {
                 children: [
                   CustomButton(
                     onPressed: () => _navigateToSignupScreen(context),
-                    text: 'Join',
+                    text: 'Register',
                     disabled: isLoading,
                   ),
                   CustomButton(
                     type: ButtonType.secondary,
-                    text: 'Welcome back',
+                    text: 'Sign In',
                     disabled: isLoading,
                     onPressed: () => _navigateToLoginScreen(context),
                   ),
                   CustomButton(
                     type: ButtonType.transparent,
-                    text: 'Join with Google',
+                    text: 'Continue with Google',
                     icon: IconType.google,
                     isLoading: isLoading,
                     disabled: isLoading,
