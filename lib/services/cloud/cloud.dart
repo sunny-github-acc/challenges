@@ -16,7 +16,7 @@ class CloudService {
         await finalDocument.add(document);
       }
     } catch (error) {
-      // Modal.show(context, 'Oops', 'Failed to add the $collection : $error');
+      rethrow;
     }
   }
 

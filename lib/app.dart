@@ -3,6 +3,7 @@ import 'package:challenges/UI/screens/auth/auth.dart';
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
+import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -32,6 +33,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc(),
         ),
+        BlocProvider<CollectionsBloc>(
+          create: (context) => CollectionsBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Challenges',
@@ -59,7 +63,7 @@ class _MyAppState extends State<MyApp> {
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (kDebugMode) {
-                  print('🚀 BlocListener state: $state');
+                  print('🚀 BlocListener AuthBloc state: $state');
                 }
 
                 if (state is AuthStateLoggedIn) {

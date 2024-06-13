@@ -1,17 +1,19 @@
-import 'package:challenges/components/column.dart';
-import 'package:challenges/components/row.dart';
-import 'package:flutter/material.dart';
-
-import 'package:challenges/services/cloud/cloud.dart';
-import 'package:challenges/services/auth/auth.dart';
-
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
-import 'package:challenges/components/modal.dart';
-import 'package:challenges/components/input.dart';
-import 'package:challenges/components/text.dart';
 import 'package:challenges/components/date.dart';
+import 'package:challenges/components/input.dart';
+import 'package:challenges/components/modal.dart';
+import 'package:challenges/components/row.dart';
+import 'package:challenges/components/text.dart';
+import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
+import 'package:challenges/logic/bloc/collections/collections_events.dart';
+import 'package:challenges/logic/bloc/collections/collections_state.dart';
+import 'package:challenges/services/auth/auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateChallenge extends StatefulWidget {
   const CreateChallenge({super.key});
@@ -30,7 +32,6 @@ class _CreateChallenge extends State<CreateChallenge> {
   String visibility = 'Public';
   bool isTitle = true;
   bool isDuration = true;
-  bool isLoading = false;
   DateTime today = DateTime.now();
   DateTime customStartDate = DateTime.now();
   DateTime? customEndDate;
@@ -66,17 +67,10 @@ class _CreateChallenge extends State<CreateChallenge> {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    CloudService cloudService = CloudService();
-    await cloudService.setCollection('challenges', document);
-    Navigator.pop(context);
-
-    setState(() {
-      isLoading = false;
-    });
+    BlocProvider.of<CollectionsBloc>(context).add(CollectionsEventAddCollection(
+      title: 'challenges',
+      document: document,
+    ));
   }
 
   void _handleDuration(BuildContext context, String durationParam) {
@@ -105,15 +99,56 @@ class _CreateChallenge extends State<CreateChallenge> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<CollectionsBloc, CollectionsState>(
+      listener: (context, state) {
+        if (kDebugMode) {
+          print('🚀 BlocListener CollectionsBloc state: $state');
+        }
+
+        if (state is CollectionsStateCollectionCollected) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Success. Challenge added!'),
+                duration: Duration(seconds: 2)),
+          );
+
+          Navigator.pop(context);
+        }
+
+        if (state.collectionsError != null) {
+          Modal.show(context, state.collectionsError!.dialogTitle,
+              state.collectionsError!.dialogText);
+        }
+      },
+      child: Scaffold(
         appBar: CustomAppBar(
           title: 'Add a challenge',
+          leftButton: BlocBuilder<CollectionsBloc, CollectionsState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  semanticsLabel: 'Circular progress indicator',
+                );
+              }
+
+              return IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              );
+            },
+          ),
           actions: [
-            CustomButton(
-              text: 'Save',
-              size: ButtonSize.small,
-              isLoading: isLoading,
-              onPressed: () => _save(context),
+            BlocBuilder<CollectionsBloc, CollectionsState>(
+              builder: (context, state) {
+                return CustomButton(
+                  text: 'Save',
+                  size: ButtonSize.small,
+                  isLoading: state.isLoading,
+                  onPressed: () => _save(context),
+                );
+              },
             ),
           ],
         ),
@@ -223,6 +258,8 @@ class _CreateChallenge extends State<CreateChallenge> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
