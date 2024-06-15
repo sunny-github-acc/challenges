@@ -15,7 +15,7 @@ class SwitchCustom extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: (value) => onChanged(value),
-      activeColor: Colors.green, // Set the color when the switch is ON
+      activeColor: Colors.green,
     );
   }
 }

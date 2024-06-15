@@ -10,6 +10,7 @@ class CloudService {
           .collection('challenges')
           .doc(collection)
           .collection(collection);
+
       if (customDocumentId != null) {
         await finalDocument.doc(customDocumentId).set(document);
       } else {
@@ -34,8 +35,7 @@ class CloudService {
     }
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>?> getDocument(
-      collection, id) async {
+  Future<Map<String, dynamic>> getDocument(collection, id) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = FirebaseFirestore
           .instance
@@ -45,12 +45,15 @@ class CloudService {
           .doc(id);
 
       DocumentSnapshot<Map<String, dynamic>> querySnapshot = await ref.get();
+      Map<String, dynamic>? data = querySnapshot.data();
 
-      return querySnapshot;
+      if (data != null) {
+        return data;
+      } else {
+        throw Exception('no-data-found');
+      }
     } catch (error) {
-      // Modal.show(context, 'Oops', 'Failed to get challenges : $error');
-
-      return null;
+      rethrow;
     }
   }
 

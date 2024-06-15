@@ -78,22 +78,19 @@ class AuthService {
   Future<void> setUser(id) async {
     try {
       CloudService cloudService = CloudService();
-      final firebaseDocument = await cloudService.getDocument('users', id);
 
-      if (firebaseDocument?.data() == null) {
-        Map<String, dynamic> document = {
-          'uid': id,
-          'isGlobal': false,
-          'isCompleted': false,
-          'isUnlimited': false,
-        };
+      Map<String, dynamic> document = {
+        'uid': id,
+        'isGlobal': false,
+        'isCompleted': false,
+        'isUnlimited': false,
+      };
 
-        await cloudService.setCollection(
-          'users',
-          document,
-          customDocumentId: id,
-        );
-      }
+      await cloudService.setCollection(
+        'users',
+        document,
+        customDocumentId: id,
+      );
     } catch (error) {
       if (kDebugMode) {
         print('setUser error 🚀');

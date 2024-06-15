@@ -5,6 +5,7 @@ import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
+import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<CollectionsBloc>(
           create: (context) => CollectionsBloc(),
+        ),
+        BlocProvider<FilterSettingsBloc>(
+          create: (context) => FilterSettingsBloc(),
         ),
       ],
       child: MaterialApp(
