@@ -105,17 +105,26 @@ class AuthStateGoogleLoggedIn extends AuthState {
 
 @immutable
 class AuthStateLoggedOut extends AuthState {
-  const AuthStateLoggedOut({
-    required bool isLoading,
-    AuthError? authError,
-  }) : super(
-          isLoading: isLoading,
-          authError: authError,
+  const AuthStateLoggedOut()
+      : super(
+          isLoading: false,
         );
 
   @override
-  String toString() =>
-      '🚀 AuthStateLoggedOut, (isLoading = $isLoading, authError: $authError)'; // , authError = $authError';
+  String toString() => '🚀 AuthStateLoggedOut';
+}
+
+@immutable
+class AuthStateError extends AuthState {
+  const AuthStateError({
+    required authError,
+  }) : super(
+          authError: authError,
+          isLoading: false,
+        );
+
+  @override
+  String toString() => '🚀 AuthStateError';
 }
 
 @immutable

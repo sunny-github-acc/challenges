@@ -43,7 +43,7 @@ class DisplayChallengeState extends State<DisplayChallenge> {
 
     collection = widget.collection;
 
-    cloudService.getCollectionStream(context, 'challenges').listen((data) {
+    cloudService.getCollectionStream('challenges').listen((data) {
       setState(() {
         collection = data.firstWhere((d) => d['id'] == widget.collection['id']);
       });

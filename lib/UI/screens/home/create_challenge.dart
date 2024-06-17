@@ -1,5 +1,6 @@
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/date.dart';
@@ -105,7 +106,7 @@ class _CreateChallenge extends State<CreateChallenge> {
           print('🚀 BlocListener CollectionsBloc state: $state');
         }
 
-        if (state is CollectionsStateCollectionCollected) {
+        if (state is CollectionsStateAdded) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -116,7 +117,7 @@ class _CreateChallenge extends State<CreateChallenge> {
           Navigator.pop(context);
         }
 
-        if (state.collectionsError != null) {
+        if (state is CollectionsStateAddingError) {
           Modal.show(context, state.collectionsError!.dialogTitle,
               state.collectionsError!.dialogText);
         }
@@ -127,10 +128,7 @@ class _CreateChallenge extends State<CreateChallenge> {
           leftButton: BlocBuilder<CollectionsBloc, CollectionsState>(
             builder: (context, state) {
               if (state.isLoading) {
-                return const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  semanticsLabel: 'Circular progress indicator',
-                );
+                return const CustomCircularProgressIndicator();
               }
 
               return IconButton(

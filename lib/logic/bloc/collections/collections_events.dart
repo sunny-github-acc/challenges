@@ -15,3 +15,22 @@ class CollectionsEventAddCollection implements CollectionsEvent {
     required this.document,
   });
 }
+
+@immutable
+class CollectionsEventGetCollection implements CollectionsEvent {
+  const CollectionsEventGetCollection();
+}
+
+@immutable
+class CollectionsEventInitiateStream implements CollectionsEvent {
+  const CollectionsEventInitiateStream();
+}
+
+@immutable
+class CollectionsEventStream implements CollectionsEvent {
+  final List<Map<String, dynamic>> sortedData;
+
+  const CollectionsEventStream({
+    required this.sortedData,
+  });
+}

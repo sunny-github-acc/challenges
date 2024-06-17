@@ -58,7 +58,7 @@ class CloudService {
   }
 
   Future<List<Map<String, dynamic>>> getCollectionWithQuery(
-      context, collection, Map<String, dynamic> queryOptions) async {
+      collection, Map<String, dynamic> queryOptions) async {
     try {
       CollectionReference challenges = FirebaseFirestore.instance
           .collection('challenges')
@@ -102,9 +102,7 @@ class CloudService {
 
       return removeDuplicates(dataList);
     } catch (error) {
-      Modal.show(context, 'Oops', 'Failed to get challenges : $error');
-
-      return [];
+      rethrow;
     }
   }
 
@@ -125,7 +123,7 @@ class CloudService {
     return resultList;
   }
 
-  Stream<List<Map<String, dynamic>>> getCollectionStream(context, collection,
+  Stream<List<Map<String, dynamic>>> getCollectionStream(collection,
       [Map<String, dynamic>? queryOptions]) {
     try {
       CollectionReference challenges = FirebaseFirestore.instance
@@ -173,9 +171,7 @@ class CloudService {
         return dataList;
       });
     } catch (error) {
-      Modal.show(context, 'Oops', 'Failed to get challenges : $error');
-
-      return Stream.error(error);
+      rethrow;
     }
   }
 

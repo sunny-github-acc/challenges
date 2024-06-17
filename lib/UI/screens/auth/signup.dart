@@ -50,6 +50,7 @@ class SignupState extends State<Signup> {
       username: username,
       email: email,
     ));
+
     Navigator.of(context).pushNamed(Routes.signupPassword);
   }
 

@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc()
       : super(
-          const AuthStateLoggedOut(isLoading: false),
+          const AuthStateLoggedOut(),
         ) {
     on<AuthEventLogIn>(
       (event, emit) async {
@@ -40,8 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoggedOut(
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -68,9 +67,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             );
           } else {
             emit(
-              const AuthStateLoggedOut(
-                isLoading: false,
-              ),
+              const AuthStateLoggedOut(),
             );
           }
         } on FirebaseAuthException catch (e) {
@@ -80,9 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoading(
-              event: event,
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -113,9 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoading(
-              event: event,
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -145,9 +138,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoading(
-              event: event,
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -181,9 +172,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoading(
-              event: event,
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -232,8 +221,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
 
           emit(
-            AuthStateLoggedOut(
-              isLoading: false,
+            AuthStateError(
               authError: AuthError.from(e),
             ),
           );
@@ -241,90 +229,96 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    on<AuthEventInitialize>(
-      (event, emit) async {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) {
-          emit(
-            const AuthStateLoggedOut(
-              isLoading: false,
-            ),
-          );
-        } else {
-          emit(
-            AuthStateLoggedIn(
-              isLoading: false,
-              user: user,
-            ),
-          );
-        }
-      },
-    );
+    // on<AuthEventInitialize>(
+    //   (event, emit) async {
+    //     final user = FirebaseAuth.instance.currentUser;
+    //     if (user == null) {
+    //       emit(
+    //         const AuthStateLoggedOut(),
+    //       );
+    //     } else {
+    //       emit(
+    //         AuthStateLoggedIn(
+    //           isLoading: false,
+    //           user: user,
+    //         ),
+    //       );
+    //     }
+    //   },
+    // );
 
     on<AuthEventLogOut>(
       (event, emit) async {
-        emit(const AuthStateLoggedOut(isLoading: true));
+        emit(AuthStateLoading(event: event));
 
         try {
           await FirebaseAuth.instance.signOut();
+
+          emit(const AuthStateLoggedOut());
         } catch (e) {
           if (kDebugMode) {
             print('AuthEventLogOut error 🚀');
             print(e);
           }
-        }
 
-        emit(const AuthStateLoggedOut(isLoading: false));
-      },
-    );
-
-    on<AuthEventDeleteAccount>(
-      (event, emit) async {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) {
-          emit(
-            const AuthStateLoggedOut(
-              isLoading: false,
+          emit(AuthStateError(
+            authError: AuthError.from(
+              FirebaseAuthException(
+                code: 'unknown',
+                message: 'Unknown error',
+              ),
             ),
-          );
-          return;
-        }
-
-        emit(
-          AuthStateLoggedIn(
-            isLoading: true,
-            user: user,
-          ),
-        );
-
-        try {
-          await user.delete();
-          await FirebaseAuth.instance.signOut();
-          emit(
-            const AuthStateLoggedOut(
-              isLoading: false,
-            ),
-          );
-        } on FirebaseAuthException catch (e) {
-          if (kDebugMode) {
-            print('AuthEventDeleteAccount error 🚀');
-            print(e);
-          }
-
-          emit(
-            AuthStateLoggedOut(
-              isLoading: false,
-              authError: AuthError.from(e),
-            ),
-          );
-        } on FirebaseException {
-          emit(
-            const AuthStateLoggedOut(
-              isLoading: false,
-            ),
-          );
+          ));
         }
       },
     );
+
+    // on<AuthEventDeleteAccount>(
+    //   (event, emit) async {
+    //     final user = FirebaseAuth.instance.currentUser;
+    //     if (user == null) {
+    //       return emit(
+    //         const AuthStateLoggedOut(),
+    //       );
+    //     }
+
+    //     emit(
+    //       AuthStateLoggedIn(
+    //         isLoading: true,
+    //         user: user,
+    //       ),
+    //     );
+
+    //     try {
+    //       await user.delete();
+    //       await FirebaseAuth.instance.signOut();
+    //       emit(
+    //         const AuthStateLoggedOut(),
+    //       );
+    //     } on FirebaseAuthException catch (e) {
+    //       if (kDebugMode) {
+    //         print('AuthEventDeleteAccount error 🚀');
+    //         print(e);
+    //       }
+
+    //       emit(
+    //         AuthStateError(
+    //           authError: AuthError.from(e),
+    //         ),
+    //       );
+    //     } on FirebaseException {
+    //       emit(
+    //         AuthStateError(
+    //           authError: AuthError.from(
+    //             FirebaseAuthException(
+    //               code: 'unknown',
+    //               message: 'Unknown error',
+    //             ),
+    //           ),
+    //         ),
+    //       );
+    //     }
+    //   },
+    // );
   }
 }

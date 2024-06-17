@@ -5,14 +5,12 @@ import 'package:challenges/components/button_floating.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatelessWidget {
-  final User? user;
-
-  Home({super.key}) : user = FirebaseAuth.instance.currentUser;
+  const Home({super.key});
 
   void _logout(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventLogOut());
@@ -38,20 +36,26 @@ class Home extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
               width: 50,
               height: 10,
-              child: user?.photoURL == 'null' || user?.photoURL == null
-                  ? Image.asset(
-                      'assets/grow.png',
-                      width: 50,
-                      height: 10,
-                    )
-                  : ClipOval(
-                      child: Image.network(
-                        user!.photoURL!,
-                        width: 50,
-                        height: 10,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  final user = state.user;
+
+                  return user?.photoURL == 'null' || user?.photoURL == null
+                      ? Image.asset(
+                          'assets/grow.png',
+                          width: 50,
+                          height: 10,
+                        )
+                      : ClipOval(
+                          child: Image.network(
+                            user!.photoURL!,
+                            width: 50,
+                            height: 10,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                },
+              ),
             ),
           ),
         ],
