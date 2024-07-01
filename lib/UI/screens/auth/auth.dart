@@ -16,6 +16,11 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void _navigateToLoginScreen(BuildContext context) {
     Navigator.of(context).pushNamed(Routes.login);
   }

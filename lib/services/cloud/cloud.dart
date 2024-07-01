@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:challenges/components/modal.dart';
@@ -182,9 +181,6 @@ class CloudService {
           .doc(collection)
           .collection(collection);
       await collectionReference.doc(documentId).delete();
-
-      Navigator.pop(context);
-      Navigator.pop(context);
     } on FirebaseException catch (error) {
       Modal.show(context, 'Oops', 'Failed to get challenges : $error');
     }

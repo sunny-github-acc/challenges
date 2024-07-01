@@ -9,6 +9,7 @@ import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/utils/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Login extends StatefulWidget {
@@ -100,21 +101,45 @@ class _LoginState extends State<Login> {
             ),
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
+                bool isLoading =
+                    state.isLoading && state.event is AuthEventRememberPassword;
+                bool isRememberPassword =
+                    state.event is AuthEventRememberPassword;
+                bool isError = state.error != null;
+                String email = _emailController.text.trim();
+
+                if (!isLoading &&
+                    !isError &&
+                    isRememberPassword &&
+                    isValidEmail(email)) {
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    Modal.show(
+                      context,
+                      'Success',
+                      'A password reset link has been sent to $email',
+                    );
+                  });
+                }
+
                 return CustomButton(
                   text: 'Forgot password?',
                   type: ButtonType.transparent,
                   size: ButtonSize.small,
-                  isLoading: state.isLoading &&
-                      state.event is AuthEventRememberPassword,
+                  isLoading: isLoading,
+                  disabled: isLoading,
                   onPressed: () => _rememberPassword(context),
                 );
               },
             ),
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
+                bool isLoading =
+                    state.isLoading && state.event is AuthEventLogIn;
+
                 return CustomButton(
                   text: 'Login',
-                  isLoading: state.isLoading && state.event is AuthEventLogIn,
+                  isLoading: isLoading,
+                  disabled: isLoading,
                   onPressed: () => _loginEmail(context),
                 );
               },

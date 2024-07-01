@@ -6,42 +6,48 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class AuthState {
   final bool isLoading;
-  final AuthError? authError;
+  final String? username;
+  final String? email;
+  final AuthEvent? event;
+  final AuthError? error;
 
   const AuthState({
     required this.isLoading,
-    this.authError,
+    this.username,
+    this.email,
+    this.event,
+    this.error,
   });
 }
 
 @immutable
-class AuthStateLoading extends AuthState {
-  final AuthEvent event;
-
-  const AuthStateLoading({
-    required this.event,
-    bool? isLoading,
-    AuthError? authError,
-  }) : super(
-          isLoading: isLoading ?? true,
-          authError: authError,
+class AuthStateEmpty extends AuthState {
+  const AuthStateEmpty()
+      : super(
+          isLoading: false,
         );
 
   @override
-  String toString() {
-    return '🚀 AuthStateLoading(event: $event, authError: $authError)';
-  }
+  String toString() => '🚀 AuthStateEmpty';
 }
 
 @immutable
 class AuthStateLoggedIn extends AuthState {
-  final User user;
+  final User? user;
 
   const AuthStateLoggedIn({
-    required bool isLoading,
-    required this.user,
+    bool? isLoading,
+    String? username,
+    String? email,
+    AuthEvent? event,
+    AuthError? error,
+    this.user,
   }) : super(
-          isLoading: isLoading,
+          isLoading: isLoading ?? false,
+          username: username,
+          email: email,
+          event: event,
+          error: error,
         );
 
   @override
@@ -50,8 +56,8 @@ class AuthStateLoggedIn extends AuthState {
 
     if (otherClass is AuthStateLoggedIn) {
       return isLoading == otherClass.isLoading &&
-          user.uid == otherClass.user.uid &&
-          user.emailVerified == otherClass.user.emailVerified;
+          user?.uid == otherClass.user?.uid &&
+          user?.emailVerified == otherClass.user?.emailVerified;
     } else {
       return false;
     }
@@ -60,12 +66,12 @@ class AuthStateLoggedIn extends AuthState {
   @override
   int get hashCode => Object.hash(
         isLoading,
-        user.uid,
+        user?.uid,
       );
 
   @override
   String toString() {
-    return '🚀 AuthStateLoggedIn(user: $user)';
+    return '🚀 AuthStateLoggedIn(user: $user, isLoading: $isLoading, event: $event, error: $error, )';
   }
 }
 
@@ -85,7 +91,7 @@ class AuthStateGoogleLoggedIn extends AuthState {
     final otherClass = other;
     if (otherClass is AuthStateLoggedIn) {
       return isLoading == otherClass.isLoading &&
-          user.uid == otherClass.user.uid;
+          user.uid == otherClass.user?.uid;
     } else {
       return false;
     }
@@ -115,34 +121,19 @@ class AuthStateLoggedOut extends AuthState {
 }
 
 @immutable
-class AuthStateError extends AuthState {
-  const AuthStateError({
-    required authError,
+class AuthStateNameSaved extends AuthState {
+  const AuthStateNameSaved({
+    required String username,
+    required String email,
   }) : super(
-          authError: authError,
+          username: username,
+          email: email,
           isLoading: false,
         );
 
   @override
-  String toString() => '🚀 AuthStateError';
-}
-
-@immutable
-class AuthStateNameSaved extends AuthState {
-  final String username;
-  final String email;
-
-  const AuthStateNameSaved({
-    required this.username,
-    required this.email,
-    required bool isLoading,
-  }) : super(
-          isLoading: isLoading,
-        );
-
-  @override
   String toString() {
-    return '🚀 AuthStateNameSaved(username: $username, email: $email, isLoading: $isLoading)';
+    return '🚀 AuthStateNameSaved(username: $username, email: $email)';
   }
 }
 
@@ -173,17 +164,6 @@ extension GetEmail on AuthState {
     final cls = this;
     if (cls is AuthStateNameSaved) {
       return cls.email;
-    } else {
-      return null;
-    }
-  }
-}
-
-extension GetEvent on AuthState {
-  AuthEvent? get event {
-    final cls = this;
-    if (cls is AuthStateLoading) {
-      return cls.event;
     } else {
       return null;
     }

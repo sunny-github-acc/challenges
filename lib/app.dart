@@ -4,12 +4,15 @@ import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/verify_email.dart';
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyApp extends StatefulWidget {
@@ -24,8 +27,6 @@ class _MyAppState extends State<MyApp> {
   final Connectivity connectivity = Connectivity();
 
   // https://pub.dev/packages/flutter_hooks
-
-  // initialize user
 
   @override
   Widget build(BuildContext context) {
@@ -68,30 +69,60 @@ class _MyAppState extends State<MyApp> {
               },
             ),
           ],
-          child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-            if (state is AuthStateLoading) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-
-            if (state is AuthStateLoggedIn) {
-              if (state.user.emailVerified == true) {
-                return Home();
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (kDebugMode) {
+                print('🚀 AuthBloc state: $state');
               }
 
-              return const VerifyEmail();
-            }
+              throwError(isError) {
+                if (!isError) {
+                  return;
+                }
 
-            if (state is AuthStateError) {
-              Modal.show(context, state.authError!.dialogTitle,
-                  state.authError!.dialogText);
-            }
+                SchedulerBinding.instance.addPostFrameCallback(
+                  (_) {
+                    Modal.show(
+                      context,
+                      state.error!.dialogTitle,
+                      state.error!.dialogText,
+                    );
+                  },
+                );
+              }
 
-            return const Auth();
-          }),
+              if (state is AuthStateEmpty) {
+                BlocProvider.of<AuthBloc>(context)
+                    .add(const AuthEventInitialize());
+
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              if (state.user != null) {
+                SchedulerBinding.instance.addPostFrameCallback(
+                  (_) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                );
+
+                throwError(state.error != null);
+
+                if (state.user?.emailVerified == true) {
+                  return const Home();
+                }
+
+                return const VerifyEmail();
+              }
+
+              throwError(state.error != null);
+
+              return const Auth();
+            },
+          ),
         ),
       ),
     );

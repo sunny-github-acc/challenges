@@ -28,7 +28,7 @@ class AppRouter {
         );
       case Routes.home:
         return MaterialPageRoute(
-          builder: (context) => Home(),
+          builder: (context) => const Home(),
         );
       case Routes.menu:
         return MaterialPageRoute(

@@ -9,6 +9,10 @@ class AuthService {
       User? user = FirebaseAuth.instance.currentUser;
       await user?.sendEmailVerification();
     } catch (error) {
+      if (kDebugMode) {
+        print('resendVerificationEmail error 🚀: $error');
+      }
+
       rethrow;
     }
   }
@@ -32,6 +36,10 @@ class AuthService {
 
       return null;
     } catch (error) {
+      if (kDebugMode) {
+        print('signupEmail error 🚀: $error');
+      }
+
       rethrow;
     }
   }
@@ -40,6 +48,10 @@ class AuthService {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (error) {
+      if (kDebugMode) {
+        print('rememberPassword error 🚀: $error');
+      }
+
       rethrow;
     }
   }
@@ -67,8 +79,7 @@ class AuthService {
       return user;
     } catch (error) {
       if (kDebugMode) {
-        print('loginGoogle error 🚀');
-        print(error);
+        print('loginGoogle error 🚀: $error');
       }
 
       rethrow;
@@ -93,8 +104,7 @@ class AuthService {
       );
     } catch (error) {
       if (kDebugMode) {
-        print('setUser error 🚀');
-        print(error);
+        print('setUser error 🚀: $error');
       }
 
       rethrow;
@@ -112,8 +122,7 @@ class AuthService {
       return user;
     } catch (error) {
       if (kDebugMode) {
-        print('getReloadedUser error 🚀');
-        print(error);
+        print('getReloadedUser error 🚀: $error');
       }
 
       rethrow;

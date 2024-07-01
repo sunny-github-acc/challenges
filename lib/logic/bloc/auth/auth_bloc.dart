@@ -9,12 +9,15 @@ import 'package:flutter/foundation.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc()
       : super(
-          const AuthStateLoggedOut(),
+          const AuthStateEmpty(),
         ) {
     on<AuthEventLogIn>(
       (event, emit) async {
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
         );
 
         try {
@@ -29,19 +32,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             AuthStateLoggedIn(
-              isLoading: false,
               user: user,
             ),
           );
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventLogIn error 🚀');
-            print(e);
+            print('AuthEventLogIn FirebaseAuthException error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventLogIn error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                ),
+              ),
             ),
           );
         }
@@ -51,7 +66,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventVerifyEmail>(
       (event, emit) async {
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
         );
 
         try {
@@ -59,26 +77,43 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           User? user = await authService.getReloadedUser();
 
           if (user != null) {
-            emit(
-              AuthStateLoggedIn(
-                isLoading: false,
-                user: user,
-              ),
-            );
+            if (user.emailVerified) {
+              emit(
+                AuthStateLoggedIn(
+                  user: user,
+                ),
+              );
+            } else {
+              throw FirebaseAuthException(code: 'email-not-verified');
+            }
           } else {
             emit(
               const AuthStateLoggedOut(),
             );
           }
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventVerifyEmail error 🚀');
-            print(e);
+            print(
+                'AuthEventVerifyEmail FirebaseAuthException error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventVerifyEmail error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                ),
+              ),
             ),
           );
         }
@@ -88,28 +123,46 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventRememberPassword>(
       (event, emit) async {
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
         );
 
         try {
           final email = event.email;
           await AuthService().rememberPassword(email);
+          User? user = await AuthService().getReloadedUser();
 
           emit(
-            AuthStateLoading(
+            AuthStateLoggedIn(
+              user: user,
               event: event,
-              isLoading: false,
             ),
           );
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventRememberPassword error 🚀');
-            print(e);
+            print(
+                'AuthEventRememberPassword FirebaseAuthException error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventRememberPassword error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                ),
+              ),
             ),
           );
         }
@@ -119,27 +172,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventResendVerificationEmail>(
       (event, emit) async {
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
         );
 
         try {
           await AuthService().resendVerificationEmail();
+          User? user = await AuthService().getReloadedUser();
 
           emit(
-            AuthStateLoading(
-              event: event,
-              isLoading: false,
+            AuthStateLoggedIn(
+              user: user,
             ),
           );
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventResendVerificationEmail error 🚀');
-            print(e);
+            print(
+                'AuthEventResendVerificationEmail FirebaseAuthException error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventResendVerificationEmail error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                ),
+              ),
             ),
           );
         }
@@ -149,7 +219,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventGoogleLogIn>(
       (event, emit) async {
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
         );
 
         try {
@@ -165,15 +238,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               ),
             );
           }
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventGoogleLogIn error 🚀');
-            print(e);
+            print(
+                'FirebaseAuthException AuthEventGoogleLogIn error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventGoogleLogIn error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'google',
+                ),
+              ),
             ),
           );
         }
@@ -188,7 +275,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthStateNameSaved(
           username: username,
           email: email,
-          isLoading: false,
         ));
       },
     );
@@ -201,11 +287,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final password = event.password;
 
         emit(
-          AuthStateLoading(event: event),
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+            username: username,
+            email: email,
+          ),
         );
 
         try {
           AuthService authService = AuthService();
+
           User? user = await authService.signupEmail(username, email, password);
 
           emit(
@@ -214,61 +306,85 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               user: user!,
             ),
           );
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
-            print('AuthEventRegister error 🚀');
-            print(e);
+            print('AuthEventRegister FirebaseAuthException error 🚀: $error');
           }
 
           emit(
-            AuthStateError(
-              authError: AuthError.from(e),
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+              username: username,
+              email: email,
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventRegister error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                ),
+              ),
+              username: username,
+              email: email,
             ),
           );
         }
       },
     );
 
-    // on<AuthEventInitialize>(
-    //   (event, emit) async {
-    //     final user = FirebaseAuth.instance.currentUser;
-    //     if (user == null) {
-    //       emit(
-    //         const AuthStateLoggedOut(),
-    //       );
-    //     } else {
-    //       emit(
-    //         AuthStateLoggedIn(
-    //           isLoading: false,
-    //           user: user,
-    //         ),
-    //       );
-    //     }
-    //   },
-    // );
+    on<AuthEventInitialize>(
+      (event, emit) async {
+        final user = FirebaseAuth.instance.currentUser;
+
+        if (user == null) {
+          emit(
+            const AuthStateLoggedOut(),
+          );
+        } else {
+          emit(
+            AuthStateLoggedIn(
+              isLoading: false,
+              user: user,
+            ),
+          );
+        }
+      },
+    );
 
     on<AuthEventLogOut>(
       (event, emit) async {
-        emit(AuthStateLoading(event: event));
+        emit(
+          AuthStateLoggedIn(
+            isLoading: true,
+            event: event,
+          ),
+        );
 
         try {
           await FirebaseAuth.instance.signOut();
 
           emit(const AuthStateLoggedOut());
-        } catch (e) {
+        } catch (error) {
           if (kDebugMode) {
-            print('AuthEventLogOut error 🚀');
-            print(e);
+            print('AuthEventLogOut error 🚀: $error');
           }
 
-          emit(AuthStateError(
-            authError: AuthError.from(
-              FirebaseAuthException(
-                code: 'unknown',
-                message: 'Unknown error',
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                  message: 'Unknown error',
+                ),
               ),
             ),
-          ));
+          );
         }
       },
     );
@@ -295,15 +411,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //       emit(
     //         const AuthStateLoggedOut(),
     //       );
-    //     } on FirebaseAuthException catch (e) {
+    //     } on FirebaseAuthException catch (error) {
     //       if (kDebugMode) {
-    //         print('AuthEventDeleteAccount error 🚀');
-    //         print(e);
+    //         print('AuthEventDeleteAccount error 🚀: error');
     //       }
 
     //       emit(
     //         AuthStateError(
-    //           authError: AuthError.from(e),
+    //           authError: AuthError.from(error),
     //         ),
     //       );
     //     } on FirebaseException {

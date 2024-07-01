@@ -9,6 +9,10 @@ const Map<String, AuthError> authErrorMapping = {
   'email-already-in-use': AuthErrorEmailAlreadyInUse(),
   'requires-recent-login': AuthErrorRequiresRecentLogin(),
   'no-current-user': AuthErrorNoCurrentUser(),
+  'email-not-verified': AuthErrorEmailNotVerified(),
+  'google': AuthErrorGoogle(),
+  'wrong-password': AuthErrorInvalidCredentials(),
+  'too-many-requests': AuthErrorTooManyRequests(),
 };
 
 @immutable
@@ -41,6 +45,15 @@ class AuthErrorNoCurrentUser extends AuthError {
       : super(
           dialogTitle: 'No current user!',
           dialogText: 'No current user with this information was found!',
+        );
+}
+
+@immutable
+class AuthErrorGoogle extends AuthError {
+  const AuthErrorGoogle()
+      : super(
+          dialogTitle: 'Authentication error',
+          dialogText: 'Unknown Google authentication error',
         );
 }
 
@@ -97,5 +110,33 @@ class AuthErrorEmailAlreadyInUse extends AuthError {
       : super(
           dialogTitle: 'Email already in use',
           dialogText: 'Please choose another email to register with!',
+        );
+}
+
+@immutable
+class AuthErrorEmailNotVerified extends AuthError {
+  const AuthErrorEmailNotVerified()
+      : super(
+          dialogTitle: 'Email not verified',
+          dialogText: 'Please verify your email before proceeding!',
+        );
+}
+
+@immutable
+class AuthErrorInvalidCredentials extends AuthError {
+  const AuthErrorInvalidCredentials()
+      : super(
+          dialogTitle: 'Invalid credentials',
+          dialogText: 'The given credentials are invalid!',
+        );
+}
+
+@immutable
+class AuthErrorTooManyRequests extends AuthError {
+  const AuthErrorTooManyRequests()
+      : super(
+          dialogTitle: 'Too many requests',
+          dialogText:
+              'You have made too many requests in a short period of time. Please try again later!',
         );
 }
