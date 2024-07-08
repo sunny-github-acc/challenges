@@ -35,7 +35,7 @@ class _CreateChallenge extends State<CreateChallenge> {
   bool isDuration = true;
   DateTime today = DateTime.now();
   DateTime customStartDate = DateTime.now();
-  DateTime? customEndDate;
+  DateTime customEndDate = DateTime.now().add(const Duration(days: 7));
 
   Future<void> _save(context) async {
     AuthService authService = AuthService();
@@ -106,20 +106,23 @@ class _CreateChallenge extends State<CreateChallenge> {
           print('🚀 BlocListener CollectionsBloc state: $state');
         }
 
-        if (state is CollectionsStateAdded) {
+        if (state.success != null) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Success. Challenge added!'),
-                duration: Duration(seconds: 2)),
+            SnackBar(
+                content: Text(state.success!),
+                duration: const Duration(seconds: 2)),
           );
 
           Navigator.pop(context);
         }
 
-        if (state is CollectionsStateAddingError) {
-          Modal.show(context, state.collectionsError!.dialogTitle,
-              state.collectionsError!.dialogText);
+        if (state.error != null) {
+          Modal.show(
+            context,
+            state.error!.dialogTitle,
+            state.error!.dialogText,
+          );
         }
       },
       child: Scaffold(
@@ -176,52 +179,59 @@ class _CreateChallenge extends State<CreateChallenge> {
                         child: Wrap(
                           children: [
                             CustomButton(
-                                onPressed: () =>
-                                    _handleDuration(context, 'Week'),
-                                text: 'Week',
-                                size: ButtonSize.small,
-                                type: duration == 'Week'
-                                    ? ButtonType.primary
-                                    : ButtonType.secondary),
+                              onPressed: () => _handleDuration(context, 'Week'),
+                              text: 'Week',
+                              size: ButtonSize.small,
+                              type: duration == 'Week'
+                                  ? ButtonType.primary
+                                  : ButtonType.secondary,
+                            ),
                             CustomButton(
-                                onPressed: () =>
-                                    _handleDuration(context, 'Month'),
-                                text: 'Month',
-                                size: ButtonSize.small,
-                                type: duration == 'Month'
-                                    ? ButtonType.primary
-                                    : ButtonType.secondary),
+                              onPressed: () =>
+                                  _handleDuration(context, 'Month'),
+                              text: 'Month',
+                              size: ButtonSize.small,
+                              type: duration == 'Month'
+                                  ? ButtonType.primary
+                                  : ButtonType.secondary,
+                            ),
                             CustomButton(
-                                onPressed: () =>
-                                    _handleDuration(context, 'Year'),
-                                text: 'Year',
-                                size: ButtonSize.small,
-                                type: duration == 'Year'
-                                    ? ButtonType.primary
-                                    : ButtonType.secondary),
+                              onPressed: () => _handleDuration(context, 'Year'),
+                              text: 'Year',
+                              size: ButtonSize.small,
+                              type: duration == 'Year'
+                                  ? ButtonType.primary
+                                  : ButtonType.secondary,
+                            ),
                             CustomButton(
-                                onPressed: () =>
-                                    _handleDuration(context, 'Custom'),
-                                text: 'Custom',
-                                size: ButtonSize.small,
-                                type: duration == 'Custom'
-                                    ? ButtonType.primary
-                                    : ButtonType.secondary),
+                              onPressed: () =>
+                                  _handleDuration(context, 'Custom'),
+                              text: 'Custom',
+                              size: ButtonSize.small,
+                              type: duration == 'Custom'
+                                  ? ButtonType.primary
+                                  : ButtonType.secondary,
+                            ),
                             CustomButton(
-                                onPressed: () =>
-                                    _handleDuration(context, 'Unlimited'),
-                                text: 'Unlimited',
-                                size: ButtonSize.small,
-                                type: duration == 'Unlimited'
-                                    ? ButtonType.primary
-                                    : ButtonType.secondary),
+                              onPressed: () =>
+                                  _handleDuration(context, 'Unlimited'),
+                              text: 'Unlimited',
+                              size: ButtonSize.small,
+                              type: duration == 'Unlimited'
+                                  ? ButtonType.primary
+                                  : ButtonType.secondary,
+                            ),
                             duration == 'Custom'
                                 ? CustomDateRangePicker(
-                                    customStartDate: customStartDate,
-                                    customEndDate: customEndDate,
+                                    dateRange: DateTimeRange(
+                                      start: customStartDate,
+                                      end: customEndDate,
+                                    ),
                                     onSelected: (date) {
-                                      customStartDate = date.start;
-                                      customEndDate = date.end;
+                                      setState(() {
+                                        customStartDate = date.start;
+                                        customEndDate = date.end;
+                                      });
                                     },
                                   )
                                 : const SizedBox.shrink(),
@@ -237,22 +247,26 @@ class _CreateChallenge extends State<CreateChallenge> {
                   isTall: true,
                 ),
                 const TextCustom(text: 'Public or private challenge?'),
-                CustomRow(children: [
-                  CustomButton(
+                CustomRow(
+                  children: [
+                    CustomButton(
                       onPressed: () => _handleVisibility(context, 'Public'),
                       text: 'Public',
                       size: ButtonSize.small,
                       type: visibility == 'Public'
                           ? ButtonType.primary
-                          : ButtonType.secondary),
-                  CustomButton(
+                          : ButtonType.secondary,
+                    ),
+                    CustomButton(
                       onPressed: () => _handleVisibility(context, 'Private'),
                       text: 'Private',
                       size: ButtonSize.small,
                       type: visibility == 'Private'
                           ? ButtonType.primary
-                          : ButtonType.secondary),
-                ]),
+                          : ButtonType.secondary,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

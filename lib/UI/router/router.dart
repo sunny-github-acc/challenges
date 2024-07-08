@@ -3,8 +3,10 @@ import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
 import 'package:challenges/UI/screens/auth/signup_password.dart';
 import 'package:challenges/UI/screens/home/create_challenge.dart';
+import 'package:challenges/UI/screens/home/display_challenge.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/menu.dart';
+import 'package:challenges/UI/screens/home/update_challenge.dart';
 import 'package:challenges/UI/screens/home/verify_email.dart';
 import 'package:flutter/material.dart';
 
@@ -15,8 +17,10 @@ class Routes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String signupPassword = '/signup-password';
-  static const String verifyEmail = '/verifyEmail';
-  static const String createChallenge = '/createChallenge';
+  static const String verifyEmail = '/verify-email';
+  static const String createChallenge = '/create-challenge';
+  static const String displayChallenge = '/display-challenge';
+  static const String updateChallenge = '/update-challenge';
 }
 
 class AppRouter {
@@ -53,6 +57,14 @@ class AppRouter {
       case Routes.createChallenge:
         return MaterialPageRoute(
           builder: (context) => const CreateChallenge(),
+        );
+      case Routes.displayChallenge:
+        return MaterialPageRoute(
+          builder: (context) => const DisplayChallenge(),
+        );
+      case Routes.updateChallenge:
+        return MaterialPageRoute(
+          builder: (context) => const UpdateChallenge(),
         );
       default:
         return null;

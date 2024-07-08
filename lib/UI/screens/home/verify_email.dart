@@ -10,16 +10,21 @@ class VerifyEmail extends StatelessWidget {
   const VerifyEmail({super.key});
 
   void _resendVerificationEmail(context) {
-    BlocProvider.of<AuthBloc>(context)
-        .add(const AuthEventResendVerificationEmail());
+    BlocProvider.of<AuthBloc>(context).add(
+      const AuthEventResendVerificationEmail(),
+    );
   }
 
   void _verifyEmail(context) {
-    BlocProvider.of<AuthBloc>(context).add(const AuthEventVerifyEmail());
+    BlocProvider.of<AuthBloc>(context).add(
+      const AuthEventVerifyEmail(),
+    );
   }
 
   void _logout(context) {
-    BlocProvider.of<AuthBloc>(context).add(const AuthEventLogOut());
+    BlocProvider.of<AuthBloc>(context).add(
+      const AuthEventLogOut(),
+    );
   }
 
   @override

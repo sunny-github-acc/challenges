@@ -59,10 +59,15 @@ class FilterSettingsBloc
           final data = await cloud.getDocument('users', user['uid']);
 
           Map<String, dynamic> updatedFilterSettings = data
-            ..addAll({key: value});
+            ..addAll({
+              key: value,
+            });
 
-          await cloud.setCollection('users', updatedFilterSettings,
-              customDocumentId: updatedFilterSettings['uid']);
+          await cloud.setCollection(
+            'users',
+            updatedFilterSettings,
+            customDocumentId: updatedFilterSettings['uid'],
+          );
 
           emit(
             FilterSettingsStateLoaded(filterSettings: updatedFilterSettings),

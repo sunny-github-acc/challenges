@@ -11,6 +11,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       : super(
           const AuthStateEmpty(),
         ) {
+    on<AuthEventInitialize>(
+      (event, emit) async {
+        final user = FirebaseAuth.instance.currentUser;
+
+        if (user == null) {
+          emit(
+            const AuthStateLoggedOut(),
+          );
+        } else {
+          emit(
+            AuthStateLoggedIn(
+              isLoading: false,
+              user: user,
+            ),
+          );
+        }
+      },
+    );
+
     on<AuthEventLogIn>(
       (event, emit) async {
         emit(
@@ -69,6 +88,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoggedIn(
             isLoading: true,
             event: event,
+            user: state.user,
           ),
         );
 
@@ -77,15 +97,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           User? user = await authService.getReloadedUser();
 
           if (user != null) {
-            if (user.emailVerified) {
-              emit(
-                AuthStateLoggedIn(
-                  user: user,
-                ),
-              );
-            } else {
-              throw FirebaseAuthException(code: 'email-not-verified');
-            }
+            emit(
+              AuthStateLoggedIn(
+                user: user,
+                error: user.emailVerified
+                    ? null
+                    : AuthError.from(
+                        FirebaseAuthException(code: 'email-not-verified'),
+                      ),
+              ),
+            );
           } else {
             emit(
               const AuthStateLoggedOut(),
@@ -100,6 +121,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             AuthStateLoggedIn(
               error: AuthError.from(error),
+              user: state.user,
             ),
           );
         } catch (error) {
@@ -114,6 +136,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                   code: 'unknown',
                 ),
               ),
+              user: state.user,
             ),
           );
         }
@@ -126,6 +149,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoggedIn(
             isLoading: true,
             event: event,
+            user: state.user,
           ),
         );
 
@@ -158,6 +182,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             AuthStateLoggedIn(
+              user: state.user,
               error: AuthError.from(
                 FirebaseAuthException(
                   code: 'unknown',
@@ -175,6 +200,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           AuthStateLoggedIn(
             isLoading: true,
             event: event,
+            user: state.user,
           ),
         );
 
@@ -185,6 +211,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             AuthStateLoggedIn(
               user: user,
+              success: 'Verification email sent 📩',
             ),
           );
         } on FirebaseAuthException catch (error) {
@@ -195,6 +222,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             AuthStateLoggedIn(
+              user: state.user,
               error: AuthError.from(error),
             ),
           );
@@ -205,6 +233,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             AuthStateLoggedIn(
+              user: state.user,
               error: AuthError.from(
                 FirebaseAuthException(
                   code: 'unknown',
@@ -230,14 +259,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           final user = await authService.loginGoogle();
 
-          if (user != null) {
-            emit(
-              AuthStateLoggedIn(
-                isLoading: false,
-                user: user,
-              ),
-            );
-          }
+          emit(
+            AuthStateLoggedIn(
+              isLoading: false,
+              user: user,
+            ),
+          );
         } on FirebaseAuthException catch (error) {
           if (kDebugMode) {
             print(
@@ -272,10 +299,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final username = event.username;
         final email = event.email;
 
-        emit(AuthStateNameSaved(
-          username: username,
-          email: email,
-        ));
+        emit(
+          AuthStateNameSaved(
+            username: username,
+            email: email,
+          ),
+        );
       },
     );
 
@@ -303,7 +332,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             AuthStateLoggedIn(
               isLoading: false,
-              user: user!,
+              user: user,
             ),
           );
         } on FirebaseAuthException catch (error) {
@@ -338,25 +367,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    on<AuthEventInitialize>(
-      (event, emit) async {
-        final user = FirebaseAuth.instance.currentUser;
-
-        if (user == null) {
-          emit(
-            const AuthStateLoggedOut(),
-          );
-        } else {
-          emit(
-            AuthStateLoggedIn(
-              isLoading: false,
-              user: user,
-            ),
-          );
-        }
-      },
-    );
-
     on<AuthEventLogOut>(
       (event, emit) async {
         emit(
@@ -369,7 +379,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           await FirebaseAuth.instance.signOut();
 
-          emit(const AuthStateLoggedOut());
+          emit(
+            const AuthStateLoggedOut(),
+          );
         } catch (error) {
           if (kDebugMode) {
             print('AuthEventLogOut error 🚀: $error');
@@ -377,6 +389,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             AuthStateLoggedIn(
+              user: state.user,
               error: AuthError.from(
                 FirebaseAuthException(
                   code: 'unknown',

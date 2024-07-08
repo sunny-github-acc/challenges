@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class Challenge extends StatelessWidget {
   final Map<String, dynamic> collection;
@@ -17,6 +17,9 @@ class Challenge extends StatelessWidget {
   Widget build(BuildContext context) {
     final description = collection['description'];
     final consequence = collection['consequence'];
+    dynamic endDateDynamic = collection['endDate'];
+    dynamic endDate =
+        endDateDynamic is Timestamp ? endDateDynamic.toDate() : endDateDynamic;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       CustomRow(children: [
@@ -61,7 +64,7 @@ class Challenge extends StatelessWidget {
         TextCustom(
             text: collection['isUnlimited'] == true
                 ? 'Unlimited (${DateTime.now().difference(DateTime.parse(collection['createdAt'].toDate().toString())).inDays} days since start)'
-                : '${collection['endDate'].toDate().toString().substring(0, 10)} (${DateTime.parse(collection['endDate'].toDate().toString()).difference(DateTime.now()).inDays + 1} days left)'),
+                : '${endDate.toString().substring(0, 10)} (${DateTime.parse(endDate.toString()).difference(DateTime.now()).inDays + 1} days left)'),
         if (consequence != '') ...[
           const TextCustom(
             text: 'Consequence',

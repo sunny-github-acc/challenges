@@ -4,106 +4,52 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class CollectionsState {
   final bool isLoading;
-  final CollectionsError? collectionsError;
+  final String? success;
+  final CollectionsError? error;
 
   const CollectionsState({
     required this.isLoading,
-    this.collectionsError,
+    this.success,
+    this.error,
   });
 }
 
 @immutable
-class CollectionsStateInitial extends CollectionsState {
-  const CollectionsStateInitial()
+class CollectionsStateEmpty extends CollectionsState {
+  const CollectionsStateEmpty()
       : super(
           isLoading: false,
         );
 
   @override
-  String toString() => '🚀 CollectionsStateInitial';
+  String toString() => '🚀 CollectionsStateEmpty';
 }
 
 @immutable
-class CollectionsStateAdding extends CollectionsState {
-  const CollectionsStateAdding()
-      : super(
-          isLoading: true,
-        );
+class CollectionsStateUpdated extends CollectionsState {
+  final List<Map<String, dynamic>> collections;
 
-  @override
-  String toString() => '🚀 CollectionsStateAdding';
-}
-
-@immutable
-class CollectionsStateAdded extends CollectionsState {
-  const CollectionsStateAdded()
-      : super(
-          isLoading: false,
-        );
-
-  @override
-  String toString() => '🚀 CollectionsStateAdded';
-}
-
-@immutable
-class CollectionsStateAddingError extends CollectionsState {
-  const CollectionsStateAddingError({
-    required CollectionsError collectionsError,
+  const CollectionsStateUpdated({
+    required this.collections,
+    success,
+    isLoading,
+    error,
   }) : super(
-          isLoading: false,
-          collectionsError: collectionsError,
+          isLoading: isLoading ?? false,
+          success: success,
+          error: error,
         );
 
   @override
   String toString() =>
-      '🚀 CollectionsStateAddingError(collectionsError: $collectionsError)';
+      '🚀 CollectionsStateAdded(collections: $collections, isLoading: $isLoading, success: $success, error: $error)';
 }
 
-@immutable
-class CollectionsStateGetting extends CollectionsState {
-  const CollectionsStateGetting()
-      : super(
-          isLoading: true,
-        );
-
-  @override
-  String toString() => '🚀 CollectionsStateGetting';
-}
-
-@immutable
-class CollectionsStateGot extends CollectionsState {
-  final List<Map<String, dynamic>> collectionsData;
-
-  const CollectionsStateGot({
-    required this.collectionsData,
-  }) : super(
-          isLoading: false,
-        );
-
-  @override
-  String toString() =>
-      '🚀 CollectionsStateGot: (collectionsData: $collectionsData)';
-}
-
-@immutable
-class CollectionsStateGettingError extends CollectionsState {
-  const CollectionsStateGettingError({
-    required CollectionsError collectionsError,
-  }) : super(
-          isLoading: false,
-          collectionsError: collectionsError,
-        );
-
-  @override
-  String toString() =>
-      '🚀 CollectionsStateGettingError(collectionsError: $collectionsError)';
-}
-
-extension GetCollectionsData on CollectionsState {
-  List<Map<String, dynamic>> get collectionsData {
+extension GetCollections on CollectionsState {
+  List<Map<String, dynamic>> get collections {
     final cls = this;
-    if (cls is CollectionsStateGot) {
-      return cls.collectionsData;
+    if (cls is CollectionsStateUpdated) {
+      return cls.collections;
     } else {
       return [];
     }

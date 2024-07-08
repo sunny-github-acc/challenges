@@ -6,7 +6,9 @@ import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
+import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
+import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -41,6 +43,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<CollectionsBloc>(
           create: (context) => CollectionsBloc(),
         ),
+        BlocProvider<CollectionBloc>(
+          create: (context) => CollectionBloc(),
+        ),
         BlocProvider<FilterSettingsBloc>(
           create: (context) => FilterSettingsBloc(),
         ),
@@ -54,15 +59,17 @@ class _MyAppState extends State<MyApp> {
               listener: (context, state) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 if (state is InternetConnected) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Connected'),
+                        content: Text('Connected emoji ✨'),
                         duration: Duration(seconds: 1)),
                   );
                 } else {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('No internet connection'),
+                        content: Text('No internet connection 🙈'),
                         duration: Duration(days: 999)),
                   );
                 }
@@ -75,17 +82,25 @@ class _MyAppState extends State<MyApp> {
                 print('🚀 AuthBloc state: $state');
               }
 
-              throwError(isError) {
-                if (!isError) {
-                  return;
-                }
-
+              throwError() {
                 SchedulerBinding.instance.addPostFrameCallback(
                   (_) {
                     Modal.show(
                       context,
                       state.error!.dialogTitle,
                       state.error!.dialogText,
+                    );
+                  },
+                );
+              }
+
+              throwSuccess() {
+                SchedulerBinding.instance.addPostFrameCallback(
+                  (_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(state.success!),
+                          duration: const Duration(seconds: 2)),
                     );
                   },
                 );
@@ -109,16 +124,32 @@ class _MyAppState extends State<MyApp> {
                   },
                 );
 
-                throwError(state.error != null);
+                if (state.success != null) {
+                  throwSuccess();
+                }
+
+                if (state.error != null) {
+                  throwError();
+                }
 
                 if (state.user?.emailVerified == true) {
+                  BlocProvider.of<CollectionsBloc>(context).add(
+                    const CollectionsEventInitiateStream(),
+                  );
+
                   return const Home();
                 }
 
                 return const VerifyEmail();
               }
 
-              throwError(state.error != null);
+              if (state.success != null) {
+                throwSuccess();
+              }
+
+              if (state.error != null) {
+                throwError();
+              }
 
               return const Auth();
             },

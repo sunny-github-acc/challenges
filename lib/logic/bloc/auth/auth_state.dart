@@ -9,6 +9,7 @@ abstract class AuthState {
   final String? username;
   final String? email;
   final AuthEvent? event;
+  final String? success;
   final AuthError? error;
 
   const AuthState({
@@ -16,6 +17,7 @@ abstract class AuthState {
     this.username,
     this.email,
     this.event,
+    this.success,
     this.error,
   });
 }
@@ -39,6 +41,7 @@ class AuthStateLoggedIn extends AuthState {
     bool? isLoading,
     String? username,
     String? email,
+    String? success,
     AuthEvent? event,
     AuthError? error,
     this.user,
@@ -47,6 +50,7 @@ class AuthStateLoggedIn extends AuthState {
           username: username,
           email: email,
           event: event,
+          success: success,
           error: error,
         );
 
@@ -111,13 +115,15 @@ class AuthStateGoogleLoggedIn extends AuthState {
 
 @immutable
 class AuthStateLoggedOut extends AuthState {
-  const AuthStateLoggedOut()
-      : super(
+  const AuthStateLoggedOut({
+    AuthError? error,
+  }) : super(
           isLoading: false,
+          error: error,
         );
 
   @override
-  String toString() => '🚀 AuthStateLoggedOut';
+  String toString() => '🚀 AuthStateLoggedOut: (error: $error)';
 }
 
 @immutable

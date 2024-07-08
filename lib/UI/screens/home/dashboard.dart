@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'package:challenges/UI/screens/home/display_challenge.dart';
+import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/card.dart';
 import 'package:challenges/components/challenge.dart';
 import 'package:challenges/components/column.dart';
+import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
+import 'package:challenges/logic/bloc/collection/collection_events.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/collections/collections_state.dart';
@@ -12,22 +14,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Dashboard extends StatefulWidget {
+class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
-
-  @override
-  State<Dashboard> createState() => _Dashboard();
-}
-
-class _Dashboard extends State<Dashboard> {
-  @override
-  void initState() {
-    super.initState();
-
-    BlocProvider.of<CollectionsBloc>(context).add(
-      const CollectionsEventInitiateStream(),
-    );
-  }
 
   Future<void> _loadCollectionData(context) async {
     BlocProvider.of<CollectionsBloc>(context).add(
@@ -36,14 +24,13 @@ class _Dashboard extends State<Dashboard> {
   }
 
   void _openChallenge(BuildContext context, Map<String, dynamic> collection) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DisplayChallenge(
-          collection: collection,
-        ),
+    BlocProvider.of<CollectionBloc>(context).add(
+      CollectionEventSetCollection(
+        collection: collection,
       ),
     );
+
+    Navigator.of(context).pushNamed(Routes.displayChallenge);
   }
 
   @override
@@ -54,7 +41,7 @@ class _Dashboard extends State<Dashboard> {
           print('🚀 CollectionsBloc state: $state');
         }
 
-        if (state is CollectionsStateGetting) {
+        if (state.isLoading) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -62,26 +49,29 @@ class _Dashboard extends State<Dashboard> {
           );
         }
 
-        if (state is CollectionsStateGettingError) {
+        if (state.error != null) {
           return Scaffold(
             body: CustomColumn(
               children: [
-                Text(state.collectionsError!.dialogTitle),
-                Text(state.collectionsError!.dialogText),
+                Text(state.error!.dialogTitle),
+                Text(state.error!.dialogText),
                 CustomButton(
-                    onPressed: () => _loadCollectionData(context),
-                    text: 'Refresh'),
+                  onPressed: () => _loadCollectionData(context),
+                  text: 'Refresh',
+                ),
               ],
             ),
           );
         }
 
-        final List<Map<String, dynamic>> collection = state.collectionsData;
+        final List<Map<String, dynamic>> collections = state.collections;
 
-        if (collection.isEmpty) {
+        if (collections.isEmpty) {
           return const Scaffold(
             body: Center(
-              child: Text('No challenges available'),
+              child: Text(
+                'No challenges available',
+              ),
             ),
           );
         }
@@ -92,13 +82,17 @@ class _Dashboard extends State<Dashboard> {
             fontSize: 20,
           ),
           body: ListView.builder(
-            itemCount: collection.length,
+            itemCount: collections.length,
             itemBuilder: (context, index) {
               return CustomCard(
-                  onPressed: () => _openChallenge(context, collection[index]),
-                  child: Challenge(
-                    collection: collection[index],
-                  ));
+                onPressed: () => _openChallenge(
+                  context,
+                  collections[index],
+                ),
+                child: Challenge(
+                  collection: collections[index],
+                ),
+              );
             },
           ),
         );

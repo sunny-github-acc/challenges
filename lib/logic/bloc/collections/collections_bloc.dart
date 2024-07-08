@@ -11,12 +11,88 @@ CloudService cloudService = CloudService();
 class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
   CollectionsBloc()
       : super(
-          const CollectionsStateInitial(),
+          const CollectionsStateEmpty(),
         ) {
+    on<CollectionsEventInitiateStream>(
+      (event, emit) async {
+        emit(
+          const CollectionsStateUpdated(
+            isLoading: true,
+            collections: [],
+          ),
+        );
+
+        try {
+          cloudService.getCollectionStream('challenges', {
+            'endDateIsAfter': DateTime.now(),
+            'isUnlimited': true,
+          }).listen(
+            (data) {
+              List<Map<String, dynamic>> sortedData = data
+                ..sort((a, b) {
+                  DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();
+                  DateTime dateTimeB = (b['createdAt'] as Timestamp).toDate();
+
+                  return dateTimeB.compareTo(dateTimeA);
+                });
+
+              add(
+                CollectionsEventStream(
+                  sortedData: sortedData,
+                ),
+              );
+            },
+          );
+        } on FirebaseException catch (e) {
+          if (kDebugMode) {
+            print('CollectionsEventLogIn error 🚀');
+            print(e);
+          }
+
+          emit(
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(e),
+            ),
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('CollectionsEventLogIn error 🚀');
+            print(e);
+          }
+
+          emit(
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(
+                FirebaseException(
+                  code: null,
+                  plugin: 'collections',
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    );
+
+    on<CollectionsEventStream>(
+      (event, emit) async {
+        emit(
+          CollectionsStateUpdated(
+            collections: event.sortedData,
+          ),
+        );
+      },
+    );
+
     on<CollectionsEventAddCollection>(
       (event, emit) async {
         emit(
-          const CollectionsStateAdding(),
+          CollectionsStateUpdated(
+            collections: state.collections,
+            isLoading: true,
+          ),
         );
 
         try {
@@ -26,7 +102,10 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           await cloudService.setCollection(title, document);
 
           emit(
-            const CollectionsStateAdded(),
+            CollectionsStateUpdated(
+              collections: state.collections,
+              success: 'Collection added successfully 🎉',
+            ),
           );
         } on FirebaseException catch (e) {
           if (kDebugMode) {
@@ -35,8 +114,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           }
 
           emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(e),
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(e),
             ),
           );
         } catch (e) {
@@ -46,8 +126,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           }
 
           emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(FirebaseException(
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(FirebaseException(
                 code: null,
                 plugin: 'collections',
               )),
@@ -60,7 +141,10 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
     on<CollectionsEventGetCollection>(
       (event, emit) async {
         emit(
-          const CollectionsStateGetting(),
+          CollectionsStateUpdated(
+            isLoading: true,
+            collections: state.collections,
+          ),
         );
 
         try {
@@ -78,7 +162,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
             });
 
           emit(
-            CollectionsStateGot(collectionsData: sortedData),
+            CollectionsStateUpdated(
+              collections: sortedData,
+            ),
           );
         } on FirebaseException catch (e) {
           if (kDebugMode) {
@@ -87,8 +173,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           }
 
           emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(e),
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(e),
             ),
           );
         } catch (e) {
@@ -98,58 +185,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           }
 
           emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(FirebaseException(
-                code: null,
-                plugin: 'collections',
-              )),
-            ),
-          );
-        }
-      },
-    );
-
-    on<CollectionsEventInitiateStream>(
-      (event, emit) async {
-        emit(
-          const CollectionsStateGetting(),
-        );
-
-        try {
-          cloudService.getCollectionStream('challenges', {
-            'endDateIsAfter': DateTime.now(),
-            'isUnlimited': true,
-          }).listen((data) {
-            List<Map<String, dynamic>> sortedData = data
-              ..sort((a, b) {
-                DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();
-                DateTime dateTimeB = (b['createdAt'] as Timestamp).toDate();
-
-                return dateTimeB.compareTo(dateTimeA);
-              });
-
-            add(CollectionsEventStream(sortedData: sortedData));
-          });
-        } on FirebaseException catch (e) {
-          if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
-            print(e);
-          }
-
-          emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(e),
-            ),
-          );
-        } catch (e) {
-          if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
-            print(e);
-          }
-
-          emit(
-            CollectionsStateAddingError(
-              collectionsError: CollectionsError.from(
+            CollectionsStateUpdated(
+              collections: state.collections,
+              error: CollectionsError.from(
                 FirebaseException(
                   code: null,
                   plugin: 'collections',
@@ -158,14 +196,6 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
             ),
           );
         }
-      },
-    );
-
-    on<CollectionsEventStream>(
-      (event, emit) async {
-        emit(
-          CollectionsStateGot(collectionsData: event.sortedData),
-        );
       },
     );
   }
