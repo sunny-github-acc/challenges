@@ -15,7 +15,10 @@ class FilterSettingsBloc
     on<FilterSettingsEventGetFilterSettings>(
       (event, emit) async {
         emit(
-          const FilterSettingsStateLoadingGet(),
+          FilterSettingsStateLoad(
+            filterSettings: state.filterSettings,
+            isLoading: true,
+          ),
         );
 
         try {
@@ -24,7 +27,9 @@ class FilterSettingsBloc
           final data = await cloud.getDocument('users', user['uid']);
 
           emit(
-            FilterSettingsStateLoaded(filterSettings: data),
+            FilterSettingsStateLoad(
+              filterSettings: data,
+            ),
           );
         } catch (e) {
           if (kDebugMode) {
@@ -33,8 +38,9 @@ class FilterSettingsBloc
           }
 
           emit(
-            FilterSettingsStateError(
-              filterSettingsError: FilterSettingsError.from(e),
+            FilterSettingsStateLoad(
+              filterSettings: state.filterSettings,
+              error: FilterSettingsError.from(e),
             ),
           );
         }
@@ -45,11 +51,13 @@ class FilterSettingsBloc
       (event, emit) async {
         final key = event.key;
         final value = event.value;
-        final oldFilterSettings = state.filterSettings!;
 
         emit(
-          FilterSettingsStateLoadingUpdate(
-              key: key, filterSettings: oldFilterSettings),
+          FilterSettingsStateLoad(
+            key: key,
+            filterSettings: state.filterSettings,
+            isLoading: true,
+          ),
         );
 
         try {
@@ -70,7 +78,10 @@ class FilterSettingsBloc
           );
 
           emit(
-            FilterSettingsStateLoaded(filterSettings: updatedFilterSettings),
+            FilterSettingsStateLoad(
+              filterSettings: updatedFilterSettings,
+              success: 'Filter settings updated successfully 🎉',
+            ),
           );
         } catch (e) {
           if (kDebugMode) {
@@ -79,8 +90,9 @@ class FilterSettingsBloc
           }
 
           emit(
-            FilterSettingsStateError(
-              filterSettingsError: FilterSettingsError.from(e),
+            FilterSettingsStateLoad(
+              filterSettings: state.filterSettings,
+              error: FilterSettingsError.from(e),
             ),
           );
         }

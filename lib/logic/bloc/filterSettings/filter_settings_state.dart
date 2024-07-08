@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class FilterSettingsState {
   final bool isLoading;
-  final FilterSettingsError? filterSettingsError;
+  final String? success;
+  final FilterSettingsError? error;
 
   const FilterSettingsState({
     required this.isLoading,
-    this.filterSettingsError,
+    this.success,
+    this.error,
   });
 }
 
@@ -24,71 +26,43 @@ class FilterSettingsStateEmpty extends FilterSettingsState {
 }
 
 @immutable
-class FilterSettingsStateLoadingGet extends FilterSettingsState {
-  const FilterSettingsStateLoadingGet()
-      : super(
-          isLoading: true,
-        );
-
-  @override
-  String toString() => '🚀 FilterSettingsStateLoadingGet';
-}
-
-@immutable
-class FilterSettingsStateLoadingUpdate extends FilterSettingsState {
+class FilterSettingsStateLoad extends FilterSettingsState {
   final Map<String, dynamic> filterSettings;
-  final String key;
+  final String? key;
 
-  const FilterSettingsStateLoadingUpdate({
+  const FilterSettingsStateLoad({
     required this.filterSettings,
-    required this.key,
+    this.key,
+    final String? success,
+    final FilterSettingsError? error,
+    final bool? isLoading,
   }) : super(
-          isLoading: true,
+          isLoading: isLoading ?? false,
         );
 
   @override
   String toString() =>
-      '🚀 FilterSettingsStateLoadingUpdate: (filterSettings: $filterSettings, key: $key)';
-}
-
-@immutable
-class FilterSettingsStateLoaded extends FilterSettingsState {
-  final Map<String, dynamic> filterSettings;
-
-  const FilterSettingsStateLoaded({
-    required this.filterSettings,
-  }) : super(
-          isLoading: false,
-        );
-
-  @override
-  String toString() =>
-      '🚀 FilterSettingsStateLoaded(filterSettings: $filterSettings)';
-}
-
-@immutable
-class FilterSettingsStateError extends FilterSettingsState {
-  const FilterSettingsStateError({
-    required FilterSettingsError filterSettingsError,
-  }) : super(
-          isLoading: false,
-          filterSettingsError: filterSettingsError,
-        );
-
-  @override
-  String toString() =>
-      '🚀 FilterSettingsStateLoaded(filterSettings: $filterSettingsError)';
+      '🚀 FilterSettingsStateLoad: (filterSettings: $filterSettings, key: $key, success: $success, error: $error)';
 }
 
 extension GetFilterSettings on FilterSettingsState {
-  Map<String, dynamic>? get filterSettings {
+  Map<String, dynamic> get filterSettings {
     final cls = this;
-    if (cls is FilterSettingsStateLoaded) {
-      return cls.filterSettings;
-    } else if (cls is FilterSettingsStateLoadingUpdate) {
+    if (cls is FilterSettingsStateLoad) {
       return cls.filterSettings;
     } else {
-      return null;
+      return {};
+    }
+  }
+}
+
+extension GetFilterSettingsKey on FilterSettingsState {
+  String get key {
+    final cls = this;
+    if (cls is FilterSettingsStateLoad) {
+      return cls.key ?? '';
+    } else {
+      return '';
     }
   }
 }

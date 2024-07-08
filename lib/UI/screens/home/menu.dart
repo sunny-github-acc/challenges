@@ -5,7 +5,6 @@ import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/switch.dart';
 import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
-import 'package:challenges/logic/bloc/filterSettings/filter_settings_error.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class _Menu extends State<Menu> {
   void initValues(context) async {
     FilterSettingsBloc bloc = BlocProvider.of<FilterSettingsBloc>(context);
 
-    if (bloc.state is! FilterSettingsStateLoaded) {
+    if (bloc.state is! FilterSettingsStateLoad) {
       bloc.add(const FilterSettingsEventGetFilterSettings());
     }
   }
@@ -52,16 +51,16 @@ class _Menu extends State<Menu> {
               const TextCustom(text: 'Filter by:'),
               BlocBuilder<FilterSettingsBloc, FilterSettingsState>(
                 builder: (context, state) {
-                  if (state is FilterSettingsStateEmpty ||
-                      state is FilterSettingsStateLoadingGet) {
+                  if ((state is FilterSettingsStateEmpty || state.isLoading) &&
+                      state.filterSettings.isEmpty) {
                     return const CustomCircularProgressIndicator();
                   }
 
-                  if (state is FilterSettingsError) {
+                  if (state.error != null) {
                     return CustomColumn(
                       children: [
                         TextCustom(
-                          text: state.filterSettingsError!.dialogText,
+                          text: state.error!.dialogText,
                         ),
                         ElevatedButton(
                           onPressed: () => initValues(context),
@@ -71,7 +70,7 @@ class _Menu extends State<Menu> {
                     );
                   }
 
-                  bool isUpdating = state is FilterSettingsStateLoadingUpdate;
+                  bool isUpdating = state.isLoading;
                   bool isGlobal = isUpdating && state.key == 'isGlobal';
                   bool isUnlimited = isUpdating && state.key == 'isUnlimited';
                   bool isCompleted = isUpdating && state.key == 'isCompleted';
@@ -82,9 +81,8 @@ class _Menu extends State<Menu> {
                       isGlobal
                           ? const CustomCircularProgressIndicator()
                           : SwitchCustom(
-                              value: state.filterSettings!['isGlobal'],
-                              onChanged: state
-                                      is FilterSettingsStateLoadingUpdate
+                              value: state.filterSettings['isGlobal'],
+                              onChanged: isUpdating
                                   ? () => null
                                   : (value) => toggleSwitch('isGlobal', value),
                             ),
@@ -92,23 +90,25 @@ class _Menu extends State<Menu> {
                       isUnlimited
                           ? const CustomCircularProgressIndicator()
                           : SwitchCustom(
-                              value: state.filterSettings!['isUnlimited'],
-                              onChanged:
-                                  state is FilterSettingsStateLoadingUpdate
-                                      ? () => null
-                                      : (value) =>
-                                          toggleSwitch('isUnlimited', value),
+                              value: state.filterSettings['isUnlimited'],
+                              onChanged: isUpdating
+                                  ? () => null
+                                  : (value) => toggleSwitch(
+                                        'isUnlimited',
+                                        value,
+                                      ),
                             ),
                       const TextCustom(text: 'Completed'),
                       isCompleted
                           ? const CustomCircularProgressIndicator()
                           : SwitchCustom(
-                              value: state.filterSettings!['isCompleted'],
-                              onChanged:
-                                  state is FilterSettingsStateLoadingUpdate
-                                      ? () => null
-                                      : (value) =>
-                                          toggleSwitch('isCompleted', value),
+                              value: state.filterSettings['isCompleted'],
+                              onChanged: isUpdating
+                                  ? () => null
+                                  : (value) => toggleSwitch(
+                                        'isCompleted',
+                                        value,
+                                      ),
                             ),
                     ],
                   );

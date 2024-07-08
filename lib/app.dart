@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Connected emoji ✨'),
+                        content: Text('Connected ✨'),
                         duration: Duration(seconds: 1)),
                   );
                 } else {
