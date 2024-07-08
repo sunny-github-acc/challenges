@@ -20,13 +20,27 @@ class Challenge extends StatelessWidget {
     dynamic endDateDynamic = collection['endDate'];
     dynamic endDate =
         endDateDynamic is Timestamp ? endDateDynamic.toDate() : endDateDynamic;
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      CustomRow(children: [
-        GestureDetector(
-          onTap: () => _openUserProfile(context, collection['uid']),
-          child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 12.0),
+    String endDateString = endDate.toString().substring(0, 10);
+    dynamic createdAtDynamic = collection['createdAt'];
+    dynamic createdAt = createdAtDynamic is Timestamp
+        ? createdAtDynamic.toDate()
+        : createdAtDynamic;
+    int daysSinceStart =
+        DateTime.now().difference(DateTime.parse(createdAt.toString())).inDays;
+    int daysLeft =
+        DateTime.parse(endDate.toString()).difference(DateTime.now()).inDays +
+            1;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomRow(children: [
+          GestureDetector(
+            onTap: () => _openUserProfile(context, collection['uid']),
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 0,
+                vertical: 12.0,
+              ),
               child: collection['photoURL'] == null
                   ? Image.asset(
                       'assets/grow.png',
@@ -34,50 +48,58 @@ class Challenge extends StatelessWidget {
                     )
                   : ClipOval(
                       child: Image.network(
-                      collection['photoURL'],
-                      height: 20,
-                      fit: BoxFit.cover,
-                    ))),
-        ),
-        TextCustom(
-          text: collection['displayName'],
-          fontWeight: FontWeight.bold,
-        ),
-      ]),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const TextCustom(
-          text: 'Title',
-          fontWeight: FontWeight.bold,
-        ),
-        TextCustom(text: collection['title']),
-        if (description != '') ...[
-          const TextCustom(
-            text: 'Description',
+                        collection['photoURL'],
+                        height: 20,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+            ),
+          ),
+          TextCustom(
+            text: collection['displayName'],
             fontWeight: FontWeight.bold,
           ),
-          TextCustom(text: description)
-        ],
-        const TextCustom(
-          text: 'Period',
-          fontWeight: FontWeight.bold,
+        ]),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TextCustom(
+              text: 'Title',
+              fontWeight: FontWeight.bold,
+            ),
+            TextCustom(text: collection['title']),
+            if (description != '') ...[
+              const TextCustom(
+                text: 'Description',
+                fontWeight: FontWeight.bold,
+              ),
+              TextCustom(text: description)
+            ],
+            const TextCustom(
+              text: 'Period',
+              fontWeight: FontWeight.bold,
+            ),
+            TextCustom(
+                text: collection['isUnlimited'] == true
+                    ? 'Unlimited ($daysSinceStart days since start)'
+                    : '$endDateString ($daysLeft days left)'),
+            if (consequence != '') ...[
+              const TextCustom(
+                text: 'Consequence',
+                fontWeight: FontWeight.bold,
+              ),
+              TextCustom(text: consequence)
+            ],
+            const TextCustom(
+              text: 'Visibility',
+              fontWeight: FontWeight.bold,
+            ),
+            TextCustom(
+              text: collection['visibility'],
+            )
+          ],
         ),
-        TextCustom(
-            text: collection['isUnlimited'] == true
-                ? 'Unlimited (${DateTime.now().difference(DateTime.parse(collection['createdAt'].toDate().toString())).inDays} days since start)'
-                : '${endDate.toString().substring(0, 10)} (${DateTime.parse(endDate.toString()).difference(DateTime.now()).inDays + 1} days left)'),
-        if (consequence != '') ...[
-          const TextCustom(
-            text: 'Consequence',
-            fontWeight: FontWeight.bold,
-          ),
-          TextCustom(text: consequence)
-        ],
-        const TextCustom(
-          text: 'Visibility',
-          fontWeight: FontWeight.bold,
-        ),
-        TextCustom(text: collection['visibility'])
-      ]),
-    ]);
+      ],
+    );
   }
 }
