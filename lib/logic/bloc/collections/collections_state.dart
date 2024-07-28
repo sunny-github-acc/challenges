@@ -42,7 +42,7 @@ class CollectionsStateUpdated extends CollectionsState {
 
   @override
   String toString() =>
-      '🚀 CollectionsStateAdded(collections: $collections, isLoading: $isLoading, success: $success, error: $error)';
+      '🚀 CollectionsStateUpdated(collections: $collections, isLoading: $isLoading, success: $success, error: $error)';
 }
 
 extension GetCollections on CollectionsState {

@@ -48,6 +48,7 @@ class DisplayChallenge extends StatelessWidget {
         ),
         body: Challenge(
           collection: state.collection,
+          parent: 'display_challenge',
         ),
       );
     });

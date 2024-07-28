@@ -91,6 +91,7 @@ class Dashboard extends StatelessWidget {
                 ),
                 child: Challenge(
                   collection: collections[index],
+                  parent: 'dashboard',
                 ),
               );
             },
