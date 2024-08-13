@@ -2,6 +2,7 @@ import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/components/row.dart';
 import 'package:challenges/components/switch.dart';
 import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
@@ -48,7 +49,6 @@ class _Menu extends State<Menu> {
           padding: 8,
           child: CustomColumn(
             children: [
-              const TextCustom(text: 'Filter by:'),
               BlocBuilder<FilterSettingsBloc, FilterSettingsState>(
                 builder: (context, state) {
                   if ((state is FilterSettingsStateEmpty || state.isLoading) &&
@@ -71,45 +71,43 @@ class _Menu extends State<Menu> {
                   }
 
                   bool isUpdating = state.isLoading;
-                  bool isGlobal = isUpdating && state.key == 'isGlobal';
-                  bool isUnlimited = isUpdating && state.key == 'isUnlimited';
-                  bool isCompleted = isUpdating && state.key == 'isCompleted';
+                  bool isPrivate = isUpdating && state.key == 'isPrivate';
+                  bool isFinished = isUpdating && state.key == 'isFinished';
 
                   return CustomColumn(
                     children: [
-                      const TextCustom(text: 'Global'),
-                      isGlobal
-                          ? const CustomCircularProgressIndicator()
-                          : SwitchCustom(
-                              value: state.filterSettings['isGlobal'],
-                              onChanged: isUpdating
-                                  ? () => null
-                                  : (value) => toggleSwitch('isGlobal', value),
-                            ),
-                      const TextCustom(text: 'Unlimited'),
-                      isUnlimited
-                          ? const CustomCircularProgressIndicator()
-                          : SwitchCustom(
-                              value: state.filterSettings['isUnlimited'],
-                              onChanged: isUpdating
-                                  ? () => null
-                                  : (value) => toggleSwitch(
-                                        'isUnlimited',
-                                        value,
-                                      ),
-                            ),
-                      const TextCustom(text: 'Completed'),
-                      isCompleted
-                          ? const CustomCircularProgressIndicator()
-                          : SwitchCustom(
-                              value: state.filterSettings['isCompleted'],
-                              onChanged: isUpdating
-                                  ? () => null
-                                  : (value) => toggleSwitch(
-                                        'isCompleted',
-                                        value,
-                                      ),
-                            ),
+                      CustomRow(
+                        children: [
+                          const TextCustom(
+                              text: 'Only show private challenges'),
+                          isPrivate
+                              ? const CustomCircularProgressIndicator()
+                              : SwitchCustom(
+                                  value: state.filterSettings['isPrivate'],
+                                  onChanged: isUpdating
+                                      ? () => null
+                                      : (value) =>
+                                          toggleSwitch('isPrivate', value),
+                                ),
+                        ],
+                      ),
+                      CustomRow(
+                        children: [
+                          const TextCustom(
+                              text: 'Only show finished challenges'),
+                          isFinished
+                              ? const CustomCircularProgressIndicator()
+                              : SwitchCustom(
+                                  value: state.filterSettings['isFinished'],
+                                  onChanged: isUpdating
+                                      ? () => null
+                                      : (value) => toggleSwitch(
+                                            'isFinished',
+                                            value,
+                                          ),
+                                ),
+                        ],
+                      ),
                     ],
                   );
                 },

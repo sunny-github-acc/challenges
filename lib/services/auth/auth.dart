@@ -92,7 +92,7 @@ class AuthService {
 
       Map<String, dynamic> document = {
         'uid': id,
-        'isGlobal': false,
+        'isPrivate': false,
         'isCompleted': false,
         'isUnlimited': false,
       };
