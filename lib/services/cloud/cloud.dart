@@ -53,116 +53,125 @@ class CloudService {
     }
   }
 
+  Query<Object?> getQueryBuilder(
+    challenges,
+    isPrivate,
+    isFinished,
+    isIncludeFinished,
+    duration,
+    query,
+  ) {
+    if (isPrivate) {
+      if (!isIncludeFinished) {
+        return challenges
+            .where('uid', isEqualTo: query['uid'])
+            .where('isFinished', isEqualTo: false)
+            .where('duration', whereIn: duration);
+      } else if (isFinished) {
+        return challenges
+            .where('uid', isEqualTo: query['uid'])
+            .where('isFinished', isEqualTo: true)
+            .where('duration', whereIn: duration);
+      }
+
+      return challenges
+          .where('uid', isEqualTo: query['uid'])
+          .where('duration', whereIn: duration);
+    } else {
+      if (!isIncludeFinished) {
+        return challenges
+            .where('isFinished', isEqualTo: false)
+            .where('duration', whereIn: duration);
+      } else if (isFinished) {
+        return challenges
+            .where('isFinished', isEqualTo: true)
+            .where('duration', whereIn: duration);
+      }
+    }
+
+    return challenges.where('duration', whereIn: duration);
+  }
+
   Future<List<Map<String, dynamic>>> getCollectionWithQuery(
-      collection, Map<String, dynamic> queryOptions) async {
+      collection, Map<String, dynamic> query) async {
     try {
       CollectionReference challenges = FirebaseFirestore.instance
           .collection('challenges')
           .doc(collection)
           .collection(collection);
 
-      Query endDateQuery = challenges;
-      Query isUnlimitedQuery = challenges;
-      late QuerySnapshot<Object?>? endDateQuerySnapshot;
-      late QuerySnapshot<Object?>? isUnlimitedQuerySnapshot;
       List<Map<String, dynamic>> dataList = [];
 
-      if (queryOptions.containsKey('endDateIsGreater')) {
-        DateTime date = queryOptions['endDateIsGreater']!;
-        endDateQuery = endDateQuery.where('endDate',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(date));
-        endDateQuerySnapshot = await endDateQuery.get();
-        for (QueryDocumentSnapshot documentSnapshot
-            in endDateQuerySnapshot.docs) {
-          Map<String, dynamic> data =
-              documentSnapshot.data() as Map<String, dynamic>;
-          data['id'] = documentSnapshot.id;
+      bool isPrivate = query['isPrivate'];
+      bool isFinished = query['isFinished'];
+      bool isIncludeFinished = query['isIncludeFinished'];
+      List<String> duration = query['duration'] == 'All'
+          ? ['Week', 'Month', 'Year', 'Infinite']
+          : [query['duration']];
 
-          dataList.add(data);
-        }
+      QuerySnapshot<Object?>? querySnapshot = await getQueryBuilder(
+        challenges,
+        isPrivate,
+        isFinished,
+        isIncludeFinished,
+        duration,
+        query,
+      ).get();
+      for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
+        data['id'] = documentSnapshot.id;
+        dataList.add(data);
       }
 
-      if (queryOptions.containsKey('isUnlimited')) {
-        isUnlimitedQuery =
-            isUnlimitedQuery.where('isUnlimited', isEqualTo: true);
-        isUnlimitedQuerySnapshot = await isUnlimitedQuery.get();
-        for (QueryDocumentSnapshot documentSnapshot
-            in isUnlimitedQuerySnapshot.docs) {
-          Map<String, dynamic> data =
-              documentSnapshot.data() as Map<String, dynamic>;
-          data['id'] = documentSnapshot.id;
-
-          dataList.add(data);
-        }
-      }
-
-      return removeDuplicates(dataList);
+      return dataList;
     } catch (error) {
       rethrow;
     }
   }
 
-  List<Map<String, dynamic>> removeDuplicates(
-      List<Map<String, dynamic>> originalList) {
-    Set<String> uniqueIds = {};
-    List<Map<String, dynamic>> resultList = [];
-
-    for (Map<String, dynamic> item in originalList) {
-      String id = item['id'];
-
-      if (!uniqueIds.contains(id)) {
-        uniqueIds.add(id);
-        resultList.add(item);
-      }
-    }
-
-    return resultList;
-  }
-
-  Stream<List<Map<String, dynamic>>> getCollectionStream(collection,
-      [Map<String, dynamic>? queryOptions]) {
+  Stream<List<Map<String, dynamic>>> getCollectionStream(
+    collection,
+    Map<String, dynamic> query,
+  ) {
     try {
-      CollectionReference challenges = FirebaseFirestore.instance
+      FirebaseFirestore firebase = FirebaseFirestore.instance;
+      CollectionReference challenges = firebase
           .collection('challenges')
           .doc(collection)
           .collection(collection);
 
-      Stream<QuerySnapshot> querySnapshotStream = challenges.snapshots();
+      bool isPrivate = query['isPrivate'];
+      bool isFinished = query['isFinished'];
+      bool isIncludeFinished = query['isIncludeFinished'];
+      List<String> duration = query['duration'] == 'All'
+          ? [
+              'Week',
+              'Month',
+              'Year',
+              'Infinite',
+            ]
+          : [
+              query['duration'],
+            ];
 
-      return querySnapshotStream.map((snapshot) {
+      Stream<QuerySnapshot> querySnapshotStream = getQueryBuilder(
+        challenges,
+        isPrivate,
+        isFinished,
+        isIncludeFinished,
+        duration,
+        query,
+      ).snapshots();
+
+      return querySnapshotStream.map((querySnapshot) {
         List<Map<String, dynamic>> dataList = [];
 
-        void addValues(dynamic documentSnapshot) {
-          final Map<String, dynamic> data =
+        for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+          Map<String, dynamic> data =
               documentSnapshot.data() as Map<String, dynamic>;
           data['id'] = documentSnapshot.id;
-
           dataList.add(data);
-        }
-
-        for (dynamic documentSnapshot in snapshot.docs) {
-          if (queryOptions == null) {
-            addValues(documentSnapshot);
-          } else {
-            bool isUnlimited = queryOptions.containsKey('isUnlimited') &&
-                queryOptions['isUnlimited'] == true;
-            bool isAfter = queryOptions.containsKey('endDateIsAfter') &&
-                documentSnapshot
-                    .data()['endDate']
-                    .toDate()
-                    .isAfter(queryOptions['endDateIsAfter']);
-            bool isBefore = queryOptions.containsKey('endDateIsBefore') &&
-                documentSnapshot
-                    .data()['endDate']
-                    .toDate()
-                    .isBefore(queryOptions['endDateIsBefore']);
-            bool isEmpty = !queryOptions.containsKey('endDateIsAfter') &&
-                !queryOptions.containsKey('endDateIsBefore');
-
-            if (isUnlimited || isAfter || isBefore || isEmpty) {
-              addValues(documentSnapshot);
-            }
-          }
         }
 
         return dataList;

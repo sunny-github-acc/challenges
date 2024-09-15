@@ -23,10 +23,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
         );
 
         try {
-          cloudService.getCollectionStream('challenges', {
-            'endDateIsAfter': DateTime.now(),
-            'isUnlimited': true,
-          }).listen(
+          cloudService.getCollectionStream('challenges', event.query).listen(
             (data) {
               List<Map<String, dynamic>> sortedData = data
                 ..sort((a, b) {
@@ -35,6 +32,10 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
 
                   return dateTimeB.compareTo(dateTimeA);
                 });
+
+              // print('sortedData');
+              // print(sortedData);
+              // print(sortedData);
 
               add(
                 CollectionsEventStream(
@@ -149,10 +150,10 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
 
         try {
           List<Map<String, dynamic>> data =
-              await cloudService.getCollectionWithQuery('challenges', {
-            'endDateIsGreater': DateTime.now(),
-            'isUnlimited': true,
-          });
+              await cloudService.getCollectionWithQuery(
+            'challenges',
+            event.query,
+          );
           List<Map<String, dynamic>> sortedData = data
             ..sort((a, b) {
               DateTime dateTimeA = (a['createdAt'] as Timestamp).toDate();

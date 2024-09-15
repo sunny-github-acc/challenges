@@ -4,9 +4,9 @@ import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/date.dart';
+import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
-import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
@@ -30,7 +30,8 @@ class _CreateChallenge extends State<CreateChallenge> {
 
   String consequence = '';
   String duration = 'Week';
-  String visibility = 'Public';
+  // String visibility = 'Public';
+  bool isPrivate = false;
   bool isTitle = true;
   bool isDuration = true;
   DateTime today = DateTime.now();
@@ -55,9 +56,10 @@ class _CreateChallenge extends State<CreateChallenge> {
       'createdAt': today,
       'startDate': customStartDate,
       'endDate': endDate,
-      'isUnlimited': duration == 'Unlimited',
+      'duration': duration,
       'consequence': consequence,
-      'visibility': visibility
+      'isPrivate': isPrivate,
+      'isFinished': false,
     };
 
     setState(() {
@@ -80,9 +82,9 @@ class _CreateChallenge extends State<CreateChallenge> {
     });
   }
 
-  void _handleVisibility(BuildContext context, String visibilityParam) {
+  void _handleIsPrivate(BuildContext context, bool isPrivateParam) {
     setState(() {
-      visibility = visibilityParam;
+      isPrivate = isPrivateParam;
     });
   }
 
@@ -93,7 +95,7 @@ class _CreateChallenge extends State<CreateChallenge> {
       return DateTime.utc(
         today.year + (duration == 'Year' ? 1 : 0),
         today.month + (duration == 'Month' ? 1 : 0),
-        today.day + (duration == 'Week' || duration == 'Unlimited' ? 7 : 0),
+        today.day + (duration == 'Week' || duration == 'Infinite' ? 7 : 0),
       );
     }
   }
@@ -110,7 +112,7 @@ class _CreateChallenge extends State<CreateChallenge> {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(state.success!),
+                content: CustomText(text: state.success!),
                 duration: const Duration(seconds: 2)),
           );
 
@@ -127,7 +129,7 @@ class _CreateChallenge extends State<CreateChallenge> {
       },
       child: Scaffold(
         appBar: CustomAppBar(
-          title: 'Add a challenge',
+          title: 'Create Challenge',
           leftButton: BlocBuilder<CollectionsBloc, CollectionsState>(
             builder: (context, state) {
               if (state.isLoading) {
@@ -154,116 +156,84 @@ class _CreateChallenge extends State<CreateChallenge> {
           ],
         ),
         body: SingleChildScrollView(
-          child: ContainerGradient(
-            padding: 8,
+          child: CustomContainer(
             child: CustomColumn(
+              spacing: SpacingType.medium,
               children: [
                 CustomInput(
-                  title: 'Title',
-                  labelText: 'Enter Title',
-                  hintText: 'Enter the title of your challenge',
+                  title: 'Enter a title',
+                  labelText: 'Make it short and sweet',
                   controller: titleController,
                   isDisabled: !isTitle,
                 ),
                 CustomInput(
-                  title: 'Description',
-                  labelText: 'Enter Description',
-                  hintText: 'Enter a specific description of your challenge',
+                  title: 'Describe your challenge',
+                  labelText: 'Be as specific as you can',
                   controller: descriptionController,
                   isTall: true,
                 ),
-                const TextCustom(text: 'The period of the challenge'),
-                Center(
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(
-                          children: [
-                            CustomButton(
-                              onPressed: () => _handleDuration(context, 'Week'),
-                              text: 'Week',
-                              size: ButtonSize.small,
-                              type: duration == 'Week'
-                                  ? ButtonType.primary
-                                  : ButtonType.secondary,
-                            ),
-                            CustomButton(
-                              onPressed: () =>
-                                  _handleDuration(context, 'Month'),
-                              text: 'Month',
-                              size: ButtonSize.small,
-                              type: duration == 'Month'
-                                  ? ButtonType.primary
-                                  : ButtonType.secondary,
-                            ),
-                            CustomButton(
-                              onPressed: () => _handleDuration(context, 'Year'),
-                              text: 'Year',
-                              size: ButtonSize.small,
-                              type: duration == 'Year'
-                                  ? ButtonType.primary
-                                  : ButtonType.secondary,
-                            ),
-                            CustomButton(
-                              onPressed: () =>
-                                  _handleDuration(context, 'Custom'),
-                              text: 'Custom',
-                              size: ButtonSize.small,
-                              type: duration == 'Custom'
-                                  ? ButtonType.primary
-                                  : ButtonType.secondary,
-                            ),
-                            CustomButton(
-                              onPressed: () =>
-                                  _handleDuration(context, 'Unlimited'),
-                              text: 'Unlimited',
-                              size: ButtonSize.small,
-                              type: duration == 'Unlimited'
-                                  ? ButtonType.primary
-                                  : ButtonType.secondary,
-                            ),
-                            duration == 'Custom'
-                                ? CustomDateRangePicker(
-                                    dateRange: DateTimeRange(
-                                      start: customStartDate,
-                                      end: customEndDate,
-                                    ),
-                                    onSelected: (date) {
-                                      setState(() {
-                                        customStartDate = date.start;
-                                        customEndDate = date.end;
-                                      });
-                                    },
-                                  )
-                                : const SizedBox.shrink(),
-                          ],
-                        ))),
-                const TextCustom(
-                    text:
-                        'What will be the consequence of completed of failed challenge?'),
                 CustomInput(
-                  labelText: 'Consequence',
-                  hintText: 'Enter a specific consequence of your challenge',
+                  title: 'Enter a consequence',
+                  labelText:
+                      'What will happen if your challenge succeeds or fails?',
                   controller: consequenceController,
                   isTall: true,
                 ),
-                const TextCustom(text: 'Public or private challenge?'),
-                CustomRow(
+                CustomColumn(
+                  spacing: SpacingType.small,
                   children: [
-                    CustomButton(
-                      onPressed: () => _handleVisibility(context, 'Public'),
-                      text: 'Public',
-                      size: ButtonSize.small,
-                      type: visibility == 'Public'
-                          ? ButtonType.primary
-                          : ButtonType.secondary,
+                    const CustomText(
+                      text: 'How long will your challenge last?',
                     ),
-                    CustomButton(
-                      onPressed: () => _handleVisibility(context, 'Private'),
-                      text: 'Private',
-                      size: ButtonSize.small,
-                      type: visibility == 'Private'
-                          ? ButtonType.primary
-                          : ButtonType.secondary,
+                    CustomDropdown(
+                      values: const [
+                        'Week',
+                        'Month',
+                        'Year',
+                        'Infinite',
+                        'Custom',
+                      ],
+                      hint: 'Select an option',
+                      value: duration,
+                      onChanged: (dynamic value) {
+                        _handleDuration(context, value as String);
+                      },
+                    ),
+                    if (duration == 'Custom')
+                      CustomDateRangePicker(
+                        dateRange: DateTimeRange(
+                          start: customStartDate,
+                          end: customEndDate,
+                        ),
+                        onSelected: (date) {
+                          setState(() {
+                            customStartDate = date.start;
+                            customEndDate = date.end;
+                          });
+                        },
+                      ),
+                  ],
+                ),
+                CustomColumn(
+                  spacing: SpacingType.small,
+                  children: [
+                    const CustomText(
+                      text: 'Who can see your challenge?',
+                    ),
+                    CustomDropdown(
+                      titles: const [
+                        'Everyone',
+                        'Only me',
+                      ],
+                      values: const [
+                        false,
+                        true,
+                      ],
+                      hint: 'Select an option',
+                      value: isPrivate,
+                      onChanged: (dynamic value) {
+                        _handleIsPrivate(context, value as bool);
+                      },
                     ),
                   ],
                 ),

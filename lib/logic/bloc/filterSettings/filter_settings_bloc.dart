@@ -69,6 +69,10 @@ class FilterSettingsBloc
           Map<String, dynamic> updatedFilterSettings = data
             ..addAll({
               key: value,
+              if (key == 'isIncludeFinished' && value == false)
+                'isFinished': false,
+              if (key == 'isFinished' && value == true)
+                'isIncludeFinished': true,
             });
 
           await cloud.setCollection(

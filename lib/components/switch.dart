@@ -1,8 +1,9 @@
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class SwitchCustom extends StatelessWidget {
   final bool value;
-  final Function onChanged;
+  final Function? onChanged;
 
   const SwitchCustom({
     Key? key,
@@ -12,10 +13,12 @@ class SwitchCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Switch(
-      value: value,
-      onChanged: (value) => onChanged(value),
-      activeColor: Colors.green,
-    );
+    return SizedBox(
+        width: 40,
+        child: Switch(
+          value: value,
+          onChanged: (value) => onChanged != null ? onChanged!(value) : null,
+          activeColor: colorMap['blue'],
+        ));
   }
 }

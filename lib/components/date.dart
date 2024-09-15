@@ -1,5 +1,7 @@
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/row.dart';
+import 'package:challenges/components/text.dart';
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomDateRangePicker extends StatelessWidget {
@@ -20,24 +22,44 @@ class CustomDateRangePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomColumn(
       children: [
-        CustomRow(
+        CustomColumn(
+          spacing: SpacingType.medium,
           children: [
             CustomColumn(
+              spacing: SpacingType.small,
               children: [
-                CustomColumn(
+                CustomRow(
+                  spacing: SpacingType.small,
                   children: [
-                    Text(startText),
-                    Text(dateRange.start.toString().substring(0, 10)),
+                    CustomText(text: startText),
+                    CustomText(
+                      text: dateRange.start.toString().substring(0, 10),
+                    ),
                   ],
                 ),
                 ElevatedButton(
-                  child: const Text('Select Start Date'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorMap['blue'],
+                  ),
+                  child: const CustomText(text: 'Update Start Date'),
                   onPressed: () async {
                     final DateTime? pickerStart = await showDatePicker(
                       context: context,
                       initialDate: dateRange.start,
                       firstDate: DateTime(1111),
-                      lastDate: dateRange.end.subtract(const Duration(days: 1)),
+                      lastDate: dateRange.end.subtract(
+                        const Duration(days: 1),
+                      ),
+                      builder: (BuildContext context, Widget? child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: colorMap['blue']!,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
                     );
 
                     if (pickerStart != null) {
@@ -53,21 +75,38 @@ class CustomDateRangePicker extends StatelessWidget {
               ],
             ),
             CustomColumn(
+              spacing: SpacingType.small,
               children: [
-                CustomColumn(
+                CustomRow(
+                  spacing: SpacingType.small,
                   children: [
-                    Text(endText),
-                    Text(dateRange.end.toString().substring(0, 10)),
+                    CustomText(text: endText),
+                    CustomText(text: dateRange.end.toString().substring(0, 10)),
                   ],
                 ),
                 ElevatedButton(
-                  child: const Text('Select End Date'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorMap['blue'],
+                  ),
+                  child: const CustomText(text: 'Update End Date'),
                   onPressed: () async {
                     final DateTime? pickerEnd = await showDatePicker(
                       context: context,
                       initialDate: dateRange.end,
-                      firstDate: dateRange.start.add(const Duration(days: 1)),
+                      firstDate: dateRange.start.add(
+                        const Duration(days: 1),
+                      ),
                       lastDate: DateTime(2222),
+                      builder: (BuildContext context, Widget? child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: colorMap['blue']!,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
                     );
 
                     if (pickerEnd != null) {

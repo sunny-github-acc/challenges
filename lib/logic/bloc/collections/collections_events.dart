@@ -18,12 +18,20 @@ class CollectionsEventAddCollection implements CollectionsEvent {
 
 @immutable
 class CollectionsEventGetCollection implements CollectionsEvent {
-  const CollectionsEventGetCollection();
+  final Map<String, dynamic> query;
+
+  const CollectionsEventGetCollection({
+    required this.query,
+  });
 }
 
 @immutable
 class CollectionsEventInitiateStream implements CollectionsEvent {
-  const CollectionsEventInitiateStream();
+  final Map<String, dynamic> query;
+
+  const CollectionsEventInitiateStream({
+    required this.query,
+  });
 }
 
 @immutable

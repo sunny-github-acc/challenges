@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class EditableTextWidget extends StatefulWidget {
   final String text;
+  final String hint;
+  final bool isTitle;
   final void Function(String) onSave;
   final bool isTextRequired;
 
@@ -10,6 +12,8 @@ class EditableTextWidget extends StatefulWidget {
     super.key,
     required this.text,
     required this.onSave,
+    this.hint = '',
+    this.isTitle = false,
     this.isTextRequired = false,
   });
 
@@ -61,21 +65,16 @@ class EditableTextWidgetState extends State<EditableTextWidget> {
                   child: TextField(
                     controller: _textEditingController,
                     focusNode: _focusNode,
-                    onEditingComplete: () =>
-                        handleSubmit(_textEditingController.text),
+                    onEditingComplete: () => handleSubmit(
+                      _textEditingController.text,
+                    ),
                   ),
                 )
-              : Container(
-                  decoration: BoxDecoration(
-                    border:
-                        Border.all(color: Colors.grey), // Set border properties
-                    borderRadius: BorderRadius.circular(
-                        5.0), // Optional: Set border radius
-                  ),
-                  child: TextCustom(
-                    text: widget.text,
-                    fullWidth: true,
-                  )),
+              : CustomText(
+                  text: widget.text.trim() != '' ? widget.text : widget.hint,
+                  fontSize:
+                      widget.isTitle ? FontSizeType.large : FontSizeType.medium,
+                ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class FloatingButton extends StatelessWidget {
@@ -14,8 +15,8 @@ class FloatingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor = Colors.white;
-    Color borderColor = Colors.green.shade200;
+    Color textColor = colorMap['white']!;
+    Color borderColor = colorMap['blue']!;
 
     return Align(
       alignment: alignment,

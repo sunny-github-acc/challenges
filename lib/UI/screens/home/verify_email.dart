@@ -1,5 +1,8 @@
+import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
@@ -30,55 +33,51 @@ class VerifyEmail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ContainerGradient(
-        child: Column(
+      appBar: const CustomAppBar(
+        title: 'Verify Email',
+      ),
+      body: CustomContainer(
+        child: CustomColumn(
+          spacing: SpacingType.medium,
           children: [
-            Flexible(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'The email is not yet verified. Please check your email for a verification link.',
-                    ),
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        final isLoading = state.isLoading &&
-                            state.event is AuthEventVerifyEmail;
+            const CustomText(
+              text:
+                  'You need to verify your email before you can create challenges. Please check your email and click the link to verify your email.',
+            ),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                final isLoading =
+                    state.isLoading && state.event is AuthEventVerifyEmail;
 
-                        return CustomButton(
-                          type: ButtonType.secondary,
-                          text: "I've verified the email",
-                          onPressed: () => _verifyEmail(context),
-                          isLoading: isLoading,
-                          disabled: isLoading,
-                          // handle loading
-                        );
-                      },
-                    ),
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        final isLoading = state.isLoading &&
-                            state.event is AuthEventResendVerificationEmail;
+                return CustomButton(
+                  text: "I've verified the email",
+                  onPressed: () => _verifyEmail(context),
+                  isLoading: isLoading,
+                  disabled: isLoading,
+                  // handle loading
+                );
+              },
+            ),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                final isLoading = state.isLoading &&
+                    state.event is AuthEventResendVerificationEmail;
 
-                        return CustomButton(
-                          type: ButtonType.secondary,
-                          text: 'Resend', // the verification email',
-                          onPressed: () => _resendVerificationEmail(context),
-                          isLoading: isLoading,
-                          disabled: isLoading,
-                          // handle loading
-                        );
-                      },
-                    ),
-                    CustomButton(
-                      text: 'Logout',
-                      onPressed: () => _logout(context),
-                      // handle loading
-                    ),
-                  ],
-                ),
-              ),
+                return CustomButton(
+                  type: ButtonType.secondary,
+                  text: 'Resend verification email',
+                  onPressed: () => _resendVerificationEmail(context),
+                  isLoading: isLoading,
+                  disabled: isLoading,
+                  // handle loading
+                );
+              },
+            ),
+            CustomButton(
+              text: 'Logout',
+              onPressed: () => _logout(context),
+              type: ButtonType.secondary,
+              // handle loading
             ),
           ],
         ),

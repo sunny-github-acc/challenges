@@ -1,3 +1,4 @@
+import 'package:challenges/components/text.dart';
 import 'package:flutter/material.dart';
 
 class Modal {
@@ -6,12 +7,12 @@ class Modal {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          title: CustomText(text: title),
+          content: CustomText(text: content),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: const CustomText(text: 'Close'),
             ),
           ],
         );

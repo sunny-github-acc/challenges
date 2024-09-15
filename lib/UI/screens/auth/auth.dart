@@ -35,41 +35,46 @@ class _AuthState extends State<Auth> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ContainerGradient(
-        child: Center(
-          child: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              final isLoading =
-                  state.isLoading && state.event is AuthEventGoogleLogIn;
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final isLoading =
+            state.isLoading && state.event is AuthEventGoogleLogIn;
 
-              return CustomColumn(
-                children: [
-                  CustomButton(
-                    onPressed: () => _navigateToSignupScreen(context),
-                    text: 'Register',
-                    disabled: isLoading,
-                  ),
-                  CustomButton(
-                    type: ButtonType.secondary,
-                    text: 'Sign In',
-                    disabled: isLoading,
-                    onPressed: () => _navigateToLoginScreen(context),
-                  ),
-                  CustomButton(
-                    type: ButtonType.transparent,
-                    text: 'Continue with Google',
-                    icon: IconType.google,
-                    isLoading: isLoading,
-                    disabled: isLoading,
-                    onPressed: () => _loginGoogle(),
-                  )
-                ],
-              );
-            },
+        return Scaffold(
+          body: CustomContainer(
+            isSingleChildScrollView: false,
+            isFull: true,
+            child: CustomColumn(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: SpacingType.medium,
+              children: [
+                CustomButton(
+                  onPressed: () => _navigateToSignupScreen(context),
+                  text: 'Register',
+                  disabled: isLoading,
+                  icon: IconType.register,
+                ),
+                CustomButton(
+                  type: ButtonType.secondary,
+                  text: 'Sign In',
+                  disabled: isLoading,
+                  icon: IconType.signIn,
+                  onPressed: () => _navigateToLoginScreen(context),
+                ),
+                CustomButton(
+                  type: ButtonType.secondary,
+                  text: 'Continue with Google',
+                  icon: IconType.google,
+                  isLoading: isLoading,
+                  disabled: isLoading,
+                  onPressed: () => _loginGoogle(),
+                )
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

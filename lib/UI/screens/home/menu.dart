@@ -2,6 +2,7 @@ import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/switch.dart';
 import 'package:challenges/components/text.dart';
@@ -19,13 +20,7 @@ class Menu extends StatefulWidget {
 }
 
 class _Menu extends State<Menu> {
-  @override
-  void initState() {
-    super.initState();
-    initValues(context);
-  }
-
-  void initValues(context) async {
+  void getFilterSettings(context) async {
     FilterSettingsBloc bloc = BlocProvider.of<FilterSettingsBloc>(context);
 
     if (bloc.state is! FilterSettingsStateLoad) {
@@ -34,19 +29,33 @@ class _Menu extends State<Menu> {
   }
 
   void toggleSwitch(String key, bool value) {
-    BlocProvider.of<FilterSettingsBloc>(context)
-        .add(FilterSettingsEventUpdateFilterSettings(key: key, value: value));
+    BlocProvider.of<FilterSettingsBloc>(context).add(
+      FilterSettingsEventUpdateFilterSettings(
+        key: key,
+        value: value,
+      ),
+    );
+  }
+
+  void handleDuration(String value) {
+    BlocProvider.of<FilterSettingsBloc>(context).add(
+      FilterSettingsEventUpdateFilterSettings(
+        key: 'duration',
+        value: value,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-        title: 'Menu',
+        title: 'Filter Settings',
       ),
       body: SingleChildScrollView(
-        child: ContainerGradient(
-          padding: 8,
+        child: CustomContainer(
+          paddingHorizontal: 12,
+          paddingVertical: 16,
           child: CustomColumn(
             children: [
               BlocBuilder<FilterSettingsBloc, FilterSettingsState>(
@@ -59,53 +68,116 @@ class _Menu extends State<Menu> {
                   if (state.error != null) {
                     return CustomColumn(
                       children: [
-                        TextCustom(
+                        CustomText(
                           text: state.error!.dialogText,
                         ),
                         ElevatedButton(
-                          onPressed: () => initValues(context),
-                          child: const Text('Refresh'),
+                          onPressed: () => getFilterSettings(context),
+                          child: const CustomText(text: 'Refresh'),
                         ),
                       ],
                     );
                   }
 
                   bool isUpdating = state.isLoading;
-                  bool isPrivate = isUpdating && state.key == 'isPrivate';
-                  bool isFinished = isUpdating && state.key == 'isFinished';
+                  bool isDuration = isUpdating && state.key == 'duration';
 
                   return CustomColumn(
                     children: [
+                      const CustomText(
+                        text: 'Customize your settings',
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                        ),
+                        child: null,
+                      ),
                       CustomRow(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: SpacingType.small,
                         children: [
-                          const TextCustom(
-                              text: 'Only show private challenges'),
-                          isPrivate
-                              ? const CustomCircularProgressIndicator()
-                              : SwitchCustom(
-                                  value: state.filterSettings['isPrivate'],
-                                  onChanged: isUpdating
-                                      ? () => null
-                                      : (value) =>
-                                          toggleSwitch('isPrivate', value),
-                                ),
+                          SwitchCustom(
+                            value: state.filterSettings['isPrivate'],
+                            onChanged: !isUpdating
+                                ? (value) => toggleSwitch('isPrivate', value)
+                                : null,
+                          ),
+                          const CustomText(
+                            text: 'Show Personal Challenges Only',
+                          ),
                         ],
                       ),
                       CustomRow(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: SpacingType.small,
                         children: [
-                          const TextCustom(
-                              text: 'Only show finished challenges'),
-                          isFinished
-                              ? const CustomCircularProgressIndicator()
-                              : SwitchCustom(
-                                  value: state.filterSettings['isFinished'],
-                                  onChanged: isUpdating
-                                      ? () => null
-                                      : (value) => toggleSwitch(
-                                            'isFinished',
-                                            value,
-                                          ),
-                                ),
+                          SwitchCustom(
+                            value: state.filterSettings['isIncludeFinished'],
+                            onChanged: !isUpdating
+                                ? (value) => toggleSwitch(
+                                      'isIncludeFinished',
+                                      value,
+                                    )
+                                : null,
+                          ),
+                          const CustomText(
+                            text: 'Include Finished Challenges',
+                          ),
+                        ],
+                      ),
+                      CustomRow(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: SpacingType.small,
+                        children: [
+                          SwitchCustom(
+                            value: state.filterSettings['isFinished'] == true,
+                            onChanged: !isUpdating
+                                ? (value) => toggleSwitch(
+                                      'isFinished',
+                                      value,
+                                    )
+                                : null,
+                          ),
+                          const CustomText(
+                            text: 'Show Only Finished Challenges',
+                          ),
+                        ],
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 2,
+                        ),
+                        child: null,
+                      ),
+                      const Divider(),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                        ),
+                        child: null,
+                      ),
+                      CustomColumn(
+                        children: [
+                          const CustomText(
+                            text: 'The duration of the challenges',
+                          ),
+                          CustomDropdown(
+                            values: const [
+                              'Week',
+                              'Month',
+                              'Year',
+                              'Infinite',
+                              'All',
+                            ],
+                            hint: 'Select an option',
+                            value: state.filterSettings['duration'],
+                            onChanged: (dynamic value) {
+                              if (!isDuration) {
+                                handleDuration(value as String);
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ],

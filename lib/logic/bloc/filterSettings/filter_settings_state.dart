@@ -42,7 +42,7 @@ class FilterSettingsStateLoad extends FilterSettingsState {
 
   @override
   String toString() =>
-      '🚀 FilterSettingsStateLoad: (filterSettings: $filterSettings, key: $key, success: $success, error: $error)';
+      '🚀 FilterSettingsStateLoad: (filterSettings: $filterSettings, isLoading: $isLoading, key: $key, success: $success, error: $error)';
 }
 
 extension GetFilterSettings on FilterSettingsState {

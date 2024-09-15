@@ -1,5 +1,6 @@
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
@@ -58,38 +59,38 @@ class SignupPasswordState extends State<SignupPassword> {
       appBar: const CustomAppBar(
         title: 'Nice to meet you',
       ),
-      body: ContainerGradient(
-        child: Center(
-          child: Column(
-            children: [
-              CustomInput(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-                controller: passwordController,
-                isObscureText: true,
-                isAutocorrect: false,
-                isDisabled: !isPassword,
-              ),
-              CustomInput(
-                labelText: 'Repeat Password',
-                hintText: 'Repeat your password',
-                controller: passwordRepeatController,
-                isObscureText: true,
-                isAutocorrect: false,
-                isDisabled: !isPasswordRepeat,
-              ),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  return CustomButton(
-                    text: 'Signup',
-                    onPressed: () => _signup(context),
-                    isLoading: state.isLoading,
-                    disabled: state.isLoading,
-                  );
-                },
-              ),
-            ],
-          ),
+      body: CustomContainer(
+        child: CustomColumn(
+          spacing: SpacingType.medium,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomInput(
+              hintText: 'Password',
+              labelText: 'Enter your password',
+              controller: passwordController,
+              isObscureText: true,
+              isAutocorrect: false,
+              isDisabled: !isPassword,
+            ),
+            CustomInput(
+              hintText: 'Repeat Password',
+              labelText: 'Repeat your password',
+              controller: passwordRepeatController,
+              isObscureText: true,
+              isAutocorrect: false,
+              isDisabled: !isPasswordRepeat,
+            ),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return CustomButton(
+                  text: 'Signup',
+                  onPressed: () => _signup(context),
+                  isLoading: state.isLoading,
+                  disabled: state.isLoading,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

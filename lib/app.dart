@@ -3,15 +3,20 @@ import 'package:challenges/UI/screens/auth/auth.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/verify_email.dart';
 import 'package:challenges/components/modal.dart';
+import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
+import 'package:challenges/logic/bloc/collections/collections_state.dart';
 import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
+import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
+import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -55,103 +60,148 @@ class _MyAppState extends State<MyApp> {
         onGenerateRoute: (settings) => appRouter.onGenerateRoute(settings),
         home: MultiBlocListener(
           listeners: [
-            BlocListener<InternetBloc, InternetState>(
+            BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                if (state is InternetConnected) {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Connected ✨'),
-                        duration: Duration(seconds: 1)),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('No internet connection 🙈'),
-                        duration: Duration(days: 999)),
+                FilterSettingsBloc filterSettingsBloc =
+                    BlocProvider.of<FilterSettingsBloc>(context);
+                FilterSettingsState filterSettingsState =
+                    filterSettingsBloc.state;
+
+                if (state is! AuthStateLoggedOut &&
+                    filterSettingsState is FilterSettingsStateEmpty &&
+                    state.user != null) {
+                  filterSettingsBloc.add(
+                    const FilterSettingsEventGetFilterSettings(),
                   );
                 }
               },
             ),
+            BlocListener<FilterSettingsBloc, FilterSettingsState>(
+              listener: (context, state) {
+                User? user = BlocProvider.of<AuthBloc>(context).state.user;
+
+                FilterSettingsBloc filterSettingsBloc =
+                    BlocProvider.of<FilterSettingsBloc>(context);
+                FilterSettingsState filterSettingsState =
+                    filterSettingsBloc.state;
+                print('check if filterSettingsState is state');
+                CollectionsBloc collectionsBloc =
+                    BlocProvider.of<CollectionsBloc>(context);
+                CollectionsState collectionsState = collectionsBloc.state;
+
+                if (user?.emailVerified == true &&
+                    !filterSettingsState.isLoading &&
+                    filterSettingsState.filterSettings.isNotEmpty) {
+                  Map<String, dynamic> filterSettingsQuery =
+                      filterSettingsState.filterSettings;
+
+                  if (collectionsState is CollectionsStateEmpty) {
+                    collectionsBloc.add(
+                      CollectionsEventInitiateStream(
+                        query: filterSettingsQuery,
+                      ),
+                    );
+                  } else {
+                    collectionsBloc.add(
+                      CollectionsEventGetCollection(
+                        query: filterSettingsQuery,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
           ],
-          child: BlocBuilder<AuthBloc, AuthState>(
+          child: BlocBuilder<InternetBloc, InternetState>(
             builder: (context, state) {
               if (kDebugMode) {
-                print('🚀 AuthBloc state: $state');
+                print('🚀 InternetBloc state: $state');
               }
 
-              throwError() {
-                SchedulerBinding.instance.addPostFrameCallback(
-                  (_) {
-                    Modal.show(
-                      context,
-                      state.error!.dialogTitle,
-                      state.error!.dialogText,
-                    );
-                  },
-                );
-              }
-
-              throwSuccess() {
-                SchedulerBinding.instance.addPostFrameCallback(
-                  (_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(state.success!),
-                          duration: const Duration(seconds: 2)),
-                    );
-                  },
-                );
-              }
-
-              if (state is AuthStateEmpty) {
-                BlocProvider.of<AuthBloc>(context)
-                    .add(const AuthEventInitialize());
-
+              if (state is! InternetConnected) {
                 return const Scaffold(
                   body: Center(
-                    child: CircularProgressIndicator(),
+                    child: CustomText(text: 'No internet connection 🙈'),
                   ),
                 );
               }
 
-              if (state.user != null) {
-                SchedulerBinding.instance.addPostFrameCallback(
-                  (_) {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                );
+              return BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (kDebugMode) {
+                    print('🚀 AuthBloc state: $state');
+                  }
 
-                if (state.success != null) {
-                  throwSuccess();
-                }
+                  if (state is AuthStateEmpty) {
+                    BlocProvider.of<AuthBloc>(context).add(
+                      const AuthEventInitialize(),
+                    );
 
-                if (state.error != null) {
-                  throwError();
-                }
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
 
-                if (state.user?.emailVerified == true) {
-                  BlocProvider.of<CollectionsBloc>(context).add(
-                    const CollectionsEventInitiateStream(),
-                  );
+                  throwError() {
+                    SchedulerBinding.instance.addPostFrameCallback(
+                      (_) {
+                        Modal.show(
+                          context,
+                          state.error!.dialogTitle,
+                          state.error!.dialogText,
+                        );
+                      },
+                    );
+                  }
 
-                  return const Home();
-                }
+                  throwSuccess() {
+                    SchedulerBinding.instance.addPostFrameCallback(
+                      (_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: CustomText(text: state.success!),
+                              duration: const Duration(seconds: 2)),
+                        );
+                      },
+                    );
+                  }
 
-                return const VerifyEmail();
-              }
+                  if (state.user != null) {
+                    SchedulerBinding.instance.addPostFrameCallback(
+                      (_) {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                      },
+                    );
 
-              if (state.success != null) {
-                throwSuccess();
-              }
+                    if (state.success != null) {
+                      throwSuccess();
+                    }
 
-              if (state.error != null) {
-                throwError();
-              }
+                    if (state.error != null) {
+                      throwError();
+                    }
 
-              return const Auth();
+                    if (state.user?.emailVerified == true) {
+                      return const Home();
+                    }
+
+                    return const VerifyEmail();
+                  }
+
+                  if (state.success != null) {
+                    throwSuccess();
+                  }
+
+                  if (state.error != null) {
+                    throwError();
+                  }
+
+                  return const Auth();
+                },
+              );
             },
           ),
         ),

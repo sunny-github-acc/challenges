@@ -1,8 +1,9 @@
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
   final Widget child;
-  final Color color;
+  final Color? color;
   final double borderRadius;
   final EdgeInsets padding;
   final VoidCallback? onPressed;
@@ -10,7 +11,7 @@ class CustomCard extends StatelessWidget {
   const CustomCard({
     super.key,
     required this.child,
-    this.color = Colors.white,
+    this.color,
     this.borderRadius = 8.0,
     this.padding = const EdgeInsets.all(16.0),
     this.onPressed,
@@ -20,7 +21,7 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (onPressed == null) {
       return Card(
-        color: color,
+        color: color ?? colorMap['white']!,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),

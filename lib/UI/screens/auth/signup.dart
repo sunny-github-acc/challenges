@@ -1,6 +1,7 @@
 import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
@@ -60,33 +61,33 @@ class SignupState extends State<Signup> {
       appBar: const CustomAppBar(
         title: 'Nice to meet you',
       ),
-      body: ContainerGradient(
-        child: Center(
-          child: Column(
-            children: [
-              CustomInput(
-                labelText: 'Username',
-                hintText: 'Enter your username',
-                controller: usernameController,
-                isDisabled: !isUsername,
+      body: CustomContainer(
+        child: CustomColumn(
+          spacing: SpacingType.medium,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomInput(
+              hintText: 'Username',
+              labelText: 'Enter your username',
+              controller: usernameController,
+              isDisabled: !isUsername,
+            ),
+            CustomInput(
+              hintText: 'Email',
+              labelText: 'Enter your email',
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              isDisabled: !isEmail,
+            ),
+            CustomButton(
+              text: 'Next',
+              onPressed: () => _navigateToSignupPasswordScreen(
+                context,
+                usernameController.text.trim(),
+                emailController.text.trim(),
               ),
-              CustomInput(
-                labelText: 'Email',
-                hintText: 'Enter your email',
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                isDisabled: !isEmail,
-              ),
-              CustomButton(
-                text: 'Next',
-                onPressed: () => _navigateToSignupPasswordScreen(
-                  context,
-                  usernameController.text.trim(),
-                  emailController.text.trim(),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

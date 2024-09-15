@@ -1,37 +1,22 @@
-import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
-import 'package:challenges/logic/bloc/collection/collection_events.dart';
+import 'package:challenges/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Challenge extends StatelessWidget {
   final Map<String, dynamic> collection;
-  final String parent;
 
   const Challenge({
     Key? key,
     required this.collection,
-    required this.parent,
   }) : super(key: key);
 
-  void _openUserProfile(BuildContext context, String uid) {
+  openUserProfile(BuildContext context, String uid) {
     print('finish profile');
     print('finish profile');
-  }
-
-  void setStatus(BuildContext context, bool status) {
-    Map<String, dynamic> updatedCollection = {
-      'isCompleted': status,
-    };
-
-    BlocProvider.of<CollectionBloc>(context).add(
-      CollectionEventUpdateCollection(
-        collection: updatedCollection,
-      ),
-    );
   }
 
   @override
@@ -41,121 +26,140 @@ class Challenge extends StatelessWidget {
     dynamic endDateDynamic = collection['endDate'];
     dynamic endDate =
         endDateDynamic is Timestamp ? endDateDynamic.toDate() : endDateDynamic;
-    String endDateString = endDate.toString().substring(0, 10);
-    dynamic createdAtDynamic = collection['createdAt'];
-    dynamic createdAt = createdAtDynamic is Timestamp
-        ? createdAtDynamic.toDate()
-        : createdAtDynamic;
+    dynamic startDateDynamic = collection['startDate'];
+    dynamic startDate = startDateDynamic is Timestamp
+        ? startDateDynamic.toDate()
+        : startDateDynamic;
     int daysSinceStart =
-        DateTime.now().difference(DateTime.parse(createdAt.toString())).inDays;
+        DateTime.now().difference(DateTime.parse(startDate.toString())).inDays;
     int daysLeft =
         DateTime.parse(endDate.toString()).difference(DateTime.now()).inDays +
             1;
     Map user = authService.getUser();
     bool isOwner = user['email'] == collection['email'];
-    bool showSetStatus = isOwner && parent == 'display_challenge';
 
-    return Column(
+    return CustomColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: SpacingType.medium,
       children: [
-        CustomRow(children: [
-          GestureDetector(
-            onTap: () => _openUserProfile(context, collection['uid']),
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 0,
-                vertical: 12.0,
-              ),
-              child: collection['photoURL'] == null
-                  ? Image.asset(
-                      'assets/grow.png',
-                      height: 20.0,
-                    )
-                  : ClipOval(
-                      child: Image.network(
+        GestureDetector(
+          onTap: () => openUserProfile(context, collection['uid']),
+          child: CustomRow(
+            spacing: SpacingType.small,
+            flex: const [0, 1],
+            children: [
+              ClipOval(
+                child: collection['photoURL'] != null
+                    ? Image.network(
                         collection['photoURL'],
-                        height: 20,
+                        height: 34,
                         fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/avatar.png',
+                        height: 34,
+                        fit: BoxFit.cover,
+                        color: colorMap['black'],
                       ),
-                    ),
-            ),
-          ),
-          TextCustom(
-            text: collection['displayName'],
-            fontWeight: FontWeight.bold,
-          ),
-        ]),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const TextCustom(
-              text: 'Title',
-              fontWeight: FontWeight.bold,
-            ),
-            TextCustom(text: collection['title']),
-            if (description != '') ...[
-              const TextCustom(
-                text: 'Description',
-                fontWeight: FontWeight.bold,
               ),
-              TextCustom(text: description)
+              CustomText(
+                text: collection['displayName'],
+                // fontWeight: FontWeight.bold,
+                fontSize: FontSizeType.xlarge,
+              ),
             ],
-            const TextCustom(
-              text: 'Period',
-              fontWeight: FontWeight.bold,
-            ),
-            TextCustom(
-                text: collection['isUnlimited'] == true
-                    ? 'Unlimited ($daysSinceStart days since start)'
-                    : '$endDateString ($daysLeft days left)'),
-            if (consequence != '') ...[
-              const TextCustom(
-                text: 'Consequence',
-                fontWeight: FontWeight.bold,
+          ),
+        ),
+        CustomText(
+          text: collection['title'],
+          fontSize: FontSizeType.large,
+        ),
+        if (description != '')
+          CustomRow(
+            spacing: SpacingType.small,
+            flex: const [0, 1],
+            children: [
+              Image.asset(
+                'assets/description.png',
+                width: 24,
+                height: 24,
               ),
-              TextCustom(text: consequence)
-            ],
-            const TextCustom(
-              text: 'Visibility',
-              fontWeight: FontWeight.bold,
-            ),
-            TextCustom(
-              text: collection['visibility'],
-            ),
-            collection['isCompleted'] != null
-                ? const TextCustom(
-                    text: 'Status',
-                    fontWeight: FontWeight.bold,
-                  )
-                : Container(),
-            collection['isCompleted'] != null
-                ? TextCustom(
-                    text: collection['isCompleted'] == true
-                        ? 'Completed'
-                        : 'Failed',
-                  )
-                : Container(),
-            if (showSetStatus)
-              const TextCustom(
-                text: 'Set status',
-                fontWeight: FontWeight.bold,
-              ),
-            if (showSetStatus)
-              CustomButton(
-                onPressed: () => setStatus(context, true),
-                text: 'Challenge Completed',
-                size: ButtonSize.small,
-                type: ButtonType.primary,
-              ),
-            if (showSetStatus)
-              CustomButton(
-                onPressed: () => setStatus(context, false),
-                text: 'Challenge Failed',
-                size: ButtonSize.small,
-                type: ButtonType.secondary,
+              CustomText(
+                text: description,
               )
+            ],
+          ),
+        if (consequence != '')
+          CustomRow(
+            spacing: SpacingType.small,
+            flex: const [0, 1],
+            children: [
+              Image.asset(
+                'assets/consequence.png',
+                width: 24,
+                height: 24,
+              ),
+              CustomText(
+                text: consequence,
+              ),
+            ],
+          ),
+        CustomRow(
+          spacing: SpacingType.small,
+          flex: const [0, 1],
+          children: [
+            Image.asset(
+              'assets/days.png',
+              width: 24,
+              height: 24,
+            ),
+            CustomText(
+              text: collection['duration'] == 'Infinite'
+                  ? 'Infinite Challenge 🤩\n$daysSinceStart days since start'
+                  : '${collection["duration"]}ly challenge ends in $daysLeft days - $daysSinceStart days since start',
+            ),
           ],
         ),
+        if (isOwner)
+          CustomRow(
+            spacing: SpacingType.small,
+            children: [
+              Image.asset(
+                collection['isPrivate']
+                    ? 'assets/private.png'
+                    : 'assets/public.png',
+                width: 24,
+                height: 24,
+              ),
+              CustomText(
+                text: collection['isPrivate']
+                    ? 'Private Challenge'
+                    : 'Public Challenge',
+              ),
+            ],
+          ),
+        if (collection['isFinished'])
+          CustomRow(
+            spacing: SpacingType.small,
+            flex: const [0, 1],
+            children: [
+              Image.asset(
+                collection['isSuccess']
+                    ? 'assets/completed.png'
+                    : 'assets/failed.png',
+                width: 24,
+                height: 24,
+                color: collection['isSuccess']
+                    ? colorMap['green']
+                    : colorMap['red'],
+              ),
+              CustomText(
+                text: collection['isSuccess']
+                    ? 'Challenge Completed'
+                    : 'Challenge Failed',
+              ),
+            ],
+          ),
       ],
     );
   }

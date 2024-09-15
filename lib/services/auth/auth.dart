@@ -93,8 +93,9 @@ class AuthService {
       Map<String, dynamic> document = {
         'uid': id,
         'isPrivate': false,
-        'isCompleted': false,
-        'isUnlimited': false,
+        'isIncludeFinished': false,
+        'isFinished': false,
+        'duration': 'All',
       };
 
       await cloudService.setCollection(

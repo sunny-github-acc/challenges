@@ -3,7 +3,6 @@ import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
 import 'package:challenges/UI/screens/auth/signup_password.dart';
 import 'package:challenges/UI/screens/home/create_challenge.dart';
-import 'package:challenges/UI/screens/home/display_challenge.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/menu.dart';
 import 'package:challenges/UI/screens/home/update_challenge.dart';
@@ -57,10 +56,6 @@ class AppRouter {
       case Routes.createChallenge:
         return MaterialPageRoute(
           builder: (context) => const CreateChallenge(),
-        );
-      case Routes.displayChallenge:
-        return MaterialPageRoute(
-          builder: (context) => const DisplayChallenge(),
         );
       case Routes.updateChallenge:
         return MaterialPageRoute(

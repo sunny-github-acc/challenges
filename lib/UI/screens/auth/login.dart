@@ -53,10 +53,12 @@ class _LoginState extends State<Login> {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
-    BlocProvider.of<AuthBloc>(context).add(AuthEventLogIn(
-      email: email,
-      password: password,
-    ));
+    BlocProvider.of<AuthBloc>(context).add(
+      AuthEventLogIn(
+        email: email,
+        password: password,
+      ),
+    );
   }
 
   Future<void> _rememberPassword(context) async {
@@ -67,7 +69,11 @@ class _LoginState extends State<Login> {
     });
 
     if (!isValidEmail(email)) {
-      return Modal.show(context, 'Oops', 'Please enter a valid email');
+      return Modal.show(
+        context,
+        'Oops',
+        'Please enter a valid email address where you would like the password reset link sent',
+      );
     }
 
     BlocProvider.of<AuthBloc>(context).add(AuthEventRememberPassword(
@@ -81,19 +87,21 @@ class _LoginState extends State<Login> {
       appBar: const CustomAppBar(
         title: 'Welcome back',
       ),
-      body: ContainerGradient(
+      body: CustomContainer(
         child: CustomColumn(
+          spacing: SpacingType.medium,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomInput(
-              labelText: 'Email',
-              hintText: 'Enter your email',
+              hintText: 'Email',
+              labelText: 'Enter your email',
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               isDisabled: !isEmail,
             ),
             CustomInput(
-              labelText: 'Password',
-              hintText: 'Enter your password',
+              hintText: 'Password',
+              labelText: 'Enter your password',
               controller: _passwordController,
               isObscureText: true,
               isAutocorrect: false,
@@ -123,7 +131,7 @@ class _LoginState extends State<Login> {
 
                 return CustomButton(
                   text: 'Forgot password?',
-                  type: ButtonType.transparent,
+                  type: ButtonType.secondary,
                   size: ButtonSize.small,
                   isLoading: isLoading,
                   disabled: isLoading,

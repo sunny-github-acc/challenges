@@ -1,3 +1,7 @@
+import 'package:challenges/components/circular_progress_indicator.dart';
+import 'package:challenges/components/column.dart';
+import 'package:challenges/components/text.dart';
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 import 'package:challenges/components/row.dart';
@@ -5,7 +9,7 @@ import 'package:challenges/components/row.dart';
 enum ButtonType {
   primary,
   secondary,
-  transparent,
+  danger,
 }
 
 enum ButtonSize {
@@ -16,6 +20,8 @@ enum ButtonSize {
 enum IconType {
   none,
   google,
+  register,
+  signIn,
 }
 
 class CustomButton extends StatelessWidget {
@@ -42,21 +48,24 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     double paddingVertical = 10;
     double paddingHorizontal = 20;
-    Color buttonColor = Colors.green.shade300;
-    Color textColor = Colors.white;
-    Color borderColor = Colors.green.shade200;
-    double fontSize = 30;
-    FontWeight fontWeight = FontWeight.bold;
+    Color buttonColor = colorMap['blue']!;
+    Color textColor = colorMap['white']!;
+    Color borderColor = colorMap['blue']!;
+    double fontSize = 24;
+    FontWeight fontWeight = FontWeight.normal;
     String iconPath = '';
+    Color? iconColor = colorMap['white'];
 
     if (type == ButtonType.secondary) {
-      buttonColor = Colors.transparent;
-      textColor = Colors.black26;
-      borderColor = Colors.green.shade200;
-    } else if (type == ButtonType.transparent) {
-      buttonColor = Colors.transparent;
-      textColor = Colors.black26;
-      borderColor = Colors.transparent;
+      buttonColor = colorMap['white']!;
+      textColor = colorMap['black']!;
+
+      if (icon == IconType.register || icon == IconType.signIn) {
+        iconColor = colorMap['black'];
+      }
+    } else if (type == ButtonType.danger) {
+      buttonColor = colorMap['red']!;
+      borderColor = colorMap['red']!;
     }
 
     if (size == ButtonSize.small) {
@@ -68,51 +77,69 @@ class CustomButton extends StatelessWidget {
 
     if (icon == IconType.google) {
       iconPath = 'assets/google.png';
+      iconColor = null;
+    } else if (icon == IconType.register) {
+      iconPath = 'assets/register.png';
+    } else if (icon == IconType.signIn) {
+      iconPath = 'assets/signIn.png';
     }
 
     ButtonStyle buttonStyle = ButtonStyle(
       backgroundColor: MaterialStateProperty.all<Color?>(buttonColor),
       padding: MaterialStateProperty.all<EdgeInsets>(
         EdgeInsets.symmetric(
-            vertical: paddingVertical, horizontal: paddingHorizontal),
+          vertical: paddingVertical,
+          horizontal: paddingHorizontal,
+        ),
       ),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
-          side: BorderSide(color: borderColor, width: 2.0),
+          side: BorderSide(
+            color: borderColor,
+            width: 2.0,
+          ),
         ),
       ),
     );
+
+    int iconLength = icon != IconType.none ? 1 : 0;
+    int isLoadingLength = isLoading ? 1 : 0;
+    int buttonItemLength = iconLength + 1 + isLoadingLength;
 
     return ElevatedButton(
       onPressed: disabled ? null : onPressed,
       style: buttonStyle,
       child: CustomRow(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        spacing: SpacingType.medium,
+        flex: List.generate(buttonItemLength, (index) => 0),
         children: [
           if (icon != IconType.none)
             Image.asset(
               iconPath,
-              height: 20,
+              height: fontSize,
+              width: fontSize,
+              color: iconColor,
             ),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              style: TextStyle(
-                  fontSize: fontSize, color: textColor, fontWeight: fontWeight),
-              textAlign: TextAlign.center, // Center the text
+          CustomText(
+            text: text,
+            style: TextStyle(
+              fontSize: fontSize,
+              color: textColor,
+              fontWeight: fontWeight,
             ),
+            textAlign: TextAlign.center,
           ),
           if (isLoading)
-            const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                semanticsLabel: 'Circular progress indicator',
+            SizedBox(
+              height: fontSize - 5,
+              width: fontSize - 5,
+              child: const CustomCircularProgressIndicator(
+                strokeWidth: 2.5,
               ),
-            )
+            ),
         ],
       ),
     );
