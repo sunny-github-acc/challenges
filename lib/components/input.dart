@@ -45,7 +45,7 @@ class CustomInput extends StatelessWidget {
               hintText: hintText,
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: isDisabled ? colorMap['red']! : colorMap['black']!,
+                  color: isDisabled ? colorMap['red']! : colorMap['blue']!,
                   width: 1.0,
                 ),
               ),

@@ -17,8 +17,11 @@ class CustomContainer extends StatelessWidget {
   final double? marginBottom;
   final double? marginLeft;
   final double? marginRight;
+  final double? width;
   final bool isSingleChildScrollView;
   final bool isFull;
+  final bool isFullHeight;
+  final bool isFullWidth;
 
   const CustomContainer({
     Key? key,
@@ -37,8 +40,11 @@ class CustomContainer extends StatelessWidget {
     this.marginBottom,
     this.marginLeft,
     this.marginRight,
+    this.width,
     this.isSingleChildScrollView = true,
     this.isFull = false,
+    this.isFullHeight = false,
+    this.isFullWidth = false,
   }) : super(key: key);
 
   @override
@@ -59,8 +65,8 @@ class CustomContainer extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: SizedBox(
-        height: isFull ? screenHeight : availableHeight,
-        width: isFull ? screenWidth : null,
+        height: (isFull || isFullHeight) ? screenHeight : availableHeight,
+        width: (isFull || isFullWidth) ? screenWidth : width,
         child: Container(
           margin: EdgeInsets.only(
             left: margin ?? marginHorizontal,

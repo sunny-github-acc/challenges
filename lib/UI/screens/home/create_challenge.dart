@@ -70,10 +70,12 @@ class _CreateChallenge extends State<CreateChallenge> {
       return Modal.show(context, 'Oops', 'Please fill out all input fields');
     }
 
-    BlocProvider.of<CollectionsBloc>(context).add(CollectionsEventAddCollection(
-      title: 'challenges',
-      document: document,
-    ));
+    BlocProvider.of<CollectionsBloc>(context).add(
+      CollectionsEventAddCollection(
+        title: 'challenges',
+        document: document,
+      ),
+    );
   }
 
   void _handleDuration(BuildContext context, String durationParam) {

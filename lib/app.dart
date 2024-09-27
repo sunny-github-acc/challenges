@@ -15,6 +15,7 @@ import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -53,6 +54,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<FilterSettingsBloc>(
           create: (context) => FilterSettingsBloc(),
+        ),
+        BlocProvider<TribesBloc>(
+          create: (context) => TribesBloc(),
         ),
       ],
       child: MaterialApp(

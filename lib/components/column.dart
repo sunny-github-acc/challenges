@@ -18,6 +18,7 @@ class CustomColumn extends StatelessWidget {
   final List<Widget> children;
   final CrossAxisAlignment crossAxisAlignment;
   final MainAxisAlignment mainAxisAlignment;
+  final MainAxisSize mainAxisSize;
   final SpacingType spacing;
 
   const CustomColumn({
@@ -25,6 +26,7 @@ class CustomColumn extends StatelessWidget {
     required this.children,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     this.mainAxisAlignment = MainAxisAlignment.start,
+    this.mainAxisSize = MainAxisSize.max,
     this.spacing = SpacingType.none,
   }) : super(key: key);
 
@@ -33,6 +35,7 @@ class CustomColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: crossAxisAlignment,
       mainAxisAlignment: mainAxisAlignment,
+      mainAxisSize: mainAxisSize,
       children: children.map(
         (child) {
           final bool isLastChild =

@@ -22,6 +22,7 @@ enum IconType {
   google,
   register,
   signIn,
+  close,
 }
 
 class CustomButton extends StatelessWidget {
@@ -59,10 +60,8 @@ class CustomButton extends StatelessWidget {
     if (type == ButtonType.secondary) {
       buttonColor = colorMap['white']!;
       textColor = colorMap['black']!;
-
-      if (icon == IconType.register || icon == IconType.signIn) {
-        iconColor = colorMap['black'];
-      }
+      iconColor = colorMap['black'];
+      borderColor = Colors.transparent;
     } else if (type == ButtonType.danger) {
       buttonColor = colorMap['red']!;
       borderColor = colorMap['red']!;
@@ -82,6 +81,8 @@ class CustomButton extends StatelessWidget {
       iconPath = 'assets/register.png';
     } else if (icon == IconType.signIn) {
       iconPath = 'assets/signIn.png';
+    } else if (icon == IconType.close) {
+      iconPath = 'assets/close.png';
     }
 
     ButtonStyle buttonStyle = ButtonStyle(
@@ -123,15 +124,16 @@ class CustomButton extends StatelessWidget {
               width: fontSize,
               color: iconColor,
             ),
-          CustomText(
-            text: text,
-            style: TextStyle(
-              fontSize: fontSize,
-              color: textColor,
-              fontWeight: fontWeight,
+          if (text != '')
+            CustomText(
+              text: text,
+              style: TextStyle(
+                fontSize: fontSize,
+                color: textColor,
+                fontWeight: fontWeight,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
           if (isLoading)
             SizedBox(
               height: fontSize - 5,

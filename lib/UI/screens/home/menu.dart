@@ -2,6 +2,7 @@ import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/components/divider.dart';
 import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/switch.dart';
@@ -150,7 +151,7 @@ class _Menu extends State<Menu> {
                         ),
                         child: null,
                       ),
-                      const Divider(),
+                      const CustomDivider(),
                       Container(
                         margin: const EdgeInsets.symmetric(
                           vertical: 4,

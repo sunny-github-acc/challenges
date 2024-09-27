@@ -5,5 +5,6 @@ Map<String, Color> colorMap = {
   'blue': const Color.fromARGB(200, 51, 153, 255),
   'green': Colors.green,
   'white': Colors.white,
-  'black': Colors.black54,
+  'black': Colors.black87,
+  'gray': Colors.black54,
 };

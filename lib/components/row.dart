@@ -5,6 +5,7 @@ class CustomRow extends StatelessWidget {
   final List<Widget> children;
   final MainAxisSize? mainAxisSize;
   final CrossAxisAlignment crossAxisAlignment;
+  final MainAxisAlignment mainAxisAlignment;
   final SpacingType spacing;
   final List<int>? flex;
 
@@ -13,6 +14,7 @@ class CustomRow extends StatelessWidget {
     required this.children,
     this.mainAxisSize,
     this.crossAxisAlignment = CrossAxisAlignment.start,
+    this.mainAxisAlignment = MainAxisAlignment.start,
     this.spacing = SpacingType.none,
     this.flex,
   }) : super(key: key);
@@ -21,7 +23,7 @@ class CustomRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: crossAxisAlignment,
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: mainAxisAlignment,
       mainAxisSize: mainAxisSize ?? MainAxisSize.max,
       children: children.map((child) {
         final int index = children.indexOf(child);

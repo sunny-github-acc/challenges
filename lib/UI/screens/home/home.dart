@@ -1,7 +1,13 @@
 import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/UI/screens/home/dashboard.dart';
 import 'package:challenges/components/app_bar.dart';
+import 'package:challenges/components/button.dart';
+import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
+import 'package:challenges/components/divider.dart';
+import 'package:challenges/components/row.dart';
+import 'package:challenges/components/side_modal.dart';
+import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
@@ -15,16 +21,73 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class Home extends StatelessWidget {
   const Home({super.key});
 
-  void _logout(BuildContext context) {
+  void logout(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventLogOut());
   }
 
-  void _navigateToCreateChallengeScreen(BuildContext context) {
+  void navigateToCreateChallengeScreen(BuildContext context) {
     Navigator.of(context).pushNamed(Routes.createChallenge);
   }
 
-  void _navigateToMenuScreen(BuildContext context) {
+  void openModal(BuildContext context) {
+    CustomModal customModal = CustomModal(
+      child: CustomColumn(
+        spacing: SpacingType.medium,
+        children: [
+          CustomRow(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const CustomText(
+                text: 'Menu',
+                fontSize: FontSizeType.xxlarge,
+              ),
+              CustomButton(
+                text: '',
+                type: ButtonType.secondary,
+                icon: IconType.close,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          const CustomDivider(),
+          CustomButton(
+            onPressed: () => {
+              Navigator.of(context).pop(),
+              navigateToAddTribes(context),
+            },
+            text: 'Create Tribe',
+          ),
+          CustomButton(
+            onPressed: () => {
+              Navigator.of(context).pop(),
+              navigateToJoinTribes(context),
+            },
+            text: 'Join Tribe',
+          ),
+          CustomButton(
+            onPressed: () => {
+              Navigator.of(context).pop(),
+              navigateToMenuScreen(context),
+            },
+            text: 'Settings',
+          ),
+        ],
+      ),
+    );
+    customModal.show(context);
+  }
+
+  void navigateToMenuScreen(BuildContext context) {
     Navigator.of(context).pushNamed(Routes.menu);
+  }
+
+  void navigateToAddTribes(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.addTribe);
+  }
+
+  void navigateToJoinTribes(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.joinTribe);
   }
 
   @override
@@ -49,7 +112,7 @@ class Home extends StatelessWidget {
             title: appBarTitle,
             actions: [
               GestureDetector(
-                onTap: () => _logout(context),
+                onTap: () => logout(context),
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -83,7 +146,7 @@ class Home extends StatelessWidget {
             ],
             leftButton: IconButton(
               icon: const Icon(Icons.menu),
-              onPressed: () => _navigateToMenuScreen(context),
+              onPressed: () => openModal(context),
             ),
           ),
           body: const CustomContainer(
@@ -92,7 +155,7 @@ class Home extends StatelessWidget {
             child: Dashboard(),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => _navigateToCreateChallengeScreen(context),
+            onPressed: () => navigateToCreateChallengeScreen(context),
             backgroundColor: colorMap['blue'],
             child: const Icon(Icons.add),
           ),

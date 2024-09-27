@@ -3,6 +3,7 @@ import 'package:challenges/components/button.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/date.dart';
+import 'package:challenges/components/divider.dart';
 import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/editable_text.dart';
 import 'package:challenges/components/modal.dart';
@@ -161,7 +162,7 @@ class UpdateChallenge extends StatelessWidget {
                     hint: 'Press to add a consequence',
                     onSave: (input) => save(context, 'consequence', input),
                   ),
-                  const Divider(),
+                  const CustomDivider(),
                   if (collection['duration'] != 'Infinite')
                     CustomDateRangePicker(
                       dateRange: DateTimeRange(
@@ -193,7 +194,7 @@ class UpdateChallenge extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Divider(),
+                  const CustomDivider(),
                   CustomColumn(children: [
                     const CustomText(
                       text: 'Visibility',
@@ -241,7 +242,7 @@ class UpdateChallenge extends StatelessWidget {
                         )
                       ],
                     ),
-                  const Divider(),
+                  const CustomDivider(),
                   CustomButton(
                     onPressed: () => delete(
                       context,

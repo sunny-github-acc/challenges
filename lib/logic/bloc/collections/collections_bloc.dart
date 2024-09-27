@@ -23,7 +23,9 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
         );
 
         try {
-          cloudService.getCollectionStream('challenges', event.query).listen(
+          cloudService
+              .getCollectionWithFilterSettingsStream('challenges', event.query)
+              .listen(
             (data) {
               List<Map<String, dynamic>> sortedData = data
                 ..sort((a, b) {
@@ -150,7 +152,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
 
         try {
           List<Map<String, dynamic>> data =
-              await cloudService.getCollectionWithQuery(
+              await cloudService.getCollectionWithFilterSettingsQuery(
             'challenges',
             event.query,
           );

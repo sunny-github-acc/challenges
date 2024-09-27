@@ -46,7 +46,7 @@ class CloudService {
       if (data != null) {
         return data;
       } else {
-        throw Exception('no-data-found');
+        throw 'no-data-found';
       }
     } catch (error) {
       rethrow;
@@ -55,27 +55,31 @@ class CloudService {
 
   Query<Object?> getQueryBuilder(
     challenges,
-    isPrivate,
-    isFinished,
-    isIncludeFinished,
-    duration,
     query,
   ) {
+    bool isPrivate = query['isPrivate'];
+    bool isFinished = query['isFinished'];
+    bool isIncludeFinished = query['isIncludeFinished'];
+    String uid = query['uid'];
+    List<String> duration = query['duration'] == 'All'
+        ? ['Week', 'Month', 'Year', 'Infinite']
+        : [query['duration']];
+
     if (isPrivate) {
       if (!isIncludeFinished) {
         return challenges
-            .where('uid', isEqualTo: query['uid'])
+            .where('uid', isEqualTo: uid)
             .where('isFinished', isEqualTo: false)
             .where('duration', whereIn: duration);
       } else if (isFinished) {
         return challenges
-            .where('uid', isEqualTo: query['uid'])
+            .where('uid', isEqualTo: uid)
             .where('isFinished', isEqualTo: true)
             .where('duration', whereIn: duration);
       }
 
       return challenges
-          .where('uid', isEqualTo: query['uid'])
+          .where('uid', isEqualTo: uid)
           .where('duration', whereIn: duration);
     } else {
       if (!isIncludeFinished) {
@@ -92,8 +96,10 @@ class CloudService {
     return challenges.where('duration', whereIn: duration);
   }
 
-  Future<List<Map<String, dynamic>>> getCollectionWithQuery(
-      collection, Map<String, dynamic> query) async {
+  Future<List<Map<String, dynamic>>> getCollectionWithFilterSettingsQuery(
+    collection,
+    Map<String, dynamic> query,
+  ) async {
     try {
       CollectionReference challenges = FirebaseFirestore.instance
           .collection('challenges')
@@ -102,19 +108,8 @@ class CloudService {
 
       List<Map<String, dynamic>> dataList = [];
 
-      bool isPrivate = query['isPrivate'];
-      bool isFinished = query['isFinished'];
-      bool isIncludeFinished = query['isIncludeFinished'];
-      List<String> duration = query['duration'] == 'All'
-          ? ['Week', 'Month', 'Year', 'Infinite']
-          : [query['duration']];
-
       QuerySnapshot<Object?>? querySnapshot = await getQueryBuilder(
         challenges,
-        isPrivate,
-        isFinished,
-        isIncludeFinished,
-        duration,
         query,
       ).get();
       for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
@@ -130,7 +125,33 @@ class CloudService {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> getCollectionStream(
+  Future<List<Map<String, dynamic>>> getCollection(
+    collection,
+  ) async {
+    try {
+      CollectionReference challenges = FirebaseFirestore.instance
+          .collection('challenges')
+          .doc(collection)
+          .collection(collection);
+
+      List<Map<String, dynamic>> dataList = [];
+
+      QuerySnapshot<Object?>? querySnapshot = await challenges.get();
+
+      for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
+        data['id'] = documentSnapshot.id;
+        dataList.add(data);
+      }
+
+      return dataList;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Stream<List<Map<String, dynamic>>> getCollectionWithFilterSettingsStream(
     collection,
     Map<String, dynamic> query,
   ) {
@@ -141,26 +162,8 @@ class CloudService {
           .doc(collection)
           .collection(collection);
 
-      bool isPrivate = query['isPrivate'];
-      bool isFinished = query['isFinished'];
-      bool isIncludeFinished = query['isIncludeFinished'];
-      List<String> duration = query['duration'] == 'All'
-          ? [
-              'Week',
-              'Month',
-              'Year',
-              'Infinite',
-            ]
-          : [
-              query['duration'],
-            ];
-
       Stream<QuerySnapshot> querySnapshotStream = getQueryBuilder(
         challenges,
-        isPrivate,
-        isFinished,
-        isIncludeFinished,
-        duration,
         query,
       ).snapshots();
 

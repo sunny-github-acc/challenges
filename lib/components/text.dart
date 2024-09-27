@@ -1,6 +1,8 @@
+import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 enum FontSizeType {
+  xxlarge,
   xlarge,
   large,
   medium,
@@ -8,6 +10,7 @@ enum FontSizeType {
 }
 
 Map<FontSizeType, double> fontSizeMap = {
+  FontSizeType.xxlarge: 38,
   FontSizeType.xlarge: 28,
   FontSizeType.large: 24,
   FontSizeType.medium: 20,
@@ -43,6 +46,8 @@ class CustomText extends StatelessWidget {
             TextStyle(
               fontSize: fontSizeMap[fontSize],
               fontWeight: fontWeight,
+              color: colorMap['black'],
+              decoration: TextDecoration.none,
             ),
       ),
     );
