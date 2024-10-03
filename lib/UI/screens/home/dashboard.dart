@@ -20,7 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
 
-  Future<void> _loadCollectionData(context, Map<String, bool> query) async {
+  Future<void> loadCollectionData(context, Map<String, dynamic> query) async {
     BlocProvider.of<CollectionsBloc>(context).add(
       CollectionsEventGetCollection(
         query: query,
@@ -62,9 +62,10 @@ class Dashboard extends StatelessWidget {
               filterSettingsBlocState.filterSettings['isIncludeFinished'];
           bool isFinished =
               filterSettingsBlocState.filterSettings['isFinished'];
-          bool isPrivate = filterSettingsBlocState.filterSettings['isPrivate'];
-          Map<String, bool> filterSettingsQuery = {
-            'isPrivate': isPrivate,
+          Map<String, dynamic> visibility =
+              filterSettingsBlocState.filterSettings['visibility'];
+          Map<String, dynamic> filterSettingsQuery = {
+            'visibility': visibility,
             'isIncludeFinished': isIncludeFinished,
             'isFinished': isFinished,
           };
@@ -75,7 +76,7 @@ class Dashboard extends StatelessWidget {
                 CustomText(text: state.error!.dialogTitle),
                 CustomText(text: state.error!.dialogText),
                 CustomButton(
-                  onPressed: () => _loadCollectionData(
+                  onPressed: () => loadCollectionData(
                     context,
                     filterSettingsQuery,
                   ),

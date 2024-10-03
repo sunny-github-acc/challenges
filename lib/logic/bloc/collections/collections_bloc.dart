@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_error.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
@@ -13,8 +14,12 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
       : super(
           const CollectionsStateEmpty(),
         ) {
+    StreamSubscription? streamSubscription;
+
     on<CollectionsEventInitiateStream>(
       (event, emit) async {
+        streamSubscription?.cancel();
+
         emit(
           const CollectionsStateUpdated(
             isLoading: true,
@@ -23,7 +28,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
         );
 
         try {
-          cloudService
+          streamSubscription = cloudService
               .getCollectionWithFilterSettingsStream('challenges', event.query)
               .listen(
             (data) {
@@ -35,10 +40,6 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
                   return dateTimeB.compareTo(dateTimeA);
                 });
 
-              // print('sortedData');
-              // print(sortedData);
-              // print(sortedData);
-
               add(
                 CollectionsEventStream(
                   sortedData: sortedData,
@@ -48,7 +49,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           );
         } on FirebaseException catch (e) {
           if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
+            print('CollectionsEventInitiateStream FirebaseException error 🚀');
             print(e);
           }
 
@@ -60,7 +61,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           );
         } catch (e) {
           if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
+            print('CollectionsEventInitiateStream error 🚀');
             print(e);
           }
 
@@ -151,10 +152,10 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
         );
 
         try {
-          List<Map<String, dynamic>> data =
-              await cloudService.getCollectionWithFilterSettingsQuery(
+          List<Map<String, dynamic>> data = await cloudService.getCollection(
             'challenges',
             event.query,
+            queryType: QueryType.filter,
           );
           List<Map<String, dynamic>> sortedData = data
             ..sort((a, b) {
@@ -171,7 +172,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           );
         } on FirebaseException catch (e) {
           if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
+            print('CollectionsEventGetCollection FirebaseException error 🚀');
             print(e);
           }
 
@@ -183,7 +184,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           );
         } catch (e) {
           if (kDebugMode) {
-            print('CollectionsEventLogIn error 🚀');
+            print('CollectionsEventGetCollection error 🚀');
             print(e);
           }
 

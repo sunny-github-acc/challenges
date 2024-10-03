@@ -22,6 +22,7 @@ class CustomText extends StatelessWidget {
   final TextAlign textAlign;
   final FontSizeType? fontSize;
   final FontWeight fontWeight;
+  final Color? color;
   final bool fullWidth;
   final TextStyle? style;
 
@@ -30,6 +31,7 @@ class CustomText extends StatelessWidget {
     required this.text,
     this.textAlign = TextAlign.start,
     this.fontWeight = FontWeight.normal,
+    this.color,
     this.fullWidth = false,
     this.fontSize = FontSizeType.medium,
     this.style,
@@ -46,7 +48,7 @@ class CustomText extends StatelessWidget {
             TextStyle(
               fontSize: fontSizeMap[fontSize],
               fontWeight: fontWeight,
-              color: colorMap['black'],
+              color: color ?? colorMap['black'],
               decoration: TextDecoration.none,
             ),
       ),

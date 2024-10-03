@@ -101,11 +101,7 @@ class Home extends StatelessWidget {
         final isLoading = state is FilterSettingsStateEmpty ||
             state.isLoading ||
             state.filterSettings.isEmpty;
-        final appBarTitle = isLoading
-            ? 'Loading Settings'
-            : state.filterSettings['isPrivate']
-                ? 'My Challenges'
-                : 'All Challenges';
+        final appBarTitle = isLoading ? 'Loading Settings' : 'Challenges';
 
         return Scaffold(
           appBar: CustomAppBar(

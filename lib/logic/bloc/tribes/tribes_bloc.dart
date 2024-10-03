@@ -17,7 +17,10 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
 
         try {
           CloudService cloud = CloudService();
-          List<Map<String, dynamic>> data = await cloud.getCollection('tribes');
+          List<Map<String, dynamic>> data = await cloud.getCollection(
+            'tribes',
+            null,
+          );
           bool isTribePresent = data.any(
             (element) => element['name'] == event.tribe,
           );
@@ -33,6 +36,14 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
               'members': [event.user!.uid],
             },
             customDocumentId: event.tribe,
+          );
+
+          await cloud.updateCollection(
+            'users',
+            {
+              'visibility.${event.tribe}': true,
+            },
+            event.user!.uid,
           );
 
           emit(
@@ -68,14 +79,67 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
             throw 'member-already-in-tribe';
           }
 
-          await cloud.setCollection('tribes', {
-            'name': event.tribe,
-            'members': [...data['members'], event.user!.uid],
-          });
+          await cloud.updateCollection(
+            'tribes',
+            {
+              'name': event.tribe,
+              'members': [...data['members'], event.user!.uid],
+            },
+            event.tribe,
+          );
+
+          await cloud.updateCollection(
+            'users',
+            {
+              'visibility.${event.tribe}': true,
+            },
+            event.user!.uid,
+          );
 
           emit(
             TribesStateJoined(
               success: 'Tribe ${event.tribe} joined successfully',
+            ),
+          );
+        } catch (error) {
+          emit(
+            TribesStateError(
+              error: TribesError.from(
+                error,
+              ),
+            ),
+          );
+        }
+      },
+    );
+
+    on<TribesEventGetTribes>(
+      (event, emit) async {
+        emit(
+          const TribesStateGetting(),
+        );
+
+        try {
+          CloudService cloud = CloudService();
+          Map<String, dynamic> query = {
+            'uid': event.user.uid,
+          };
+
+          List<Map<String, dynamic>> data = await cloud.getCollection(
+            'tribes',
+            query,
+            queryType: QueryType.tribes,
+          );
+
+          List<String> tribes = data
+              .map(
+                (element) => element['name'] as String,
+              )
+              .toList();
+
+          emit(
+            TribesStateGot(
+              tribes: tribes,
             ),
           );
         } catch (error) {

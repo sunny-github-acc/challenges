@@ -41,7 +41,10 @@ class CustomDateRangePicker extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorMap['blue'],
                   ),
-                  child: const CustomText(text: 'Update Start Date'),
+                  child: CustomText(
+                    text: 'Update Start Date',
+                    color: colorMap['white'],
+                  ),
                   onPressed: () async {
                     final DateTime? pickerStart = await showDatePicker(
                       context: context,
@@ -88,7 +91,10 @@ class CustomDateRangePicker extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorMap['blue'],
                   ),
-                  child: const CustomText(text: 'Update End Date'),
+                  child: CustomText(
+                    text: 'Update End Date',
+                    color: colorMap['white'],
+                  ),
                   onPressed: () async {
                     final DateTime? pickerEnd = await showDatePicker(
                       context: context,

@@ -8,10 +8,16 @@ import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/components/text.dart';
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/collections/collections_state.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_events.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_state.dart';
 import 'package:challenges/services/auth/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,17 +34,33 @@ class _CreateChallenge extends State<CreateChallenge> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController consequenceController = TextEditingController();
 
+  late List<String> titles;
+
   String consequence = '';
   String duration = 'Week';
-  // String visibility = 'Public';
-  bool isPrivate = false;
+  String visibility = 'public';
   bool isTitle = true;
   bool isDuration = true;
   DateTime today = DateTime.now();
   DateTime customStartDate = DateTime.now();
   DateTime customEndDate = DateTime.now().add(const Duration(days: 7));
 
-  Future<void> _save(context) async {
+  @override
+  void initState() {
+    super.initState();
+
+    User? user = BlocProvider.of<AuthBloc>(context).state.user;
+
+    if (user != null) {
+      BlocProvider.of<TribesBloc>(context).add(
+        TribesEventGetTribes(
+          user: user,
+        ),
+      );
+    }
+  }
+
+  Future<void> save(context) async {
     AuthService authService = AuthService();
 
     String title = titleController.text.trim();
@@ -47,7 +69,7 @@ class _CreateChallenge extends State<CreateChallenge> {
 
     Map user = authService.getUser();
 
-    DateTime endDate = _getEndDate(duration, customEndDate);
+    DateTime endDate = getEndDate(duration, customEndDate);
 
     Map<String, dynamic> document = {
       ...user,
@@ -58,7 +80,7 @@ class _CreateChallenge extends State<CreateChallenge> {
       'endDate': endDate,
       'duration': duration,
       'consequence': consequence,
-      'isPrivate': isPrivate,
+      'visibility': visibility,
       'isFinished': false,
     };
 
@@ -78,19 +100,24 @@ class _CreateChallenge extends State<CreateChallenge> {
     );
   }
 
-  void _handleDuration(BuildContext context, String durationParam) {
+  void handleDuration(BuildContext context, String durationParam) {
     setState(() {
       duration = durationParam;
     });
   }
 
-  void _handleIsPrivate(BuildContext context, bool isPrivateParam) {
+  void handleVisibility(String visibilityParam) {
+    Map<String, String> visibilityMap = {
+      'Everyone': 'public',
+      'Only me': 'private',
+    };
+
     setState(() {
-      isPrivate = isPrivateParam;
+      visibility = visibilityMap[visibilityParam] ?? visibilityParam;
     });
   }
 
-  DateTime _getEndDate(duration, customDate) {
+  DateTime getEndDate(duration, customDate) {
     if (duration == 'Custom') {
       return customDate;
     } else {
@@ -151,7 +178,7 @@ class _CreateChallenge extends State<CreateChallenge> {
                   text: 'Save',
                   size: ButtonSize.small,
                   isLoading: state.isLoading,
-                  onPressed: () => _save(context),
+                  onPressed: () => save(context),
                 );
               },
             ),
@@ -198,7 +225,7 @@ class _CreateChallenge extends State<CreateChallenge> {
                       hint: 'Select an option',
                       value: duration,
                       onChanged: (dynamic value) {
-                        _handleDuration(context, value as String);
+                        handleDuration(context, value as String);
                       },
                     ),
                     if (duration == 'Custom')
@@ -222,19 +249,30 @@ class _CreateChallenge extends State<CreateChallenge> {
                     const CustomText(
                       text: 'Who can see your challenge?',
                     ),
-                    CustomDropdown(
-                      titles: const [
-                        'Everyone',
-                        'Only me',
-                      ],
-                      values: const [
-                        false,
-                        true,
-                      ],
-                      hint: 'Select an option',
-                      value: isPrivate,
-                      onChanged: (dynamic value) {
-                        _handleIsPrivate(context, value as bool);
+                    BlocBuilder<TribesBloc, TribesState>(
+                      builder: (context, state) {
+                        if (state.isLoading) {
+                          return const CustomCircularProgressIndicator(
+                            scale: 0.5,
+                          );
+                        }
+
+                        return CustomDropdown(
+                          values: [
+                            'Everyone',
+                            'Only me',
+                            ...state.tribes,
+                          ],
+                          hint: 'Select an option',
+                          value: visibility == 'private'
+                              ? 'Only me'
+                              : visibility == 'public'
+                                  ? 'Everyone'
+                                  : visibility,
+                          onChanged: (dynamic value) {
+                            handleVisibility(value as String);
+                          },
+                        );
                       },
                     ),
                   ],

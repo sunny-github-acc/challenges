@@ -57,7 +57,10 @@ class EditableTextWidgetState extends State<EditableTextWidget> {
               _isEditing = true;
               _textEditingController.text = widget.text;
             });
-            FocusScope.of(context).requestFocus(_focusNode);
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              FocusScope.of(context).requestFocus(_focusNode);
+            });
           },
           child: _isEditing
               ? SizedBox(
@@ -65,6 +68,7 @@ class EditableTextWidgetState extends State<EditableTextWidget> {
                   child: TextField(
                     controller: _textEditingController,
                     focusNode: _focusNode,
+                    autofocus: true,
                     onEditingComplete: () => handleSubmit(
                       _textEditingController.text,
                     ),

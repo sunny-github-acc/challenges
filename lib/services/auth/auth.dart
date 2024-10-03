@@ -92,8 +92,11 @@ class AuthService {
 
       Map<String, dynamic> document = {
         'uid': id,
-        'isPrivate': false,
-        'isIncludeFinished': false,
+        'visibility': {
+          'public': true,
+          'private': true,
+        },
+        'isIncludeFinished': true,
         'isFinished': false,
         'duration': 'All',
       };

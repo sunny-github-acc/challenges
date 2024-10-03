@@ -1,11 +1,11 @@
 import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class SwitchCustom extends StatelessWidget {
+class CustomSwitch extends StatelessWidget {
   final bool value;
   final Function? onChanged;
 
-  const SwitchCustom({
+  const CustomSwitch({
     Key? key,
     required this.value,
     required this.onChanged,

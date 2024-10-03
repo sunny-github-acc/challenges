@@ -63,27 +63,31 @@ class FilterSettingsBloc
         try {
           CloudService cloud = CloudService();
 
-          final user = AuthService().getUser();
-          final data = await cloud.getDocument('users', user['uid']);
-
-          Map<String, dynamic> updatedFilterSettings = data
-            ..addAll({
+          Map<String, dynamic> updatedFilterSettings = {
+            if (key == 'isFinished' && value == true) 'isIncludeFinished': true,
+            if (key == 'isIncludeFinished' && value == false)
+              'isFinished': false,
+            if (key == 'visibility') 'visibility.${event.superKey}': value,
+            if (key == 'duration' ||
+                key == 'isIncludeFinished' ||
+                key == 'isFinished')
               key: value,
-              if (key == 'isIncludeFinished' && value == false)
-                'isFinished': false,
-              if (key == 'isFinished' && value == true)
-                'isIncludeFinished': true,
-            });
+          };
 
-          await cloud.setCollection(
+          await cloud.updateCollection(
             'users',
             updatedFilterSettings,
-            customDocumentId: updatedFilterSettings['uid'],
+            state.filterSettings['uid'],
+          );
+
+          Map<String, dynamic> finalFilterSettings = await cloud.getDocument(
+            'users',
+            state.filterSettings['uid'],
           );
 
           emit(
             FilterSettingsStateLoad(
-              filterSettings: updatedFilterSettings,
+              filterSettings: finalFilterSettings,
               success: 'Filter settings updated successfully 🎉',
             ),
           );

@@ -125,16 +125,14 @@ class Challenge extends StatelessWidget {
             spacing: SpacingType.small,
             children: [
               Image.asset(
-                collection['isPrivate']
+                collection['visibility'] == 'Only me'
                     ? 'assets/private.png'
                     : 'assets/public.png',
                 width: 24,
                 height: 24,
               ),
               CustomText(
-                text: collection['isPrivate']
-                    ? 'Private Challenge'
-                    : 'Public Challenge',
+                text: '${collection['visibility']} challenge',
               ),
             ],
           ),

@@ -13,10 +13,12 @@ class FilterSettingsEventGetFilterSettings implements FilterSettingsEvent {
 @immutable
 class FilterSettingsEventUpdateFilterSettings implements FilterSettingsEvent {
   final String key;
+  final String? superKey;
   final dynamic value;
 
   const FilterSettingsEventUpdateFilterSettings({
     required this.key,
     required this.value,
+    this.superKey,
   });
 }

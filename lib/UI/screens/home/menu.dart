@@ -1,4 +1,5 @@
 import 'package:challenges/components/app_bar.dart';
+import 'package:challenges/components/checkbox.dart';
 import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
@@ -21,6 +22,14 @@ class Menu extends StatefulWidget {
 }
 
 class _Menu extends State<Menu> {
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<FilterSettingsBloc>(context).add(
+      const FilterSettingsEventGetFilterSettings(),
+    );
+  }
+
   void getFilterSettings(context) async {
     FilterSettingsBloc bloc = BlocProvider.of<FilterSettingsBloc>(context);
 
@@ -33,6 +42,16 @@ class _Menu extends State<Menu> {
     BlocProvider.of<FilterSettingsBloc>(context).add(
       FilterSettingsEventUpdateFilterSettings(
         key: key,
+        value: value,
+      ),
+    );
+  }
+
+  void handleVisibility(String key, bool value) {
+    BlocProvider.of<FilterSettingsBloc>(context).add(
+      FilterSettingsEventUpdateFilterSettings(
+        key: 'visibility',
+        superKey: key,
         value: value,
       ),
     );
@@ -83,37 +102,65 @@ class _Menu extends State<Menu> {
                   bool isUpdating = state.isLoading;
                   bool isDuration = isUpdating && state.key == 'duration';
 
+                  List<dynamic> sortedFilterSettings =
+                      state.filterSettings['visibility'].entries.map((entry) {
+                    if (entry.key == 'public') {
+                      return MapEntry(
+                        'Public challenges',
+                        entry.value,
+                      );
+                    } else {
+                      return MapEntry(
+                        entry.key,
+                        entry.value,
+                      );
+                    }
+                  }).toList()
+                        ..sort((a, b) {
+                          if (a.key == 'Public challenges') {
+                            return -1;
+                          }
+                          return 1;
+                        });
+
                   return CustomColumn(
+                    spacing: SpacingType.small,
                     children: [
                       const CustomText(
                         text: 'Customize your settings',
+                        fontSize: FontSizeType.large,
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 4,
+                      const CustomDivider(),
+                      const CustomText(
+                        text: 'What challenges do you want to see?',
+                      ),
+                      if (state.filterSettings['visibility'] != null)
+                        CustomColumn(
+                          children: sortedFilterSettings
+                              .map<Widget>(
+                                (entry) => entry.key != 'private'
+                                    ? CustomCheckbox(
+                                        isChecked: entry.value,
+                                        label: entry.key,
+                                        onChanged: (updatedValue) {
+                                          handleVisibility(
+                                            entry.key == 'Public challenges'
+                                                ? 'public'
+                                                : entry.key,
+                                            !entry.value,
+                                          );
+                                        },
+                                      )
+                                    : const SizedBox(),
+                              )
+                              .toList(),
                         ),
-                        child: null,
-                      ),
+                      const CustomDivider(),
                       CustomRow(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         spacing: SpacingType.small,
                         children: [
-                          SwitchCustom(
-                            value: state.filterSettings['isPrivate'],
-                            onChanged: !isUpdating
-                                ? (value) => toggleSwitch('isPrivate', value)
-                                : null,
-                          ),
-                          const CustomText(
-                            text: 'Show Personal Challenges Only',
-                          ),
-                        ],
-                      ),
-                      CustomRow(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: SpacingType.small,
-                        children: [
-                          SwitchCustom(
+                          CustomSwitch(
                             value: state.filterSettings['isIncludeFinished'],
                             onChanged: !isUpdating
                                 ? (value) => toggleSwitch(
@@ -123,7 +170,7 @@ class _Menu extends State<Menu> {
                                 : null,
                           ),
                           const CustomText(
-                            text: 'Include Finished Challenges',
+                            text: 'Include finished challenges',
                           ),
                         ],
                       ),
@@ -131,7 +178,7 @@ class _Menu extends State<Menu> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         spacing: SpacingType.small,
                         children: [
-                          SwitchCustom(
+                          CustomSwitch(
                             value: state.filterSettings['isFinished'] == true,
                             onChanged: !isUpdating
                                 ? (value) => toggleSwitch(
@@ -141,23 +188,11 @@ class _Menu extends State<Menu> {
                                 : null,
                           ),
                           const CustomText(
-                            text: 'Show Only Finished Challenges',
+                            text: 'Show only finished challenges',
                           ),
                         ],
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 2,
-                        ),
-                        child: null,
-                      ),
                       const CustomDivider(),
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 4,
-                        ),
-                        child: null,
-                      ),
                       CustomColumn(
                         children: [
                           const CustomText(

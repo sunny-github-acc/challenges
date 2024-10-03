@@ -70,6 +70,16 @@ class _MyAppState extends State<MyApp> {
                     BlocProvider.of<FilterSettingsBloc>(context);
                 FilterSettingsState filterSettingsState =
                     filterSettingsBloc.state;
+                Map<String, dynamic> filterSettings =
+                    filterSettingsState.filterSettings;
+
+                if (filterSettings.isNotEmpty) {
+                  BlocProvider.of<CollectionsBloc>(context).add(
+                    CollectionsEventInitiateStream(
+                      query: filterSettings,
+                    ),
+                  );
+                }
 
                 if (state is! AuthStateLoggedOut &&
                     filterSettingsState is FilterSettingsStateEmpty &&
@@ -99,19 +109,19 @@ class _MyAppState extends State<MyApp> {
                   Map<String, dynamic> filterSettingsQuery =
                       filterSettingsState.filterSettings;
 
-                  if (collectionsState is CollectionsStateEmpty) {
-                    collectionsBloc.add(
-                      CollectionsEventInitiateStream(
-                        query: filterSettingsQuery,
-                      ),
-                    );
-                  } else {
+                  if (collectionsState is! CollectionsStateEmpty) {
                     collectionsBloc.add(
                       CollectionsEventGetCollection(
                         query: filterSettingsQuery,
                       ),
                     );
                   }
+
+                  collectionsBloc.add(
+                    CollectionsEventInitiateStream(
+                      query: filterSettingsQuery,
+                    ),
+                  );
                 }
               },
             ),

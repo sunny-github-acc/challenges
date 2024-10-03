@@ -85,3 +85,39 @@ class TribesStateError extends TribesState {
   @override
   String toString() => '🚀 TribesStateError: (error: $error)';
 }
+
+@immutable
+class TribesStateGetting extends TribesState {
+  const TribesStateGetting()
+      : super(
+          isLoading: true,
+        );
+
+  @override
+  String toString() => '🚀 TribesStateGetting';
+}
+
+@immutable
+class TribesStateGot extends TribesState {
+  final List<String> tribes;
+
+  const TribesStateGot({
+    required this.tribes,
+  }) : super(
+          isLoading: false,
+        );
+
+  @override
+  String toString() => '🚀 TribesStateGot: (tribes: $tribes)';
+}
+
+extension GetTribes on TribesState {
+  List<String> get tribes {
+    final cls = this;
+    if (cls is TribesStateGot) {
+      return cls.tribes;
+    } else {
+      return [];
+    }
+  }
+}

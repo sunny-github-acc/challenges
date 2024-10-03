@@ -1,5 +1,6 @@
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
+import 'package:challenges/components/circular_progress_indicator.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/container_gradient.dart';
 import 'package:challenges/components/date.dart';
@@ -10,11 +11,17 @@ import 'package:challenges/components/modal.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/switch.dart';
 import 'package:challenges/components/text.dart';
+import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
 import 'package:challenges/logic/bloc/collection/collection_events.dart';
 import 'package:challenges/logic/bloc/collection/collection_state.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_events.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_state.dart';
 import 'package:challenges/utils/helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,11 +39,12 @@ class UpdateChallenge extends StatelessWidget {
     Map<String, dynamic> updatedCollection = {
       type: input,
       if (type == 'duration') 'startDate': DateTime.now(),
-      'endDate': DateTime.now().add(
-        const Duration(
-          days: 7,
+      if (type == 'duration')
+        'endDate': DateTime.now().add(
+          const Duration(
+            days: 7,
+          ),
         ),
-      ),
     };
 
     BlocProvider.of<CollectionBloc>(context).add(
@@ -86,6 +94,17 @@ class UpdateChallenge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = BlocProvider.of<AuthBloc>(context).state.user;
+    TribesState tribesState = BlocProvider.of<TribesBloc>(context).state;
+
+    if (user != null && tribesState is! TribesStateGot) {
+      BlocProvider.of<TribesBloc>(context).add(
+        TribesEventGetTribes(
+          user: user,
+        ),
+      );
+    }
+
     return GestureDetector(
       onTapDown: (details) {
         FocusScope.of(context).unfocus();
@@ -146,21 +165,26 @@ class UpdateChallenge extends StatelessWidget {
               child: CustomColumn(
                 spacing: SpacingType.medium,
                 children: [
-                  EditableTextWidget(
-                    text: collection['title'],
-                    isTitle: true,
-                    isTextRequired: true,
-                    onSave: (input) => save(context, 'title', input),
-                  ),
-                  EditableTextWidget(
-                    text: collection['description'],
-                    hint: 'Press to add a description',
-                    onSave: (input) => save(context, 'description', input),
-                  ),
-                  EditableTextWidget(
-                    text: collection['consequence'],
-                    hint: 'Press to add a consequence',
-                    onSave: (input) => save(context, 'consequence', input),
+                  CustomColumn(
+                    spacing: SpacingType.large,
+                    children: [
+                      EditableTextWidget(
+                        text: collection['title'],
+                        isTitle: true,
+                        isTextRequired: true,
+                        onSave: (input) => save(context, 'title', input),
+                      ),
+                      EditableTextWidget(
+                        text: collection['description'],
+                        hint: 'Press to add a description',
+                        onSave: (input) => save(context, 'description', input),
+                      ),
+                      EditableTextWidget(
+                        text: collection['consequence'],
+                        hint: 'Press to add a consequence',
+                        onSave: (input) => save(context, 'consequence', input),
+                      ),
+                    ],
                   ),
                   const CustomDivider(),
                   if (collection['duration'] != 'Infinite')
@@ -180,7 +204,7 @@ class UpdateChallenge extends StatelessWidget {
                       SizedBox(
                         height: 40,
                         width: 40,
-                        child: SwitchCustom(
+                        child: CustomSwitch(
                           value: collection['duration'] == 'Infinite',
                           onChanged: (value) => save(
                             context,
@@ -195,26 +219,48 @@ class UpdateChallenge extends StatelessWidget {
                     ],
                   ),
                   const CustomDivider(),
-                  CustomColumn(children: [
-                    const CustomText(
-                      text: 'Visibility',
-                    ),
-                    CustomDropdown(
-                      values: const [
-                        'Private',
-                        'Public',
-                      ],
-                      hint: 'Select an option',
-                      value: collection['isPrivate'] ? 'Private' : 'Public',
-                      onChanged: (dynamic value) {
-                        save(
-                          context,
-                          'isPrivate',
-                          value == 'Private',
-                        );
-                      },
-                    ),
-                  ]),
+                  CustomColumn(
+                    children: [
+                      const CustomText(
+                        text: 'Who can see your challenge?',
+                      ),
+                      BlocBuilder<TribesBloc, TribesState>(
+                        builder: (context, state) {
+                          if (state.isLoading) {
+                            return const CustomCircularProgressIndicator(
+                              scale: 0.5,
+                            );
+                          }
+
+                          return CustomDropdown(
+                            values: [
+                              'Everyone',
+                              'Only me',
+                              ...state.tribes,
+                            ],
+                            hint: 'Select an option',
+                            value: collection['visibility'] == 'private'
+                                ? 'Only me'
+                                : collection['visibility'] == 'public'
+                                    ? 'Everyone'
+                                    : collection['visibility'],
+                            onChanged: (dynamic value) {
+                              Map<String, String> visibilityMap = {
+                                'Everyone': 'public',
+                                'Only me': 'private',
+                              };
+
+                              save(
+                                context,
+                                'visibility',
+                                visibilityMap[value] ?? value,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                   if (isOwner)
                     CustomColumn(
                       children: [

@@ -47,6 +47,24 @@ class AddTribeStateClass extends State<AddTribe> {
 
     if (tribe.isEmpty) {
       return Modal.show(context, 'Oops', 'The tribe name cannot be empty');
+    } else if (tribe.length < 3) {
+      return Modal.show(
+        context,
+        'Oops',
+        'The tribe name must be at least 3 characters long',
+      );
+    } else if (tribe.length > 20) {
+      return Modal.show(
+        context,
+        'Oops',
+        'The tribe name must be at most 20 characters long',
+      );
+    } else if (tribe == 'public' || tribe == 'private') {
+      return Modal.show(
+        context,
+        'Oops',
+        '"$tribe" is a reserved name. Please choose another name',
+      );
     }
 
     User? user = BlocProvider.of<AuthBloc>(context).state.user;

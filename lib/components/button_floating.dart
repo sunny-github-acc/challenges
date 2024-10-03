@@ -7,11 +7,11 @@ class FloatingButton extends StatelessWidget {
   final Alignment alignment;
 
   const FloatingButton({
-    Key? key, // Add the key parameter here
+    Key? key,
     required this.child,
     required this.onPressed,
     this.alignment = Alignment.bottomRight,
-  }) : super(key: key); // Call the super constructor with the key parameter
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -27,3 +27,12 @@ class TribesEventJoinTribe implements TribesEvent {
     required this.user,
   });
 }
+
+@immutable
+class TribesEventGetTribes implements TribesEvent {
+  final User user;
+
+  const TribesEventGetTribes({
+    required this.user,
+  });
+}
