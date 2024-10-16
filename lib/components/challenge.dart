@@ -1,7 +1,7 @@
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
-import 'package:challenges/logic/bloc/collection/collection_bloc.dart';
+import 'package:challenges/services/auth/auth.dart';
 import 'package:challenges/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,8 @@ class Challenge extends StatelessWidget {
     int daysLeft =
         DateTime.parse(endDate.toString()).difference(DateTime.now()).inDays +
             1;
-    Map user = authService.getUser();
+    AuthService auth = AuthService();
+    Map user = auth.getUser();
     bool isOwner = user['email'] == collection['email'];
 
     return CustomColumn(
@@ -113,11 +114,21 @@ class Challenge extends StatelessWidget {
               width: 24,
               height: 24,
             ),
-            CustomText(
-              text: collection['duration'] == 'Infinite'
-                  ? 'Infinite Challenge 🤩\n$daysSinceStart days since start'
-                  : '${collection["duration"]}ly challenge ends in $daysLeft days - $daysSinceStart days since start',
-            ),
+            CustomColumn(
+              children: [
+                CustomText(
+                  text: collection['duration'] == 'Infinite'
+                      ? 'Infinite Challenge 🤩'
+                      : '${collection["duration"]}ly challenge',
+                ),
+                CustomText(
+                  fontSize: FontSizeType.small,
+                  text: collection['duration'] == 'Infinite'
+                      ? 'Started $daysSinceStart days ago'
+                      : 'Started $daysSinceStart days ago\nEnds in $daysLeft days',
+                ),
+              ],
+            )
           ],
         ),
         if (isOwner)

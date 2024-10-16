@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 class CustomModal extends StatelessWidget {
   final Widget child;
 
-  const CustomModal({Key? key, required this.child}) : super(key: key);
+  const CustomModal({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   void show(BuildContext context) {
     showGeneralDialog(

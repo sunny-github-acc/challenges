@@ -7,6 +7,7 @@ import 'package:challenges/components/date.dart';
 import 'package:challenges/components/dropdown.dart';
 import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
+import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
@@ -33,6 +34,7 @@ class _CreateChallenge extends State<CreateChallenge> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController consequenceController = TextEditingController();
+  final AuthService auth = AuthService();
 
   late List<String> titles;
 
@@ -61,13 +63,10 @@ class _CreateChallenge extends State<CreateChallenge> {
   }
 
   Future<void> save(context) async {
-    AuthService authService = AuthService();
-
     String title = titleController.text.trim();
     String description = descriptionController.text.trim();
     String consequence = consequenceController.text.trim();
-
-    Map user = authService.getUser();
+    Map user = auth.getUser();
 
     DateTime endDate = getEndDate(duration, customEndDate);
 
@@ -107,9 +106,10 @@ class _CreateChallenge extends State<CreateChallenge> {
   }
 
   void handleVisibility(String visibilityParam) {
+    Map user = auth.getUser();
     Map<String, String> visibilityMap = {
       'Everyone': 'public',
-      'Only me': 'private',
+      'Only me': user['uid'],
     };
 
     setState(() {
@@ -131,10 +131,13 @@ class _CreateChallenge extends State<CreateChallenge> {
 
   @override
   Widget build(BuildContext context) {
+    Map user = auth.getUser();
+
     return BlocListener<CollectionsBloc, CollectionsState>(
       listener: (context, state) {
         if (kDebugMode) {
-          print('🚀 BlocListener CollectionsBloc state: $state');
+          print(
+              '🚀 CreateChallenge BlocListener CollectionsBloc state: $state');
         }
 
         if (state.success != null) {
@@ -249,32 +252,49 @@ class _CreateChallenge extends State<CreateChallenge> {
                     const CustomText(
                       text: 'Who can see your challenge?',
                     ),
-                    BlocBuilder<TribesBloc, TribesState>(
-                      builder: (context, state) {
-                        if (state.isLoading) {
-                          return const CustomCircularProgressIndicator(
-                            scale: 0.5,
-                          );
-                        }
+                    CustomRow(
+                      spacing: SpacingType.medium,
+                      children: [
+                        BlocBuilder<TribesBloc, TribesState>(
+                          builder: (context, state) {
+                            if (state.isLoading) {
+                              return const CustomCircularProgressIndicator(
+                                scale: 0.5,
+                              );
+                            }
 
-                        return CustomDropdown(
-                          values: [
-                            'Everyone',
-                            'Only me',
-                            ...state.tribes,
-                          ],
-                          hint: 'Select an option',
-                          value: visibility == 'private'
-                              ? 'Only me'
-                              : visibility == 'public'
-                                  ? 'Everyone'
-                                  : visibility,
-                          onChanged: (dynamic value) {
-                            handleVisibility(value as String);
+                            return CustomDropdown(
+                              values: [
+                                'Everyone',
+                                'Only me',
+                                ...state.tribes,
+                              ],
+                              hint: 'Select an option',
+                              value: visibility == user['uid']
+                                  ? 'Only me'
+                                  : visibility == 'public'
+                                      ? 'Everyone'
+                                      : visibility,
+                              onChanged: (dynamic value) {
+                                handleVisibility(value as String);
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                        if (visibility == user['uid'])
+                          CustomButton(
+                            size: ButtonSize.small,
+                            icon: IconType.info,
+                            onPressed: () => {
+                              Modal.show(
+                                context,
+                                'Private Challenges',
+                                'Check your profile to see your challenges. Public challenges are displayed on the home screen.',
+                              ),
+                            },
+                          ),
+                      ],
+                    )
                   ],
                 ),
               ],

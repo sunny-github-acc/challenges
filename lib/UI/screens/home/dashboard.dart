@@ -14,11 +14,14 @@ import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/collections/collections_state.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
+import 'package:challenges/services/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+  const Dashboard({
+    super.key,
+  });
 
   Future<void> loadCollectionData(context, Map<String, dynamic> query) async {
     BlocProvider.of<CollectionsBloc>(context).add(
@@ -30,7 +33,8 @@ class Dashboard extends StatelessWidget {
 
   void navigateToUpdateChallenge(
       BuildContext context, Map<String, dynamic> collection) {
-    if (authService.getUser()['email'] == collection['email']) {
+    AuthService auth = AuthService();
+    if (auth.getUser()['email'] == collection['email']) {
       BlocProvider.of<CollectionBloc>(context).add(
         CollectionEventSetCollection(
           collection: collection,
@@ -87,9 +91,7 @@ class Dashboard extends StatelessWidget {
           );
         }
 
-        final List<Map<String, dynamic>> collections = state.collections;
-
-        if (collections.isEmpty) {
+        if (state.collections.isEmpty) {
           FilterSettingsState filterSettingsBlocState =
               BlocProvider.of<FilterSettingsBloc>(context).state;
 
@@ -118,15 +120,15 @@ class Dashboard extends StatelessWidget {
 
         return Scaffold(
           body: ListView.builder(
-            itemCount: collections.length,
+            itemCount: state.collections.length,
             itemBuilder: (context, index) {
               return CustomCard(
                 onPressed: () => navigateToUpdateChallenge(
                   context,
-                  collections[index],
+                  state.collections[index],
                 ),
                 child: Challenge(
-                  collection: collections[index],
+                  collection: state.collections[index],
                 ),
               );
             },

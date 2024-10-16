@@ -59,7 +59,7 @@ class AddTribeStateClass extends State<AddTribe> {
         'Oops',
         'The tribe name must be at most 20 characters long',
       );
-    } else if (tribe == 'public' || tribe == 'private') {
+    } else if (tribe == 'public') {
       return Modal.show(
         context,
         'Oops',

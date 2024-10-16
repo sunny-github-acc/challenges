@@ -3,6 +3,7 @@ import 'package:challenges/logic/bloc/auth/auth_error.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/services/auth/auth.dart';
+import 'package:challenges/services/cloud/cloud.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -370,9 +371,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogOut>(
       (event, emit) async {
         emit(
-          AuthStateLoggedIn(
+          const AuthStateLoggedOut(
             isLoading: true,
-            event: event,
           ),
         );
 
@@ -402,51 +402,66 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    // on<AuthEventDeleteAccount>(
-    //   (event, emit) async {
-    //     final user = FirebaseAuth.instance.currentUser;
-    //     if (user == null) {
-    //       return emit(
-    //         const AuthStateLoggedOut(),
-    //       );
-    //     }
+    on<AuthEventDeleteAccount>(
+      (event, emit) async {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          return emit(
+            const AuthStateLoggedOut(),
+          );
+        }
 
-    //     emit(
-    //       AuthStateLoggedIn(
-    //         isLoading: true,
-    //         user: user,
-    //       ),
-    //     );
+        emit(
+          AuthStateLoggedIn(
+            isLoading: true,
+            user: user,
+          ),
+        );
 
-    //     try {
-    //       await user.delete();
-    //       await FirebaseAuth.instance.signOut();
-    //       emit(
-    //         const AuthStateLoggedOut(),
-    //       );
-    //     } on FirebaseAuthException catch (error) {
-    //       if (kDebugMode) {
-    //         print('AuthEventDeleteAccount error 🚀: error');
-    //       }
+        try {
+          await user.reload();
+          await user.getIdToken(true);
 
-    //       emit(
-    //         AuthStateError(
-    //           authError: AuthError.from(error),
-    //         ),
-    //       );
-    //     } on FirebaseException {
-    //       emit(
-    //         AuthStateError(
-    //           authError: AuthError.from(
-    //             FirebaseAuthException(
-    //               code: 'unknown',
-    //               message: 'Unknown error',
-    //             ),
-    //           ),
-    //         ),
-    //       );
-    //     }
-    //   },
-    // );
+          Map<String, String> query = {
+            'uid': user.uid,
+          };
+          CloudService cloud = CloudService();
+          await cloud.deleteDocuments('challenges', query);
+          await cloud.deleteDocument('users', user.uid);
+          await user.delete();
+          await FirebaseAuth.instance.signOut();
+
+          emit(
+            const AuthStateLoggedOut(),
+          );
+        } on FirebaseAuthException catch (error) {
+          if (kDebugMode) {
+            print('AuthEventRegister FirebaseAuthException error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              error: AuthError.from(error),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            print('AuthEventDeleteAccount error 🚀: $error');
+          }
+
+          emit(
+            AuthStateLoggedIn(
+              user: state.user,
+              error: AuthError.from(
+                FirebaseAuthException(
+                  code: 'unknown',
+                  message: 'Unknown error',
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    );
   }
 }

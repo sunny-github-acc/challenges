@@ -6,8 +6,8 @@ import 'package:challenges/services/auth/auth.dart';
 import 'package:challenges/services/cloud/cloud.dart';
 import 'package:flutter/foundation.dart';
 
-CloudService cloudService = CloudService();
-AuthService authService = AuthService();
+CloudService cloud = CloudService();
+AuthService auth = AuthService();
 
 class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
   CollectionBloc()
@@ -17,7 +17,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
     on<CollectionEventSetCollection>(
       (event, emit) {
         Map<String, dynamic> collection = event.collection;
-        Map user = authService.getUser();
+        Map user = auth.getUser();
         bool isOwner = user['email'] == collection['email'];
 
         emit(
@@ -45,7 +45,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
             ...event.collection,
           };
 
-          await cloudService.updateCollection(
+          await cloud.updateCollection(
             'challenges',
             updatedCollection,
             updatedCollection['id'],
@@ -78,7 +78,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
     on<CollectionEventDeleteCollection>(
       (event, emit) async {
         try {
-          await cloudService.deleteDocument('challenges', event.collectionId);
+          await cloud.deleteDocument('challenges', event.collectionId);
 
           emit(
             const CollectionStateSet(

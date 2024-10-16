@@ -15,6 +15,7 @@ import 'package:challenges/logic/bloc/connectivity/internet_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
+import 'package:challenges/logic/bloc/priorities/priorities_bloc.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -58,47 +59,24 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<TribesBloc>(
           create: (context) => TribesBloc(),
         ),
+        BlocProvider<PrioritiesBloc>(
+          create: (context) => PrioritiesBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Challenges',
         onGenerateRoute: (settings) => appRouter.onGenerateRoute(settings),
         home: MultiBlocListener(
           listeners: [
-            BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) {
-                FilterSettingsBloc filterSettingsBloc =
-                    BlocProvider.of<FilterSettingsBloc>(context);
-                FilterSettingsState filterSettingsState =
-                    filterSettingsBloc.state;
-                Map<String, dynamic> filterSettings =
-                    filterSettingsState.filterSettings;
-
-                if (filterSettings.isNotEmpty) {
-                  BlocProvider.of<CollectionsBloc>(context).add(
-                    CollectionsEventInitiateStream(
-                      query: filterSettings,
-                    ),
-                  );
-                }
-
-                if (state is! AuthStateLoggedOut &&
-                    filterSettingsState is FilterSettingsStateEmpty &&
-                    state.user != null) {
-                  filterSettingsBloc.add(
-                    const FilterSettingsEventGetFilterSettings(),
-                  );
-                }
-              },
-            ),
             BlocListener<FilterSettingsBloc, FilterSettingsState>(
               listener: (context, state) {
-                User? user = BlocProvider.of<AuthBloc>(context).state.user;
+                if (kDebugMode) {
+                  print('🚀 BlocListener FilterSettingsBloc state: $state');
+                }
 
-                FilterSettingsBloc filterSettingsBloc =
-                    BlocProvider.of<FilterSettingsBloc>(context);
+                User? user = BlocProvider.of<AuthBloc>(context).state.user;
                 FilterSettingsState filterSettingsState =
-                    filterSettingsBloc.state;
-                print('check if filterSettingsState is state');
+                    BlocProvider.of<FilterSettingsBloc>(context).state;
                 CollectionsBloc collectionsBloc =
                     BlocProvider.of<CollectionsBloc>(context);
                 CollectionsState collectionsState = collectionsBloc.state;
@@ -129,7 +107,7 @@ class _MyAppState extends State<MyApp> {
           child: BlocBuilder<InternetBloc, InternetState>(
             builder: (context, state) {
               if (kDebugMode) {
-                print('🚀 InternetBloc state: $state');
+                print('🚀 BlocBuilder InternetBloc state: $state');
               }
 
               if (state is! InternetConnected) {
@@ -150,7 +128,9 @@ class _MyAppState extends State<MyApp> {
                     BlocProvider.of<AuthBloc>(context).add(
                       const AuthEventInitialize(),
                     );
+                  }
 
+                  if (state is AuthStateEmpty || state.isLoading) {
                     return const Scaffold(
                       body: Center(
                         child: CircularProgressIndicator(),
@@ -185,8 +165,9 @@ class _MyAppState extends State<MyApp> {
                   if (state.user != null) {
                     SchedulerBinding.instance.addPostFrameCallback(
                       (_) {
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).popUntil(
+                          (route) => route.isFirst,
+                        );
                       },
                     );
 
@@ -197,6 +178,10 @@ class _MyAppState extends State<MyApp> {
                     if (state.error != null) {
                       throwError();
                     }
+
+                    BlocProvider.of<FilterSettingsBloc>(context).add(
+                      const FilterSettingsEventGetFilterSettings(),
+                    );
 
                     if (state.user?.emailVerified == true) {
                       return const Home();

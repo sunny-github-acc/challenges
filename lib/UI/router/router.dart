@@ -3,8 +3,11 @@ import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
 import 'package:challenges/UI/screens/auth/signup_password.dart';
 import 'package:challenges/UI/screens/home/create_challenge.dart';
+import 'package:challenges/UI/screens/home/priorities.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/menu.dart';
+import 'package:challenges/UI/screens/home/privacy_policy.dart';
+import 'package:challenges/UI/screens/home/terms_of_use.dart';
 import 'package:challenges/UI/screens/home/tribe_add.dart';
 import 'package:challenges/UI/screens/home/tribe_join.dart';
 import 'package:challenges/UI/screens/home/update_challenge.dart';
@@ -19,10 +22,12 @@ class Routes {
   static const String signup = '/signup';
   static const String addTribe = '/add-tribe';
   static const String joinTribe = '/join-tribes';
-  static const String signupPassword = '/signup-password';
+  static const String priorities = '/priorities';
+  static const String termsOfUse = '/terms-of-use';
   static const String verifyEmail = '/verify-email';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String signupPassword = '/signup-password';
   static const String createChallenge = '/create-challenge';
-  static const String displayChallenge = '/display-challenge';
   static const String updateChallenge = '/update-challenge';
 }
 
@@ -48,6 +53,18 @@ class AppRouter {
       case Routes.signup:
         return MaterialPageRoute(
           builder: (context) => const Signup(),
+        );
+      case Routes.termsOfUse:
+        return MaterialPageRoute(
+          builder: (context) => const TermsOfUse(),
+        );
+      case Routes.privacyPolicy:
+        return MaterialPageRoute(
+          builder: (context) => const PrivacyPolicy(),
+        );
+      case Routes.priorities:
+        return MaterialPageRoute(
+          builder: (context) => const Priorities(),
         );
       case Routes.addTribe:
         return MaterialPageRoute(

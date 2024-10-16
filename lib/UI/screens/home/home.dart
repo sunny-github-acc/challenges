@@ -11,10 +11,11 @@ import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
 import 'package:challenges/logic/bloc/auth/auth_state.dart';
+import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
+import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
 import 'package:challenges/utils/colors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,14 +23,55 @@ class Home extends StatelessWidget {
   const Home({super.key});
 
   void logout(BuildContext context) {
+    context.read<CollectionsBloc>().add(const CollectionsEventCancelStream());
     context.read<AuthBloc>().add(const AuthEventLogOut());
   }
 
-  void navigateToCreateChallengeScreen(BuildContext context) {
-    Navigator.of(context).pushNamed(Routes.createChallenge);
+  void deleteAccount(BuildContext context) {
+    showConfirmationDialog(context);
   }
 
-  void openModal(BuildContext context) {
+  Future<void> showConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const CustomText(
+            fontSize: FontSizeType.large,
+            text: 'Confirm Action',
+          ),
+          content: const CustomText(
+            text: 'Are you sure you want to delete your account?',
+          ),
+          actions: <Widget>[
+            CustomButton(
+              text: 'Cancel',
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+            CustomButton(
+              text: 'Confirm',
+              type: ButtonType.danger,
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                context.read<CollectionsBloc>().add(
+                      const CollectionsEventCancelStream(),
+                    );
+                context.read<AuthBloc>().add(
+                      const AuthEventDeleteAccount(),
+                    );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void openMenuModal(BuildContext context) {
     CustomModal customModal = CustomModal(
       child: CustomColumn(
         spacing: SpacingType.medium,
@@ -51,31 +93,137 @@ class Home extends StatelessWidget {
             ],
           ),
           const CustomDivider(),
-          CustomButton(
-            onPressed: () => {
-              Navigator.of(context).pop(),
-              navigateToAddTribes(context),
-            },
-            text: 'Create Tribe',
-          ),
-          CustomButton(
-            onPressed: () => {
-              Navigator.of(context).pop(),
-              navigateToJoinTribes(context),
-            },
-            text: 'Join Tribe',
-          ),
-          CustomButton(
-            onPressed: () => {
-              Navigator.of(context).pop(),
-              navigateToMenuScreen(context),
-            },
-            text: 'Settings',
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: CustomColumn(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomColumn(
+                  spacing: SpacingType.medium,
+                  children: [
+                    CustomButton(
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToAddTribes(context),
+                      },
+                      text: 'Create Tribe',
+                    ),
+                    CustomButton(
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToJoinTribes(context),
+                      },
+                      text: 'Join Tribe',
+                    ),
+                    CustomButton(
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToMenuScreen(context),
+                      },
+                      text: 'Filter Settings',
+                    ),
+                  ],
+                ),
+                CustomColumn(
+                  spacing: SpacingType.medium,
+                  children: [
+                    CustomButton(
+                      text: 'Privacy Policy',
+                      type: ButtonType.secondary,
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToPrivacyPolicy(context),
+                      },
+                    ),
+                    CustomButton(
+                      text: 'Terms of Use',
+                      type: ButtonType.secondary,
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToTermsOfUse(context),
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
     customModal.show(context);
+  }
+
+  void openProfileModal(BuildContext context) {
+    CustomModal customModal = CustomModal(
+      child: CustomColumn(
+        spacing: SpacingType.medium,
+        children: [
+          CustomRow(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const CustomText(
+                text: 'Profile',
+                fontSize: FontSizeType.xxlarge,
+              ),
+              CustomButton(
+                text: '',
+                type: ButtonType.secondary,
+                icon: IconType.close,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          const CustomDivider(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: CustomColumn(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomColumn(
+                  spacing: SpacingType.medium,
+                  children: [
+                    CustomButton(
+                      text: 'Priorities',
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        navigateToPriorities(context),
+                      },
+                    ),
+                  ],
+                ),
+                CustomColumn(
+                  spacing: SpacingType.medium,
+                  children: [
+                    CustomButton(
+                      text: 'Logout',
+                      // type: ButtonType.danger,
+                      onPressed: () => {
+                        Navigator.of(context).pop(),
+                        logout(context),
+                      },
+                    ),
+                    CustomButton(
+                      text: 'Delete Account',
+                      type: ButtonType.danger,
+                      onPressed: () => {
+                        deleteAccount(context),
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    customModal.show(context);
+  }
+
+  void navigateToCreateChallengeScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.createChallenge);
   }
 
   void navigateToMenuScreen(BuildContext context) {
@@ -90,25 +238,30 @@ class Home extends StatelessWidget {
     Navigator.of(context).pushNamed(Routes.joinTribe);
   }
 
+  void navigateToPriorities(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.priorities);
+  }
+
+  void navigateToTermsOfUse(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.termsOfUse);
+  }
+
+  void navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.privacyPolicy);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FilterSettingsBloc, FilterSettingsState>(
       builder: (context, state) {
-        if (kDebugMode) {
-          print('🚀 FilterSettingsBloc state: $state');
-        }
-
-        final isLoading = state is FilterSettingsStateEmpty ||
-            state.isLoading ||
-            state.filterSettings.isEmpty;
-        final appBarTitle = isLoading ? 'Loading Settings' : 'Challenges';
+        final appBarTitle = state.isLoading ? 'Loading Settings' : 'Challenges';
 
         return Scaffold(
           appBar: CustomAppBar(
             title: appBarTitle,
             actions: [
               GestureDetector(
-                onTap: () => logout(context),
+                onTap: () => openProfileModal(context),
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -142,13 +295,17 @@ class Home extends StatelessWidget {
             ],
             leftButton: IconButton(
               icon: const Icon(Icons.menu),
-              onPressed: () => openModal(context),
+              onPressed: () => openMenuModal(context),
             ),
           ),
-          body: const CustomContainer(
+          body: CustomContainer(
             isSingleChildScrollView: false,
             padding: 0,
-            child: Dashboard(),
+            child: state.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : const Dashboard(),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => navigateToCreateChallengeScreen(context),

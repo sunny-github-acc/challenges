@@ -16,20 +16,34 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
         ) {
     StreamSubscription? streamSubscription;
 
+    on<CollectionsEventCancelStream>((event, emit) async {
+      streamSubscription?.cancel();
+      streamSubscription = null;
+
+      emit(
+        const CollectionsStateEmpty(),
+      );
+    });
+
     on<CollectionsEventInitiateStream>(
       (event, emit) async {
         streamSubscription?.cancel();
+        streamSubscription = null;
 
         emit(
-          const CollectionsStateUpdated(
+          CollectionsStateUpdated(
             isLoading: true,
-            collections: [],
+            collections: state.collections,
           ),
         );
 
         try {
           streamSubscription = cloudService
-              .getCollectionWithFilterSettingsStream('challenges', event.query)
+              .getCollectionWithFilterSettingsStream(
+            'challenges',
+            event.query,
+            event.queryType,
+          )
               .listen(
             (data) {
               List<Map<String, dynamic>> sortedData = data
@@ -43,6 +57,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
               add(
                 CollectionsEventStream(
                   sortedData: sortedData,
+                  queryType: event.queryType,
                 ),
               );
             },
@@ -155,7 +170,7 @@ class CollectionsBloc extends Bloc<CollectionsEvent, CollectionsState> {
           List<Map<String, dynamic>> data = await cloudService.getCollection(
             'challenges',
             event.query,
-            queryType: QueryType.filter,
+            queryType: event.queryType,
           );
           List<Map<String, dynamic>> sortedData = data
             ..sort((a, b) {

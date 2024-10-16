@@ -6,14 +6,16 @@ enum FontSizeType {
   xlarge,
   large,
   medium,
+  small,
   none,
 }
 
 Map<FontSizeType, double> fontSizeMap = {
-  FontSizeType.xxlarge: 38,
+  FontSizeType.xxlarge: 34,
   FontSizeType.xlarge: 28,
   FontSizeType.large: 24,
   FontSizeType.medium: 20,
+  FontSizeType.small: 18,
   FontSizeType.none: 20,
 };
 

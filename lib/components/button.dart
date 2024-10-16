@@ -23,11 +23,12 @@ enum IconType {
   register,
   signIn,
   close,
+  info,
 }
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final String text;
+  final String? text;
   final ButtonType type;
   final ButtonSize size;
   final IconType icon;
@@ -37,7 +38,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
     required this.onPressed,
-    required this.text,
+    this.text,
     this.type = ButtonType.primary,
     this.size = ButtonSize.normal,
     this.icon = IconType.none,
@@ -83,6 +84,8 @@ class CustomButton extends StatelessWidget {
       iconPath = 'assets/signIn.png';
     } else if (icon == IconType.close) {
       iconPath = 'assets/close.png';
+    } else if (icon == IconType.info) {
+      iconPath = 'assets/info.png';
     }
 
     ButtonStyle buttonStyle = ButtonStyle(
@@ -124,9 +127,9 @@ class CustomButton extends StatelessWidget {
               width: fontSize,
               color: iconColor,
             ),
-          if (text != '')
+          if (text != '' && text != null)
             CustomText(
-              text: text,
+              text: text!,
               style: TextStyle(
                 fontSize: fontSize,
                 color: textColor,

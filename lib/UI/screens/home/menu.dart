@@ -11,6 +11,7 @@ import 'package:challenges/components/text.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
+import 'package:challenges/services/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -102,11 +103,17 @@ class _Menu extends State<Menu> {
                   bool isUpdating = state.isLoading;
                   bool isDuration = isUpdating && state.key == 'duration';
 
+                  Map<String, Object?> user = AuthService().getUser();
                   List<dynamic> sortedFilterSettings =
                       state.filterSettings['visibility'].entries.map((entry) {
                     if (entry.key == 'public') {
                       return MapEntry(
                         'Public challenges',
+                        entry.value,
+                      );
+                    } else if (entry.key == user['uid']) {
+                      return MapEntry(
+                        'Private challenges',
                         entry.value,
                       );
                     } else {
@@ -117,7 +124,8 @@ class _Menu extends State<Menu> {
                     }
                   }).toList()
                         ..sort((a, b) {
-                          if (a.key == 'Public challenges') {
+                          if (a.key == 'Public challenges' ||
+                              a.key == 'Private challenges') {
                             return -1;
                           }
                           return 1;
@@ -138,20 +146,20 @@ class _Menu extends State<Menu> {
                         CustomColumn(
                           children: sortedFilterSettings
                               .map<Widget>(
-                                (entry) => entry.key != 'private'
-                                    ? CustomCheckbox(
-                                        isChecked: entry.value,
-                                        label: entry.key,
-                                        onChanged: (updatedValue) {
-                                          handleVisibility(
-                                            entry.key == 'Public challenges'
-                                                ? 'public'
-                                                : entry.key,
-                                            !entry.value,
-                                          );
-                                        },
-                                      )
-                                    : const SizedBox(),
+                                (entry) => CustomCheckbox(
+                                  isChecked: entry.value,
+                                  label: entry.key,
+                                  onChanged: (updatedValue) {
+                                    handleVisibility(
+                                      entry.key == 'Public challenges'
+                                          ? 'public'
+                                          : entry.key == 'Private challenges'
+                                              ? user['uid']
+                                              : entry.key,
+                                      !entry.value,
+                                    );
+                                  },
+                                ),
                               )
                               .toList(),
                         ),

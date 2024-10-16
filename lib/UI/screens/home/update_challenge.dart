@@ -19,6 +19,7 @@ import 'package:challenges/logic/bloc/collection/collection_state.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_events.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_state.dart';
+import 'package:challenges/services/auth/auth.dart';
 import 'package:challenges/utils/helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -110,7 +111,9 @@ class UpdateChallenge extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: const CustomAppBar(),
+        appBar: const CustomAppBar(
+          title: 'Update Challenge',
+        ),
         body: BlocBuilder<CollectionBloc, CollectionState>(
           builder: (context, state) {
             if (state.success != null) {
@@ -157,7 +160,8 @@ class UpdateChallenge extends StatelessWidget {
               );
             }
 
-            Map user = authService.getUser();
+            AuthService auth = AuthService();
+            Map user = auth.getUser();
             bool isOwner = user['email'] == collection['email'];
 
             return CustomContainer(
@@ -166,27 +170,36 @@ class UpdateChallenge extends StatelessWidget {
                 spacing: SpacingType.medium,
                 children: [
                   CustomColumn(
-                    spacing: SpacingType.large,
                     children: [
-                      EditableTextWidget(
-                        text: collection['title'],
-                        isTitle: true,
-                        isTextRequired: true,
-                        onSave: (input) => save(context, 'title', input),
+                      const SizedBox(
+                        height: 5,
                       ),
-                      EditableTextWidget(
-                        text: collection['description'],
-                        hint: 'Press to add a description',
-                        onSave: (input) => save(context, 'description', input),
+                      CustomColumn(
+                        spacing: SpacingType.medium,
+                        children: [
+                          CustomTextInput(
+                            text: collection['title'],
+                            isTitle: true,
+                            isTextRequired: true,
+                            onSave: (input) => save(context, 'title', input),
+                          ),
+                          CustomTextInput(
+                            text: collection['description'],
+                            hint: 'Press to add a description',
+                            onSave: (input) =>
+                                save(context, 'description', input),
+                          ),
+                          CustomTextInput(
+                            text: collection['consequence'],
+                            hint: 'Press to add a consequence',
+                            onSave: (input) =>
+                                save(context, 'consequence', input),
+                          ),
+                        ],
                       ),
-                      EditableTextWidget(
-                        text: collection['consequence'],
-                        hint: 'Press to add a consequence',
-                        onSave: (input) => save(context, 'consequence', input),
-                      ),
+                      const CustomDivider(),
                     ],
                   ),
-                  const CustomDivider(),
                   if (collection['duration'] != 'Infinite')
                     CustomDateRangePicker(
                       dateRange: DateTimeRange(
@@ -224,40 +237,63 @@ class UpdateChallenge extends StatelessWidget {
                       const CustomText(
                         text: 'Who can see your challenge?',
                       ),
-                      BlocBuilder<TribesBloc, TribesState>(
-                        builder: (context, state) {
-                          if (state.isLoading) {
-                            return const CustomCircularProgressIndicator(
-                              scale: 0.5,
-                            );
-                          }
+                      CustomRow(
+                        spacing: SpacingType.medium,
+                        children: [
+                          BlocBuilder<TribesBloc, TribesState>(
+                            builder: (context, state) {
+                              if (state.isLoading) {
+                                return const CustomCircularProgressIndicator(
+                                  scale: 0.5,
+                                );
+                              }
 
-                          return CustomDropdown(
-                            values: [
-                              'Everyone',
-                              'Only me',
-                              ...state.tribes,
-                            ],
-                            hint: 'Select an option',
-                            value: collection['visibility'] == 'private'
-                                ? 'Only me'
-                                : collection['visibility'] == 'public'
-                                    ? 'Everyone'
-                                    : collection['visibility'],
-                            onChanged: (dynamic value) {
-                              Map<String, String> visibilityMap = {
-                                'Everyone': 'public',
-                                'Only me': 'private',
-                              };
+                              if (state is TribesStateEmpty) {
+                                return const CustomText(
+                                  text: 'Could not load tribes',
+                                );
+                              }
 
-                              save(
-                                context,
-                                'visibility',
-                                visibilityMap[value] ?? value,
+                              return CustomDropdown(
+                                values: [
+                                  'Everyone',
+                                  'Only me',
+                                  ...state.tribes,
+                                ],
+                                hint: 'Select an option',
+                                value: collection['visibility'] == user['uid']
+                                    ? 'Only me'
+                                    : collection['visibility'] == 'public'
+                                        ? 'Everyone'
+                                        : collection['visibility'],
+                                onChanged: (dynamic value) {
+                                  Map<String, String> visibilityMap = {
+                                    'Everyone': 'public',
+                                    'Only me': user['uid'],
+                                  };
+
+                                  save(
+                                    context,
+                                    'visibility',
+                                    visibilityMap[value] ?? value,
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
+                          ),
+                          if (collection['visibility'] == user['uid'])
+                            CustomButton(
+                              size: ButtonSize.small,
+                              icon: IconType.info,
+                              onPressed: () => {
+                                Modal.show(
+                                  context,
+                                  'Private Challenges',
+                                  'Check your profile to see your challenges. Public challenges are displayed on the home screen.',
+                                ),
+                              },
+                            ),
+                        ],
                       ),
                     ],
                   ),

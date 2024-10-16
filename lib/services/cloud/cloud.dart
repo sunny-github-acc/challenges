@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum QueryType {
-  defaultType,
+  noQuery,
   filter,
   tribes,
+  user,
 }
 
 class CloudService {
@@ -62,7 +63,7 @@ class CloudService {
   Future<List<Map<String, dynamic>>> getCollection(
     collection,
     Map<String, dynamic>? query, {
-    QueryType queryType = QueryType.defaultType,
+    QueryType queryType = QueryType.noQuery,
   }) async {
     try {
       CollectionReference challenges = FirebaseFirestore.instance
@@ -73,10 +74,13 @@ class CloudService {
       List<Map<String, dynamic>> dataList = [];
 
       final queryBuilders = {
-        QueryType.defaultType: () => challenges,
-        QueryType.filter: () =>
-            getFilterSettingsQueryBuilder(challenges, query),
+        QueryType.noQuery: () => challenges,
+        QueryType.filter: () => getFilterSettingsQueryBuilder(
+              challenges,
+              query,
+            ),
         QueryType.tribes: () => getTribesQueryBuilder(challenges, query),
+        QueryType.user: () => getUserQueryBuilder(challenges, query),
       };
 
       Query<Object?>? queryBuilder = queryBuilders[queryType]!();
@@ -102,27 +106,12 @@ class CloudService {
   ) {
     Map<String, dynamic> visibility = query['visibility'];
     List<String> visibilityKeys = visibility.entries
-        .where((entry) => entry.value == true && entry.key != 'private')
+        .where((entry) => entry.value == true)
         .map((entry) => entry.key)
         .toList();
-    visibilityKeys.removeWhere((item) => item == 'private');
     bool isFinished = query['isFinished'];
     bool isIncludeFinished = query['isIncludeFinished'];
-    // String uid = query['uid'];
     String duration = query['duration'];
-
-    print('implement private challenges later');
-    // if (!isIncludeFinished) {
-    //   return challenges
-    //       .where('uid', isEqualTo: uid)
-    //       .where('isFinished', isEqualTo: false)
-    //       .where('duration', isEqualTo: duration);
-    // } else if (isFinished) {
-    //   return challenges
-    //       .where('uid', isEqualTo: uid)
-    //       .where('isFinished', isEqualTo: true)
-    //       .where('duration', isEqualTo: duration);
-    // }
 
     if (visibilityKeys.isEmpty) {
       return challenges.where(
@@ -169,19 +158,18 @@ class CloudService {
     return challengesQuery;
   }
 
-  Query<Object?> getTribesQueryBuilder(
-    challenges,
-    query,
-  ) {
-    return challenges.where(
-      'members',
-      arrayContains: query['uid'],
-    );
+  Query<Object?> getTribesQueryBuilder(challenges, query) {
+    return challenges.where('members', arrayContains: query['uid']);
+  }
+
+  Query<Object?> getUserQueryBuilder(challenges, query) {
+    return challenges.where('uid', isEqualTo: query['uid']);
   }
 
   Stream<List<Map<String, dynamic>>> getCollectionWithFilterSettingsStream(
     collection,
     Map<String, dynamic> query,
+    QueryType queryType,
   ) {
     try {
       FirebaseFirestore firebase = FirebaseFirestore.instance;
@@ -212,13 +200,30 @@ class CloudService {
     }
   }
 
-  Future<void> deleteDocument(collection, documentId) async {
+  Future<void> deleteDocument(String collection, String documentId) async {
     try {
       final collectionReference = FirebaseFirestore.instance
           .collection('challenges')
           .doc(collection)
           .collection(collection);
       await collectionReference.doc(documentId).delete();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteDocuments(collection, query) async {
+    try {
+      QuerySnapshot collectionReference = await FirebaseFirestore.instance
+          .collection('challenges')
+          .doc(collection)
+          .collection(collection)
+          .where('uid', isEqualTo: query['uid'])
+          .get();
+
+      for (QueryDocumentSnapshot doc in collectionReference.docs) {
+        await doc.reference.delete();
+      }
     } catch (error) {
       rethrow;
     }

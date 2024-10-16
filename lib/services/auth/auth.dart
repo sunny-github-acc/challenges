@@ -94,7 +94,7 @@ class AuthService {
         'uid': id,
         'visibility': {
           'public': true,
-          'private': true,
+          id: true,
         },
         'isIncludeFinished': true,
         'isFinished': false,
