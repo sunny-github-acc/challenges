@@ -39,7 +39,7 @@ class AddTribeStateClass extends State<AddTribe> {
   }
 
   Future<void> addTribe(context) async {
-    String tribe = addTribeController.text.trim();
+    String tribe = addTribeController.text.trim().toLowerCase();
 
     setState(() {
       isAddTribe = tribe.isNotEmpty;

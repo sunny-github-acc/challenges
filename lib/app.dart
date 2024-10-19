@@ -17,6 +17,8 @@ import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
 import 'package:challenges/logic/bloc/priorities/priorities_bloc.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_state.dart';
+import 'package:challenges/logic/bloc/users_profiles/users_profiles_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -62,6 +64,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<PrioritiesBloc>(
           create: (context) => PrioritiesBloc(),
         ),
+        BlocProvider<UsersProfilesBloc>(
+          create: (context) => UsersProfilesBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Challenges',
@@ -99,6 +104,19 @@ class _MyAppState extends State<MyApp> {
                     CollectionsEventInitiateStream(
                       query: filterSettingsQuery,
                     ),
+                  );
+                }
+              },
+            ),
+            BlocListener<TribesBloc, TribesState>(
+              listener: (context, state) {
+                if (kDebugMode) {
+                  print('🚀 BlocListener TribesBloc state: $state');
+                }
+
+                if (state is TribesStateJoined) {
+                  BlocProvider.of<FilterSettingsBloc>(context).add(
+                    const FilterSettingsEventGetFilterSettings(),
                   );
                 }
               },

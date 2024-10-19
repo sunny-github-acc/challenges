@@ -11,6 +11,11 @@ class FilterSettingsEventGetFilterSettings implements FilterSettingsEvent {
 }
 
 @immutable
+class FilterSettingsEventResetState implements FilterSettingsEvent {
+  const FilterSettingsEventResetState();
+}
+
+@immutable
 class FilterSettingsEventUpdateFilterSettings implements FilterSettingsEvent {
   final String key;
   final String? superKey;

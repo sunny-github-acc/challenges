@@ -9,6 +9,14 @@ class PrioritiesBloc extends Bloc<PrioritiesEvent, PrioritiesState> {
       : super(
           const PrioritiesStateEmpty(),
         ) {
+    on<PrioritiesEventResetState>(
+      (event, emit) async {
+        emit(
+          const PrioritiesStateEmpty(),
+        );
+      },
+    );
+
     on<PrioritiesEventAddPriorities>(
       (event, emit) async {
         emit(
@@ -18,7 +26,7 @@ class PrioritiesBloc extends Bloc<PrioritiesEvent, PrioritiesState> {
         try {
           CloudService cloud = CloudService();
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'users',
             {
               'priorities': event.priorities,
@@ -58,7 +66,9 @@ class PrioritiesBloc extends Bloc<PrioritiesEvent, PrioritiesState> {
           List<Map<String, dynamic>> data = await cloud
               .getCollection('users', query, queryType: QueryType.user);
 
-          String priorities = data[0]['priorities'];
+          String priorities = data.isNotEmpty && data[0]['priorities'] != null
+              ? data[0]['priorities']
+              : '';
 
           emit(
             PrioritiesStateGot(

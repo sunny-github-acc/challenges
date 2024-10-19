@@ -9,6 +9,14 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
       : super(
           const TribesStateEmpty(),
         ) {
+    on<TribesEventResetState>(
+      (event, emit) async {
+        emit(
+          const TribesStateEmpty(),
+        );
+      },
+    );
+
     on<TribesEventAddTribe>(
       (event, emit) async {
         emit(
@@ -38,7 +46,7 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
             customDocumentId: event.tribe,
           );
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'users',
             {
               'visibility.${event.tribe}': true,
@@ -71,24 +79,30 @@ class TribesBloc extends Bloc<TribesEvent, TribesState> {
 
         try {
           CloudService cloud = CloudService();
-          Map<String, dynamic> data =
-              await cloud.getDocument('tribes', event.tribe);
-          bool isMemberPresent = data['members'].contains(event.user!.uid);
+          Map<String, dynamic> data = await cloud.getDocument(
+            'tribes',
+            event.tribe,
+          );
+          List members = data['members'] ?? [];
+          bool isMemberPresent = members.contains(event.user!.uid);
 
           if (isMemberPresent) {
             throw 'member-already-in-tribe';
           }
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'tribes',
             {
               'name': event.tribe,
-              'members': [...data['members'], event.user!.uid],
+              'members': [
+                ...members,
+                event.user!.uid,
+              ],
             },
             event.tribe,
           );
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'users',
             {
               'visibility.${event.tribe}': true,

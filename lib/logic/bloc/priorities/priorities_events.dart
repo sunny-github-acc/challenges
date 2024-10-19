@@ -18,6 +18,11 @@ class PrioritiesEventAddPriorities implements PrioritiesEvent {
 }
 
 @immutable
+class PrioritiesEventResetState implements PrioritiesEvent {
+  const PrioritiesEventResetState();
+}
+
+@immutable
 class PrioritiesEventGetPriorities implements PrioritiesEvent {
   final User user;
 

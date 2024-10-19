@@ -86,12 +86,12 @@ class PrioritiesStateGot extends PrioritiesState {
 }
 
 extension GetPriorities on PrioritiesState {
-  String? get priorities {
+  String get priorities {
     if (this is PrioritiesStateAdded) {
       return (this as PrioritiesStateAdded).priorities;
     } else if (this is PrioritiesStateGot) {
       return (this as PrioritiesStateGot).priorities;
     }
-    return null;
+    return '';
   }
 }

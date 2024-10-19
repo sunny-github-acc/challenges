@@ -38,7 +38,7 @@ class JoinTribeStateClass extends State<JoinTribe> {
   }
 
   Future<void> joinTribe(context) async {
-    String tribe = joinTribeController.text.trim();
+    String tribe = joinTribeController.text.trim().toLowerCase();
 
     setState(() {
       isJoinTribe = tribe.isNotEmpty;

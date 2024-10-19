@@ -6,6 +6,7 @@ import 'package:challenges/UI/screens/home/create_challenge.dart';
 import 'package:challenges/UI/screens/home/priorities.dart';
 import 'package:challenges/UI/screens/home/home.dart';
 import 'package:challenges/UI/screens/home/menu.dart';
+import 'package:challenges/UI/screens/home/user_profile.dart';
 import 'package:challenges/UI/screens/home/privacy_policy.dart';
 import 'package:challenges/UI/screens/home/terms_of_use.dart';
 import 'package:challenges/UI/screens/home/tribe_add.dart';
@@ -25,6 +26,7 @@ class Routes {
   static const String priorities = '/priorities';
   static const String termsOfUse = '/terms-of-use';
   static const String verifyEmail = '/verify-email';
+  static const String userProfile = '/user-profile';
   static const String privacyPolicy = '/privacy-policy';
   static const String signupPassword = '/signup-password';
   static const String createChallenge = '/create-challenge';
@@ -45,6 +47,13 @@ class AppRouter {
       case Routes.menu:
         return MaterialPageRoute(
           builder: (context) => const Menu(),
+        );
+      case Routes.userProfile:
+        final arguments = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (context) => UserProfile(
+            collection: arguments,
+          ),
         );
       case Routes.login:
         return MaterialPageRoute(

@@ -1,3 +1,4 @@
+import 'package:challenges/services/auth/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum QueryType {
@@ -8,6 +9,25 @@ enum QueryType {
 }
 
 class CloudService {
+  Query<Object?> buildQuery(
+    CollectionReference<Object?> challenges,
+    QueryType queryType,
+    Map<String, dynamic>? query,
+  ) {
+    switch (queryType) {
+      case QueryType.noQuery:
+        return challenges;
+      case QueryType.filter:
+        return getFilterSettingsQueryBuilder(challenges, query);
+      case QueryType.tribes:
+        return getTribesQueryBuilder(challenges, query);
+      case QueryType.user:
+        return getUserQueryBuilder(challenges, query);
+      default:
+        throw ArgumentError('Unsupported query type: $queryType');
+    }
+  }
+
   Future<void> setCollection(collection, document, {customDocumentId}) async {
     try {
       final finalDocument = FirebaseFirestore.instance
@@ -25,7 +45,7 @@ class CloudService {
     }
   }
 
-  Future<void> updateCollection(collection, document, documentId) async {
+  Future<void> updateDocument(collection, document, documentId) async {
     try {
       await FirebaseFirestore.instance
           .collection('challenges')
@@ -73,17 +93,7 @@ class CloudService {
 
       List<Map<String, dynamic>> dataList = [];
 
-      final queryBuilders = {
-        QueryType.noQuery: () => challenges,
-        QueryType.filter: () => getFilterSettingsQueryBuilder(
-              challenges,
-              query,
-            ),
-        QueryType.tribes: () => getTribesQueryBuilder(challenges, query),
-        QueryType.user: () => getUserQueryBuilder(challenges, query),
-      };
-
-      Query<Object?>? queryBuilder = queryBuilders[queryType]!();
+      Query<Object?>? queryBuilder = buildQuery(challenges, queryType, query);
 
       QuerySnapshot<Object?>? querySnapshot = await queryBuilder.get();
 
@@ -95,6 +105,35 @@ class CloudService {
       }
 
       return dataList;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateTribeMembersCollection(
+    String collection,
+    Map<String, dynamic>? query, {
+    QueryType queryType = QueryType.noQuery,
+  }) async {
+    try {
+      CollectionReference challenges = FirebaseFirestore.instance
+          .collection('challenges')
+          .doc(collection)
+          .collection(collection);
+
+      Query<Object?>? queryBuilder = buildQuery(challenges, queryType, query);
+
+      QuerySnapshot<Object?>? querySnapshot = await queryBuilder.get();
+      String userUID = AuthService().getUser()['uid'];
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        List<dynamic> members = doc.get('members');
+        members.remove(userUID);
+
+        await doc.reference.update({
+          'members': members,
+        });
+      }
     } catch (error) {
       rethrow;
     }

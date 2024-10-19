@@ -1,3 +1,4 @@
+import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/components/column.dart';
 import 'package:challenges/components/row.dart';
 import 'package:challenges/components/text.dart';
@@ -14,9 +15,11 @@ class Challenge extends StatelessWidget {
     required this.collection,
   }) : super(key: key);
 
-  openUserProfile(BuildContext context, String uid) {
-    print('finish profile');
-    print('finish profile');
+  openUserProfile(BuildContext context, Map<String, dynamic> collection) {
+    Navigator.of(context).pushNamed(
+      Routes.userProfile,
+      arguments: collection,
+    );
   }
 
   @override
@@ -37,14 +40,13 @@ class Challenge extends StatelessWidget {
             1;
     AuthService auth = AuthService();
     Map user = auth.getUser();
-    bool isOwner = user['email'] == collection['email'];
 
     return CustomColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: SpacingType.medium,
       children: [
         GestureDetector(
-          onTap: () => openUserProfile(context, collection['uid']),
+          onTap: () => openUserProfile(context, collection),
           child: CustomRow(
             spacing: SpacingType.small,
             flex: const [0, 1],
@@ -131,22 +133,22 @@ class Challenge extends StatelessWidget {
             )
           ],
         ),
-        if (isOwner)
-          CustomRow(
-            spacing: SpacingType.small,
-            children: [
-              Image.asset(
-                collection['visibility'] == 'Only me'
-                    ? 'assets/private.png'
-                    : 'assets/public.png',
-                width: 24,
-                height: 24,
-              ),
-              CustomText(
-                text: '${collection['visibility']} challenge',
-              ),
-            ],
-          ),
+        CustomRow(
+          spacing: SpacingType.small,
+          children: [
+            Image.asset(
+              collection['visibility'] == user['uid']
+                  ? 'assets/private.png'
+                  : 'assets/public.png',
+              width: 24,
+              height: 24,
+            ),
+            CustomText(
+              text:
+                  '${collection['visibility'] == user['uid'] ? 'private' : collection['visibility']} challenge',
+            ),
+          ],
+        ),
         if (collection['isFinished'])
           CustomRow(
             spacing: SpacingType.small,

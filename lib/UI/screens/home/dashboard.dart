@@ -58,8 +58,6 @@ class Dashboard extends StatelessWidget {
         }
 
         if (state.error != null) {
-          print('beautify');
-
           FilterSettingsState filterSettingsBlocState =
               BlocProvider.of<FilterSettingsBloc>(context).state;
           bool isIncludeFinished =

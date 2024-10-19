@@ -40,20 +40,20 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
         );
 
         try {
-          Map<String, dynamic> updatedCollection = {
+          Map<String, dynamic> updatedDocument = {
             ...state.collection,
             ...event.collection,
           };
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'challenges',
-            updatedCollection,
-            updatedCollection['id'],
+            updatedDocument,
+            updatedDocument['id'],
           );
 
           emit(
             CollectionStateSet(
-              collection: updatedCollection,
+              collection: updatedDocument,
               isOwner: state.isOwner,
             ),
           );

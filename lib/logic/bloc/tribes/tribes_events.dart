@@ -29,6 +29,11 @@ class TribesEventJoinTribe implements TribesEvent {
 }
 
 @immutable
+class TribesEventResetState implements TribesEvent {
+  const TribesEventResetState();
+}
+
+@immutable
 class TribesEventGetTribes implements TribesEvent {
   final User user;
 

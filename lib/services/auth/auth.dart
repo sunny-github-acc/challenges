@@ -133,7 +133,7 @@ class AuthService {
     }
   }
 
-  Map<String, Object?> getUser() {
+  Map<String, dynamic> getUser() {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {

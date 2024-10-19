@@ -12,6 +12,12 @@ class FilterSettingsBloc
       : super(
           const FilterSettingsStateEmpty(),
         ) {
+    on<FilterSettingsEventResetState>((event, emit) async {
+      emit(
+        const FilterSettingsStateEmpty(),
+      );
+    });
+
     on<FilterSettingsEventGetFilterSettings>(
       (event, emit) async {
         emit(
@@ -74,7 +80,7 @@ class FilterSettingsBloc
               key: value,
           };
 
-          await cloud.updateCollection(
+          await cloud.updateDocument(
             'users',
             updatedFilterSettings,
             state.filterSettings['uid'],

@@ -91,7 +91,7 @@ class PrioritiesStateClass extends State<Priorities> {
                       }
 
                       return CustomTextInput(
-                        text: state.priorities ?? '',
+                        text: state.priorities,
                         hint: 'Press to add priorities',
                         onSave: (value) {
                           addPriorities(context, value);

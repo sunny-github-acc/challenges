@@ -14,7 +14,12 @@ import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/logic/bloc/collections/collections_bloc.dart';
 import 'package:challenges/logic/bloc/collections/collections_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_bloc.dart';
+import 'package:challenges/logic/bloc/filterSettings/filter_settings_events.dart';
 import 'package:challenges/logic/bloc/filterSettings/filter_settings_state.dart';
+import 'package:challenges/logic/bloc/priorities/priorities_bloc.dart';
+import 'package:challenges/logic/bloc/priorities/priorities_events.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
+import 'package:challenges/logic/bloc/tribes/tribes_events.dart';
 import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +30,11 @@ class Home extends StatelessWidget {
   void logout(BuildContext context) {
     context.read<CollectionsBloc>().add(const CollectionsEventCancelStream());
     context.read<AuthBloc>().add(const AuthEventLogOut());
+    context.read<PrioritiesBloc>().add(const PrioritiesEventResetState());
+    context.read<TribesBloc>().add(const TribesEventResetState());
+    context.read<FilterSettingsBloc>().add(
+          const FilterSettingsEventResetState(),
+        );
   }
 
   void deleteAccount(BuildContext context) {

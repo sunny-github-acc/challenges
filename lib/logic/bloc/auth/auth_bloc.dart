@@ -428,6 +428,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           CloudService cloud = CloudService();
           await cloud.deleteDocuments('challenges', query);
           await cloud.deleteDocument('users', user.uid);
+
+          await cloud.updateTribeMembersCollection(
+            'tribes',
+            query,
+            queryType: QueryType.tribes,
+          );
+
           await user.delete();
           await FirebaseAuth.instance.signOut();
 
