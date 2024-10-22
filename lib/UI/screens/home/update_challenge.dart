@@ -38,6 +38,7 @@ class UpdateChallenge extends StatelessWidget {
 
   save(BuildContext context, String type, dynamic input) async {
     Map<String, dynamic> updatedCollection = {
+      'createdAt': DateTime.now(),
       type: input,
       if (type == 'duration') 'startDate': DateTime.now(),
       if (type == 'duration')
@@ -57,6 +58,7 @@ class UpdateChallenge extends StatelessWidget {
 
   saveDate(BuildContext context, DateTimeRange input) async {
     Map<String, dynamic> updatedCollection = {
+      'createdAt': DateTime.now(),
       'startDate': input.start,
       'endDate': input.end,
       'duration': getDuration(input.start, input.end),
@@ -72,6 +74,7 @@ class UpdateChallenge extends StatelessWidget {
   setStatus(BuildContext context, String status) {
     bool isFinished = status == Statuses.completed || status == Statuses.failed;
     Map<String, dynamic> updatedCollection = {
+      'createdAt': DateTime.now(),
       'isFinished': isFinished,
       if (isFinished) 'isSuccess': status == Statuses.completed,
     };

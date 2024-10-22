@@ -144,8 +144,9 @@ class _CreateChallenge extends State<CreateChallenge> {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: CustomText(text: state.success!),
-                duration: const Duration(seconds: 2)),
+              content: CustomText(text: state.success!),
+              duration: const Duration(seconds: 2),
+            ),
           );
 
           Navigator.pop(context);

@@ -120,6 +120,28 @@ class Dashboard extends StatelessWidget {
           body: ListView.builder(
             itemCount: state.collections.length,
             itemBuilder: (context, index) {
+              if (state.collections.length == 20 && index == 19) {
+                return CustomColumn(
+                  children: [
+                    CustomCard(
+                      onPressed: () => navigateToUpdateChallenge(
+                        context,
+                        state.collections[index],
+                      ),
+                      child: Challenge(
+                        collection: state.collections[index],
+                      ),
+                    ),
+                    const CustomCard(
+                      child: CustomText(
+                        text:
+                            "More than 20 challenges won't be visible in this version. Stay tuned for updates!",
+                      ),
+                    ),
+                  ],
+                );
+              }
+
               return CustomCard(
                 onPressed: () => navigateToUpdateChallenge(
                   context,

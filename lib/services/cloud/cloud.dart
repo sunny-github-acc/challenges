@@ -151,6 +151,7 @@ class CloudService {
     bool isFinished = query['isFinished'];
     bool isIncludeFinished = query['isIncludeFinished'];
     String duration = query['duration'];
+    int limit = 20;
 
     if (visibilityKeys.isEmpty) {
       return challenges.where(
@@ -165,11 +166,15 @@ class CloudService {
           .where('isFinished', isEqualTo: false);
 
       if (duration != 'All') {
-        challengesQuery =
-            challengesQuery.where('duration', isEqualTo: duration);
+        challengesQuery = challengesQuery.where(
+          'duration',
+          isEqualTo: duration,
+        );
       }
 
-      return challengesQuery;
+      return challengesQuery
+          .orderBy('createdAt', descending: true)
+          .limit(limit);
     } else if (isFinished) {
       Query challengesQuery = challenges
           .where('visibility', whereIn: visibilityKeys)
@@ -182,7 +187,9 @@ class CloudService {
         );
       }
 
-      return challengesQuery;
+      return challengesQuery
+          .orderBy('createdAt', descending: true)
+          .limit(limit);
     }
 
     Query challengesQuery = challenges.where(
@@ -191,10 +198,18 @@ class CloudService {
     );
 
     if (duration != 'All') {
-      challengesQuery = challengesQuery.where('duration', isEqualTo: duration);
+      challengesQuery = challengesQuery.where(
+        'duration',
+        isEqualTo: duration,
+      );
     }
 
-    return challengesQuery;
+    return challengesQuery
+        .orderBy(
+          'createdAt',
+          descending: true,
+        )
+        .limit(limit);
   }
 
   Query<Object?> getTribesQueryBuilder(challenges, query) {
