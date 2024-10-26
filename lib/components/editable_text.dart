@@ -1,6 +1,7 @@
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/components/text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextInput extends StatefulWidget {
   final String text;
@@ -10,6 +11,7 @@ class CustomTextInput extends StatefulWidget {
   final bool isTextRequired;
   final int? minValue;
   final int? maxValue;
+  final int? limit;
 
   const CustomTextInput({
     super.key,
@@ -20,6 +22,7 @@ class CustomTextInput extends StatefulWidget {
     this.isTextRequired = false,
     this.minValue,
     this.maxValue,
+    this.limit,
   });
 
   @override
@@ -29,7 +32,20 @@ class CustomTextInput extends StatefulWidget {
 class CustomTextInputState extends State<CustomTextInput> {
   final TextEditingController _textEditingController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  late String labelText;
+  late String limitText;
   bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    limitText = '(Reached limit ${widget.limit})';
+
+    setState(() {
+      labelText = widget.limit == widget.text.length ? limitText : '';
+    });
+  }
 
   @override
   void dispose() {
@@ -84,25 +100,32 @@ class CustomTextInputState extends State<CustomTextInput> {
               FocusScope.of(context).requestFocus(_focusNode);
             });
           },
-          child: SizedBox(
-            height: 40.0,
-            width: MediaQuery.of(context).size.width,
-            child: _isEditing
-                ? TextField(
-                    controller: _textEditingController,
-                    focusNode: _focusNode,
-                    autofocus: true,
-                    onEditingComplete: () => handleSubmit(
-                      _textEditingController.text,
-                    ),
-                  )
-                : CustomText(
-                    text: widget.text.trim() != '' ? widget.text : widget.hint,
-                    fontSize: widget.isTitle
-                        ? FontSizeType.large
-                        : FontSizeType.medium,
+          child: _isEditing
+              ? TextField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: labelText,
+                    hintText: widget.hint,
                   ),
-          ),
+                  controller: _textEditingController,
+                  focusNode: _focusNode,
+                  autofocus: true,
+                  maxLines: null,
+                  inputFormatters: widget.limit != null
+                      ? [LengthLimitingTextInputFormatter(widget.limit)]
+                      : null,
+                  onEditingComplete: () => handleSubmit(
+                    _textEditingController.text,
+                  ),
+                  onChanged: (value) => setState(() {
+                    labelText = widget.limit == value.length ? limitText : '';
+                  }),
+                )
+              : CustomText(
+                  text: widget.text.trim() != '' ? widget.text : widget.hint,
+                  fontSize:
+                      widget.isTitle ? FontSizeType.large : FontSizeType.medium,
+                ),
         ),
       ),
     );
