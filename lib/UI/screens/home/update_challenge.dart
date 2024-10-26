@@ -185,18 +185,27 @@ class UpdateChallenge extends StatelessWidget {
                             isTitle: true,
                             isTextRequired: true,
                             onSave: (input) => save(context, 'title', input),
+                            limit: 50,
                           ),
                           CustomTextInput(
                             text: collection['description'],
-                            hint: 'Press to add a description',
-                            onSave: (input) =>
-                                save(context, 'description', input),
+                            hint: 'Enter your description here',
+                            onSave: (input) => save(
+                              context,
+                              'description',
+                              input,
+                            ),
+                            limit: 300,
                           ),
                           CustomTextInput(
                             text: collection['consequence'],
-                            hint: 'Press to add a consequence',
-                            onSave: (input) =>
-                                save(context, 'consequence', input),
+                            hint: 'Enter your consequence here',
+                            onSave: (input) => save(
+                              context,
+                              'consequence',
+                              input,
+                            ),
+                            limit: 300,
                           ),
                         ],
                       ),
