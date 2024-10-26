@@ -3,6 +3,7 @@ import 'package:challenges/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 import 'package:challenges/components/text.dart';
+import 'package:flutter/services.dart';
 
 class CustomInput extends StatelessWidget {
   final TextEditingController controller;
@@ -15,6 +16,8 @@ class CustomInput extends StatelessWidget {
   final bool isObscureText;
   final bool isSuggestions;
   final bool isTall;
+  final int? limit;
+  final void Function(String)? onChanged;
 
   const CustomInput({
     super.key,
@@ -28,6 +31,8 @@ class CustomInput extends StatelessWidget {
     this.isSuggestions = true,
     this.isTall = false,
     this.keyboardType = TextInputType.text,
+    this.limit,
+    this.onChanged,
   });
 
   @override
@@ -56,6 +61,10 @@ class CustomInput extends StatelessWidget {
             obscureText: isObscureText,
             autocorrect: isAutocorrect,
             enableSuggestions: isObscureText ? false : isSuggestions,
+            inputFormatters: limit != null
+                ? [LengthLimitingTextInputFormatter(limit)]
+                : null,
+            onChanged: onChanged,
           ),
         ),
       ],
