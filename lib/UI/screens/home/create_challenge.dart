@@ -47,6 +47,20 @@ class _CreateChallenge extends State<CreateChallenge> {
   DateTime customStartDate = DateTime.now();
   DateTime customEndDate = DateTime.now().add(const Duration(days: 7));
 
+  int titleLimit = 50;
+  int descriptionLimit = 300;
+  int consequenceLimit = 300;
+  String titleLabelShort = 'Make it short and sweet';
+  String descriptionLabelShort = 'Be as specific as you can';
+  String consequenceLabelShort =
+      'What will happen if your challenge succeeds or fails?';
+  late String titleLabelLong;
+  late String descriptionLabelLong;
+  late String consequenceLabelLong;
+  late String titleLabel;
+  late String descriptionLabel;
+  late String consequenceLabel;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +74,15 @@ class _CreateChallenge extends State<CreateChallenge> {
         ),
       );
     }
+
+    titleLabelLong = '$titleLabelShort (Reached limit $titleLimit)';
+    descriptionLabelLong =
+        '$descriptionLabelShort (Reached limit $descriptionLimit)';
+    consequenceLabelLong =
+        '$consequenceLabelShort (Reached limit $consequenceLimit)';
+    titleLabel = titleLabelShort;
+    descriptionLabel = descriptionLabelShort;
+    consequenceLabel = consequenceLabelShort;
   }
 
   Future<void> save(context) async {
@@ -195,22 +218,41 @@ class _CreateChallenge extends State<CreateChallenge> {
               children: [
                 CustomInput(
                   title: 'Enter a title',
-                  labelText: 'Make it short and sweet',
+                  labelText: titleLabel,
                   controller: titleController,
                   isDisabled: !isTitle,
+                  limit: titleLimit,
+                  onChanged: (e) => setState(() {
+                    titleLabel = titleController.text.length == titleLimit
+                        ? titleLabelLong
+                        : titleLabelShort;
+                  }),
                 ),
                 CustomInput(
                   title: 'Describe your challenge',
-                  labelText: 'Be as specific as you can',
+                  labelText: descriptionLabel,
                   controller: descriptionController,
                   isTall: true,
+                  limit: descriptionLimit,
+                  onChanged: (e) => setState(() {
+                    descriptionLabel =
+                        descriptionController.text.length == descriptionLimit
+                            ? descriptionLabelLong
+                            : descriptionLabelShort;
+                  }),
                 ),
                 CustomInput(
                   title: 'Enter a consequence',
-                  labelText:
-                      'What will happen if your challenge succeeds or fails?',
+                  labelText: consequenceLabel,
                   controller: consequenceController,
                   isTall: true,
+                  limit: consequenceLimit,
+                  onChanged: (e) => setState(() {
+                    consequenceLabel =
+                        consequenceController.text.length == consequenceLimit
+                            ? consequenceLabelLong
+                            : consequenceLabelShort;
+                  }),
                 ),
                 CustomColumn(
                   spacing: SpacingType.small,
