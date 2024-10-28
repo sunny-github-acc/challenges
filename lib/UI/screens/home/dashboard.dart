@@ -34,7 +34,7 @@ class Dashboard extends StatelessWidget {
   void navigateToUpdateChallenge(
       BuildContext context, Map<String, dynamic> collection) {
     AuthService auth = AuthService();
-    if (auth.getUser()['email'] == collection['email']) {
+    if (auth.getUser()['uid'] == collection['uid']) {
       BlocProvider.of<CollectionBloc>(context).add(
         CollectionEventSetCollection(
           collection: collection,

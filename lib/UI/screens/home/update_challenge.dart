@@ -165,7 +165,7 @@ class UpdateChallenge extends StatelessWidget {
 
             AuthService auth = AuthService();
             Map user = auth.getUser();
-            bool isOwner = user['email'] == collection['email'];
+            bool isOwner = user['uid'] == collection['uid'];
 
             return CustomContainer(
               paddingBottom: 0,

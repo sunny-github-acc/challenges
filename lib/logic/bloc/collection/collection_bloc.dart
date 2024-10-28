@@ -18,7 +18,7 @@ class CollectionBloc extends Bloc<CollectionEvent, CollectionState> {
       (event, emit) {
         Map<String, dynamic> collection = event.collection;
         Map user = auth.getUser();
-        bool isOwner = user['email'] == collection['email'];
+        bool isOwner = user['uid'] == collection['uid'];
 
         emit(
           CollectionStateSet(

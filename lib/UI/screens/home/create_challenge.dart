@@ -94,7 +94,9 @@ class _CreateChallenge extends State<CreateChallenge> {
     DateTime endDate = getEndDate(duration, customEndDate);
 
     Map<String, dynamic> document = {
-      ...user,
+      'uid': user['uid'],
+      'displayName': user['displayName'],
+      'photoURL': user['photoURL'],
       'title': title,
       'description': description,
       'createdAt': today,
