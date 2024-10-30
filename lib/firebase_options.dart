@@ -5,15 +5,6 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -51,10 +42,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAZpJcFo1_sBpNweaRB6mn_h8cLIpaddZ0',
-    appId: '1:547856188797:android:05b45ab172772094867814',
+    appId: '1:547856188797:android:ba0717c54a559ca4867814',
     messagingSenderId: '547856188797',
     projectId: 'challenges-b6ee8',
     storageBucket: 'challenges-b6ee8.appspot.com',
+    androidClientId:
+        '547856188797-vqp4erb2i0al4jhmtnqv3ifj3p87k0ov.apps.googleusercontent.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

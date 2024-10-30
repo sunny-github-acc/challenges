@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:547856188797:android:05b45ab172772094867814",
+        "mobilesdk_app_id": "1:547856188797:android:ba0717c54a559ca4867814",
         "android_client_info": {
           "package_name": "pro.issukiai.challenges"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "547856188797-vqp4erb2i0al4jhmtnqv3ifj3p87k0ov.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pro.issukiai.challenges",
+            "certificate_hash": "22df60a728633ddf3c58086e8c96c0ec4c6ae6fe"
+          }
+        },
         {
           "client_id": "547856188797-7blb5kheiukahi6kq0n2navi7r8knn9u.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +37,13 @@
             {
               "client_id": "547856188797-5o4msm270rut0h52lsijmp24ml4c9p8q.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "547856188797-6ru5acmo2jo5hoorq4tth89uud85rogv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "pro.issukiai.challenges"
+              }
             }
           ]
         }
