@@ -19,6 +19,7 @@ import 'package:challenges/logic/bloc/priorities/priorities_bloc.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_bloc.dart';
 import 'package:challenges/logic/bloc/tribes/tribes_state.dart';
 import 'package:challenges/logic/bloc/users_profiles/users_profiles_bloc.dart';
+import 'package:challenges/utils/colors.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -146,9 +147,7 @@ class _MyAppState extends State<MyApp> {
                     BlocProvider.of<AuthBloc>(context).add(
                       const AuthEventInitialize(),
                     );
-                  }
 
-                  if (state is AuthStateEmpty || state.isLoading) {
                     return const Scaffold(
                       body: Center(
                         child: CircularProgressIndicator(),
@@ -173,8 +172,14 @@ class _MyAppState extends State<MyApp> {
                       (_) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: CustomText(text: state.success!),
-                              duration: const Duration(seconds: 2)),
+                            content: CustomText(
+                              text: state.success!,
+                              color: colorMap['white'],
+                            ),
+                            duration: const Duration(
+                              seconds: 2,
+                            ),
+                          ),
                         );
                       },
                     );

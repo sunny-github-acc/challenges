@@ -1,7 +1,6 @@
 import 'package:challenges/UI/screens/auth/auth.dart';
 import 'package:challenges/UI/screens/auth/login.dart';
 import 'package:challenges/UI/screens/auth/signup.dart';
-import 'package:challenges/UI/screens/auth/signup_password.dart';
 import 'package:challenges/UI/screens/home/create_challenge.dart';
 import 'package:challenges/UI/screens/home/priorities.dart';
 import 'package:challenges/UI/screens/home/home.dart';
@@ -28,7 +27,6 @@ class Routes {
   static const String verifyEmail = '/verify-email';
   static const String userProfile = '/user-profile';
   static const String privacyPolicy = '/privacy-policy';
-  static const String signupPassword = '/signup-password';
   static const String createChallenge = '/create-challenge';
   static const String updateChallenge = '/update-challenge';
 }
@@ -82,10 +80,6 @@ class AppRouter {
       case Routes.joinTribe:
         return MaterialPageRoute(
           builder: (context) => const JoinTribe(),
-        );
-      case Routes.signupPassword:
-        return MaterialPageRoute(
-          builder: (context) => const SignupPassword(),
         );
       case Routes.verifyEmail:
         return MaterialPageRoute(

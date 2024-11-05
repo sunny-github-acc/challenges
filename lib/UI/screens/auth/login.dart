@@ -66,6 +66,7 @@ class _LoginState extends State<Login> {
 
     setState(() {
       isEmail = email.isNotEmpty;
+      isPassword = true;
     });
 
     if (!isValidEmail(email)) {
@@ -110,6 +111,20 @@ class _LoginState extends State<Login> {
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 bool isLoading =
+                    state.isLoading && state.event is AuthEventLogIn;
+
+                return CustomButton(
+                  isFullWidth: true,
+                  text: 'Log in',
+                  isLoading: isLoading,
+                  disabled: isLoading,
+                  onPressed: () => _loginEmail(context),
+                );
+              },
+            ),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                bool isLoading =
                     state.isLoading && state.event is AuthEventRememberPassword;
                 bool isRememberPassword =
                     state.event is AuthEventRememberPassword;
@@ -130,25 +145,12 @@ class _LoginState extends State<Login> {
                 }
 
                 return CustomButton(
-                  text: 'Forgot password?',
+                  text: 'Forgotten password?',
                   type: ButtonType.secondary,
                   size: ButtonSize.small,
                   isLoading: isLoading,
                   disabled: isLoading,
                   onPressed: () => _rememberPassword(context),
-                );
-              },
-            ),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                bool isLoading =
-                    state.isLoading && state.event is AuthEventLogIn;
-
-                return CustomButton(
-                  text: 'Login',
-                  isLoading: isLoading,
-                  disabled: isLoading,
-                  onPressed: () => _loginEmail(context),
                 );
               },
             ),

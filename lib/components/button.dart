@@ -34,6 +34,7 @@ class CustomButton extends StatelessWidget {
   final IconType icon;
   final bool isLoading;
   final bool disabled;
+  final bool isFullWidth;
 
   const CustomButton({
     super.key,
@@ -44,6 +45,7 @@ class CustomButton extends StatelessWidget {
     this.icon = IconType.none,
     this.isLoading = false,
     this.disabled = false,
+    this.isFullWidth = false,
   });
 
   @override
@@ -111,41 +113,47 @@ class CustomButton extends StatelessWidget {
     int isLoadingLength = isLoading ? 1 : 0;
     int buttonItemLength = iconLength + 1 + isLoadingLength;
 
-    return ElevatedButton(
-      onPressed: disabled ? null : onPressed,
-      style: buttonStyle,
-      child: CustomRow(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        spacing: SpacingType.medium,
-        flex: List.generate(buttonItemLength, (index) => 0),
-        children: [
-          if (icon != IconType.none)
-            Image.asset(
-              iconPath,
-              height: fontSize,
-              width: fontSize,
-              color: iconColor,
-            ),
-          if (text != '' && text != null)
-            CustomText(
-              text: text!,
-              style: TextStyle(
-                fontSize: fontSize,
-                color: textColor,
-                fontWeight: fontWeight,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          if (isLoading)
-            SizedBox(
-              height: fontSize - 5,
-              width: fontSize - 5,
-              child: const CustomCircularProgressIndicator(
-                strokeWidth: 2.5,
-              ),
-            ),
-        ],
+    return SizedBox(
+      width: isFullWidth ? double.infinity : null,
+      child: ElevatedButton(
+        onPressed: disabled ? null : onPressed,
+        style: buttonStyle,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: CustomRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+            spacing: SpacingType.medium,
+            flex: List.generate(buttonItemLength, (index) => 0),
+            children: [
+              if (icon != IconType.none)
+                Image.asset(
+                  iconPath,
+                  height: fontSize,
+                  width: fontSize,
+                  color: iconColor,
+                ),
+              if (text != null && text!.isNotEmpty)
+                CustomText(
+                  text: text!,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    color: textColor,
+                    fontWeight: fontWeight,
+                  ),
+                ),
+              if (isLoading)
+                SizedBox(
+                  height: fontSize - 5,
+                  width: fontSize - 5,
+                  child: const CustomCircularProgressIndicator(
+                    strokeWidth: 2.5,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

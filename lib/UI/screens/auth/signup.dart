@@ -1,4 +1,3 @@
-import 'package:challenges/UI/router/router.dart';
 import 'package:challenges/components/app_bar.dart';
 import 'package:challenges/components/button.dart';
 import 'package:challenges/components/column.dart';
@@ -7,6 +6,7 @@ import 'package:challenges/components/input.dart';
 import 'package:challenges/components/modal.dart';
 import 'package:challenges/logic/bloc/auth/auth_bloc.dart';
 import 'package:challenges/logic/bloc/auth/auth_events.dart';
+import 'package:challenges/logic/bloc/auth/auth_state.dart';
 import 'package:challenges/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,22 +21,37 @@ class Signup extends StatefulWidget {
 class SignupState extends State<Signup> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController passwordRepeatController =
+      TextEditingController();
 
   bool isUsername = true;
   bool isEmail = true;
+  bool isPassword = true;
+  bool isPasswordRepeat = true;
 
-  void _navigateToSignupPasswordScreen(
-    BuildContext context,
-    String username,
-    String email,
-  ) {
-    if (username.isEmpty || email.isEmpty) {
+  Future<void> _signup(context) async {
+    String username = usernameController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String passwordRepeat = passwordRepeatController.text.trim();
+
+    if (username.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        passwordRepeat.isEmpty) {
       setState(() {
         isUsername = username.isNotEmpty;
         isEmail = email.isNotEmpty;
+        isPassword = password.isNotEmpty;
+        isPasswordRepeat = password.isNotEmpty;
       });
 
-      return Modal.show(context, 'Oops', 'Please fill out all input fields');
+      return Modal.show(
+        context,
+        'Oops',
+        'Please fill out all input fields',
+      );
     }
 
     if (!isValidEmail(email)) {
@@ -47,12 +62,21 @@ class SignupState extends State<Signup> {
       return Modal.show(context, 'Oops', 'Please fill in a valid email');
     }
 
-    BlocProvider.of<AuthBloc>(context).add(AuthEventSaveName(
-      username: username,
-      email: email,
-    ));
+    if (password != passwordRepeat) {
+      setState(() {
+        isPasswordRepeat = false;
+      });
 
-    Navigator.of(context).pushNamed(Routes.signupPassword);
+      return Modal.show(context, 'Oops', 'Passwords should match');
+    }
+
+    BlocProvider.of<AuthBloc>(context).add(
+      AuthEventRegister(
+        username: username,
+        email: email,
+        password: password,
+      ),
+    );
   }
 
   @override
@@ -79,13 +103,32 @@ class SignupState extends State<Signup> {
               keyboardType: TextInputType.emailAddress,
               isDisabled: !isEmail,
             ),
-            CustomButton(
-              text: 'Next',
-              onPressed: () => _navigateToSignupPasswordScreen(
-                context,
-                usernameController.text.trim(),
-                emailController.text.trim(),
-              ),
+            CustomInput(
+              hintText: 'Password',
+              labelText: 'Enter your password',
+              controller: passwordController,
+              isObscureText: true,
+              isAutocorrect: false,
+              isDisabled: !isPassword,
+            ),
+            CustomInput(
+              hintText: 'Repeat Password',
+              labelText: 'Repeat your password',
+              controller: passwordRepeatController,
+              isObscureText: true,
+              isAutocorrect: false,
+              isDisabled: !isPasswordRepeat,
+            ),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return CustomButton(
+                  isFullWidth: true,
+                  text: 'Sign up',
+                  onPressed: () => _signup(context),
+                  isLoading: state.isLoading,
+                  disabled: state.isLoading,
+                );
+              },
             ),
           ],
         ),

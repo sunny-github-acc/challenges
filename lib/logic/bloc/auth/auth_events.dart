@@ -61,21 +61,14 @@ class AuthEventGoToRegistration implements AuthEvent {
 }
 
 @immutable
-class AuthEventSaveName implements AuthEvent {
+class AuthEventRegister implements AuthEvent {
   final String username;
   final String email;
-
-  const AuthEventSaveName({
-    required this.username,
-    required this.email,
-  });
-}
-
-@immutable
-class AuthEventRegister implements AuthEvent {
   final String password;
 
   const AuthEventRegister({
+    required this.username,
+    required this.email,
     required this.password,
   });
 }

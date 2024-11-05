@@ -22,6 +22,7 @@ class CustomContainer extends StatelessWidget {
   final bool isFull;
   final bool isFullHeight;
   final bool isFullWidth;
+  final List<Color>? colors;
 
   const CustomContainer({
     Key? key,
@@ -45,6 +46,7 @@ class CustomContainer extends StatelessWidget {
     this.isFull = false,
     this.isFullHeight = false,
     this.isFullWidth = false,
+    this.colors,
   }) : super(key: key);
 
   @override
@@ -78,10 +80,12 @@ class CustomContainer extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                colorMap['white']!,
-                colorMap['white']!,
-              ],
+              colors: colors != null
+                  ? colors!
+                  : [
+                      colorMap['white']!,
+                      colorMap['white']!,
+                    ],
             ),
           ),
           child: Padding(

@@ -6,6 +6,7 @@ import 'package:challenges/utils/colors.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final double? fontSize;
+  final FontWeight? fontWeight;
   final bool? centerTitle;
   final List<Widget>? actions;
   final Widget? leftButton;
@@ -15,7 +16,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.leftButton,
     this.actions,
-    this.fontSize = 24,
+    this.fontSize = 28,
+    this.fontWeight,
     this.centerTitle = false,
   }) : super(key: key);
 
@@ -26,6 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         text: title ?? '',
         style: TextStyle(
           fontSize: fontSize,
+          fontWeight: fontWeight,
           color: colorMap['white']!,
         ),
       ),

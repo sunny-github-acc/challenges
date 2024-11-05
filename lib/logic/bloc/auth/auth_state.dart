@@ -75,7 +75,7 @@ class AuthStateLoggedIn extends AuthState {
 
   @override
   String toString() {
-    return '🚀 AuthStateLoggedIn(user: $user, isLoading: $isLoading, event: $event, error: $error, )';
+    return '🚀 AuthStateLoggedIn(user: $user, isLoading: $isLoading, event: $event, success: $success, error: $error, )';
   }
 }
 
@@ -171,6 +171,8 @@ extension GetEmail on AuthState {
   String? get email {
     final cls = this;
     if (cls is AuthStateNameSaved) {
+      return cls.email;
+    } else if (cls is AuthStateLoggedIn) {
       return cls.email;
     } else {
       return null;

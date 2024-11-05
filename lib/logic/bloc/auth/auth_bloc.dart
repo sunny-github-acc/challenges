@@ -163,6 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             AuthStateLoggedIn(
               user: user,
               event: event,
+              email: email,
             ),
           );
         } on FirebaseAuthException catch (error) {
@@ -295,25 +296,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    on<AuthEventSaveName>(
+    on<AuthEventRegister>(
       (event, emit) async {
         final username = event.username;
         final email = event.email;
-
-        emit(
-          AuthStateNameSaved(
-            username: username,
-            email: email,
-          ),
-        );
-      },
-    );
-
-    on<AuthEventRegister>(
-      (event, emit) async {
-        final currentState = state;
-        final username = currentState.username;
-        final email = currentState.email;
         final password = event.password;
 
         emit(
@@ -328,7 +314,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           AuthService authService = AuthService();
 
-          User? user = await authService.signupEmail(username, email, password);
+          User? user = await authService.signupEmail(
+            username,
+            email,
+            password,
+          );
 
           emit(
             AuthStateLoggedIn(

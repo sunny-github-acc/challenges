@@ -48,6 +48,7 @@ class Challenge extends StatelessWidget {
         GestureDetector(
           onTap: () => openUserProfile(context, collection),
           child: CustomRow(
+            crossAxisAlignment: CrossAxisAlignment.center,
             spacing: SpacingType.small,
             flex: const [0, 1],
             children: [
@@ -67,7 +68,6 @@ class Challenge extends StatelessWidget {
               ),
               CustomText(
                 text: collection['displayName'],
-                // fontWeight: FontWeight.bold,
                 fontSize: FontSizeType.xlarge,
               ),
             ],
