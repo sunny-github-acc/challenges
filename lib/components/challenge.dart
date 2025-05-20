@@ -40,6 +40,15 @@ class Challenge extends StatelessWidget {
             1;
     AuthService auth = AuthService();
     Map user = auth.getUser();
+    String formatChallengeStatus(int daysSinceStart, int daysLeft) {
+      if (daysSinceStart < 0) {
+        return 'Starts in ${-daysSinceStart} day${-daysSinceStart == 1 ? '' : 's'}';
+      } else if (daysLeft < 0) {
+        return 'Ended ${-daysLeft} day${-daysLeft == 1 ? '' : 's'} ago';
+      } else {
+        return 'Started $daysSinceStart day${daysSinceStart == 1 ? '' : 's'} ago\nEnds in $daysLeft day${daysLeft == 1 ? '' : 's'}';
+      }
+    }
 
     return CustomColumn(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +136,7 @@ class Challenge extends StatelessWidget {
                   fontSize: FontSizeType.small,
                   text: collection['duration'] == 'Infinite'
                       ? 'Started $daysSinceStart days ago'
-                      : 'Started $daysSinceStart days ago\nEnds in $daysLeft days',
+                      : formatChallengeStatus(daysSinceStart, daysLeft),
                 ),
               ],
             )

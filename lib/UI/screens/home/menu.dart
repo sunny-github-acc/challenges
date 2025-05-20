@@ -31,6 +31,22 @@ class _Menu extends State<Menu> {
     );
   }
 
+  final internalToDisplay = {
+    'Week': 'One Week',
+    'Month': 'One Month',
+    'Year': 'One Year',
+    'Infinite': 'No Limit',
+    'All': 'All',
+  };
+
+  final displayToInternal = {
+    'One Week': 'Week',
+    'One Month': 'Month',
+    'One Year': 'Year',
+    'No Limit': 'Infinite',
+    'All': 'All',
+  };
+
   void getFilterSettings(context) async {
     FilterSettingsBloc bloc = BlocProvider.of<FilterSettingsBloc>(context);
 
@@ -107,29 +123,43 @@ class _Menu extends State<Menu> {
                   List<dynamic> sortedFilterSettings =
                       state.filterSettings['visibility'].entries.map((entry) {
                     if (entry.key == 'public') {
-                      return MapEntry(
-                        'Public challenges',
-                        entry.value,
-                      );
+                      return MapEntry('Public challenges', entry.value);
                     } else if (entry.key == user['uid']) {
-                      return MapEntry(
-                        'Private challenges',
-                        entry.value,
-                      );
+                      return MapEntry('Private challenges', entry.value);
                     } else {
-                      return MapEntry(
-                        entry.key,
-                        entry.value,
-                      );
+                      return MapEntry(entry.key, entry.value);
                     }
-                  }).toList()
-                        ..sort((a, b) {
-                          if (a.key == 'Public challenges' ||
-                              a.key == 'Private challenges') {
-                            return -1;
-                          }
-                          return 1;
-                        });
+                  }).toList();
+
+                  const List<String> prioritizedOrder = [
+                    'Private challenges',
+                    'Public challenges',
+                  ];
+
+                  sortedFilterSettings.sort((a, b) {
+                    String keyA = a.key;
+                    String keyB = b.key;
+
+                    int indexA = prioritizedOrder.indexOf(keyA);
+                    int indexB = prioritizedOrder.indexOf(keyB);
+
+                    // Case 1: Both keys are in the prioritized list
+                    if (indexA != -1 && indexB != -1) {
+                      return indexA.compareTo(indexB);
+                    }
+                    // Case 2: Only keyA is in the prioritized list (so it comes first)
+                    else if (indexA != -1) {
+                      return -1;
+                    }
+                    // Case 3: Only keyB is in the prioritized list (so it comes first)
+                    else if (indexB != -1) {
+                      return 1;
+                    }
+                    // Case 4: Neither key is in the prioritized list, sort them alphabetically (or by another logic)
+                    else {
+                      return keyA.compareTo(keyB);
+                    }
+                  });
 
                   return CustomColumn(
                     spacing: SpacingType.small,
@@ -208,17 +238,19 @@ class _Menu extends State<Menu> {
                           ),
                           CustomDropdown(
                             values: const [
-                              'Week',
-                              'Month',
-                              'Year',
-                              'Infinite',
+                              'One Week',
+                              'One Month',
+                              'One Year',
+                              'No Limit',
                               'All',
                             ],
                             hint: 'Select an option',
-                            value: state.filterSettings['duration'],
+                            value: internalToDisplay[
+                                state.filterSettings['duration']],
                             onChanged: (dynamic value) {
+                              final updatedValue = displayToInternal[value];
                               if (!isDuration) {
-                                handleDuration(value as String);
+                                handleDuration(updatedValue as String);
                               }
                             },
                           ),
